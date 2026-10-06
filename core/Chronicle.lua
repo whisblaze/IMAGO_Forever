@@ -336,8 +336,6 @@ function IMAGO.Chronicle.CreateFrame()
     f.settingsBtn:SetScript("OnClick", function()
         if Settings and Settings.OpenToCategory and IMAGO.settingsCategory then
             Settings.OpenToCategory(IMAGO.settingsCategory:GetID())
-        elseif InterfaceOptionsFrame_OpenToCategory then
-            InterfaceOptionsFrame_OpenToCategory("IMAGO")
         end
     end)
 
@@ -1962,7 +1960,7 @@ function IMAGO.Chronicle.UpdateList()
                         anim:SetOrder(1)
                         ag:SetLooping("BOUNCE")
                         ag:Play()
-                        btn.newTag.ag = ag
+                        btn.newTagAnim = ag
 
                         btn:SetScript("OnEnter", function(self)
                             IMAGO.ShowTooltipIfTruncated(self, self.t)
