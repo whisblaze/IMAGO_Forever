@@ -51,15 +51,32 @@ L["CMD_HELP_OPEN_DESC"]             = "Öffnet oder schließt die Chronik"
 L["CMD_HELP_SETTINGS_DESC"]         = "Öffnet die Addon-Einstellungen"
 L["CMD_HELP_HELP_DESC"]             = "Zeigt diese Hilfe an"
 
--- Categories (Midnight factions)
-L["CAT_QUELTHALAS"]                 = "Verteidiger von Quel'Thalas"
-L["CAT_LIGHT"]                      = "Vorhut des Lichts"
-L["CAT_AMANI"]                      = "Der Amani-Stamm"
-L["CAT_HARATI"]                     = "Die Hara'ti"
-L["CAT_VOID"]                       = "Die Leereninvasion"
-L["CAT_EBON_BLADE"]                 = "Ritter der Schwarzen Klinge"
-L["CAT_NEUTRAL"]                    = "Unabhängige & Rätselhafte"
-L["CAT_ARCANTINA"]                  = "Die Arcantina"
+-- Categories (Alliance)
+L["CAT_STORMWIND"]                  = "Königreich Sturmwind"
+L["CAT_IRONFORGE"]                  = "Zwerge von Eisenschmiede"
+L["CAT_GNOMEREGAN"]                 = "Gnomeregan-Exilanten"
+L["CAT_DARNASSUS"]                  = "Nachtelfen von Darnassus"
+L["CAT_THERAMORE"]                  = "Theramore"
+L["CAT_WILDHAMMER"]                 = "Wildhammerklan"
+
+-- Categories (Horde)
+L["CAT_ORCS"]                       = "Orcs der Horde"
+L["CAT_DARKSPEAR"]                  = "Dunkelspeertrolle"
+L["CAT_FORSAKEN"]                   = "Die Verlassenen"
+L["CAT_THUNDERBLUFF"]               = "Tauren von Donnerfels"
+
+-- Categories (Others)
+L["CAT_SKYBORNE"]                   = "Skyborne"
+L["CAT_CENARION"]                   = "Zirkel des Cenarius"
+L["CAT_ARGENT"]                     = "Argentumdämmerung & Silberne Hand"
+L["CAT_DALARAN"]                    = "Dalaran & die Kirin Tor"
+L["CAT_GOBLIN"]                     = "Goblinkartelle"
+L["CAT_SHENDRALAR"]                 = "Die Shen'dralar"
+L["CAT_DRAGONFLIGHTS"]              = "Drachenschwärme"
+L["CAT_ELEMENTALS"]                 = "Elementare"
+L["CAT_CENTAUR"]                    = "Zentaurenklans"
+L["CAT_NEUTRAL"]                    = "Neutral/Unabhängig"
+L["CAT_CUSTOM"]                     = "Eigene"
 
 -- ============================================================
 -- TAB 2: ZONES (DASHBOARD & DETAILS)
@@ -174,21 +191,6 @@ L["CONFIRM_ENC_DESC"]               = "Alle Inhalte werden sichtbar,\nzählen ab
 L["CONFIRM_UNLOCK_TITLE"]           = "Inhaltsvorschau freischalten"
 L["CONFIRM_UNLOCK_DESC"]            = "Dieser Eintrag wird für dich lesbar, zählt aber nicht für deinen Fortschritt.\n\nFreischalten?"
 L["BACK"]                           = "Zurück"
-
--- NPC categories (Midnight / The War Within)
-L["CAT_QUELTHALAS"]             = "Verteidiger von Quel'Thalas"
-L["CAT_LIGHT"]                  = "Champions des Lichts"
-L["CAT_AMANI"]                  = "Die Amani"
-L["CAT_HARATI"]                 = "Die Harati"
-L["CAT_EBON_BLADE"]             = "Ritter der Onyxklinge"
-L["CAT_NEUTRAL"]                = "Neutrale Kräfte"
-L["CAT_ARCANTINA"]              = "Die Arkantina"
-L["CAT_VOIDHUNTERS"]            = "Leerenjäger"
-L["CAT_HARBINGER"]              = "Herolde der Leere"
-L["CAT_KIRIN_TOR"]              = "Kirin Tor"
-L["CAT_EARTHEN"]                = "Die Irden"
-L["CAT_ARATHI"]                 = "Kinder der Arathi"
-L["CAT_HARANIR"]                = "Die Haraniir"
 
 -- Credits
 L["TAB_CREDITS"] = "Credits"

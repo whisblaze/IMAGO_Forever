@@ -86,6 +86,20 @@ local SLUG_ERA = {
     _tww      = "TWW",
 }
 
+-- Category → faction crest shown in the detail header
+local FACTION_ICONS = {
+    CAT_STORMWIND    = "Interface\\Timer\\Alliance-Logo",
+    CAT_IRONFORGE    = "Interface\\Timer\\Alliance-Logo",
+    CAT_GNOMEREGAN   = "Interface\\Timer\\Alliance-Logo",
+    CAT_DARNASSUS    = "Interface\\Timer\\Alliance-Logo",
+    CAT_THERAMORE    = "Interface\\Timer\\Alliance-Logo",
+    CAT_WILDHAMMER   = "Interface\\Timer\\Alliance-Logo",
+    CAT_ORCS         = "Interface\\Timer\\Horde-Logo",
+    CAT_DARKSPEAR    = "Interface\\Timer\\Horde-Logo",
+    CAT_FORSAKEN     = "Interface\\Timer\\Horde-Logo",
+    CAT_THUNDERBLUFF = "Interface\\Timer\\Horde-Logo",
+}
+
 IMAGO.Chronicle.ranks = IMAGO.Chronicle.ranks or {}
 IMAGO.Chronicle.zoneRanks = IMAGO.Chronicle.zoneRanks or {}
 
@@ -2094,11 +2108,9 @@ function IMAGO.Chronicle.UpdateList()
                                 f.detailModel:Show()
                                 
                                 local cat = npc.data.category or ""
-                                if cat == "CAT_ALLIANCE" then
-                                    f.factionIcon:SetTexture("Interface\\Timer\\Alliance-Logo")
-                                    f.factionIcon:Show()
-                                elseif cat == "CAT_HORDE" then
-                                    f.factionIcon:SetTexture("Interface\\Timer\\Horde-Logo")
+                                local factionTex = FACTION_ICONS[cat]
+                                if factionTex then
+                                    f.factionIcon:SetTexture(factionTex)
                                     f.factionIcon:Show()
                                 else
                                     f.factionIcon:Hide()

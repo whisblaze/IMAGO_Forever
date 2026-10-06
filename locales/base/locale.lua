@@ -51,26 +51,32 @@ L["CMD_HELP_OPEN_DESC"]             = "Opens or closes the Chronicle"
 L["CMD_HELP_SETTINGS_DESC"]         = "Opens the addon settings"
 L["CMD_HELP_HELP_DESC"]             = "Shows this help message"
 
--- Categories (Midnight Factions)
-L["CAT_QUELTHALAS"]                 = "Defenders of Quel'Thalas"
-L["CAT_LIGHT"]                      = "Vanguard of Light"
-L["CAT_AMANI"]                      = "The Amani Tribe"
-L["CAT_HARATI"]                     = "The Hara'ti"
-L["CAT_VOID"]                       = "The Void Invasion"
-L["CAT_EBON_BLADE"]                 = "Knights of the Ebon Blade"
-L["CAT_NEUTRAL"]                    = "Independent & Enigmatic"
-L["CAT_ARCANTINA"]                  = "The Arcantina"
+-- Categories (Alliance)
+L["CAT_STORMWIND"]                  = "Kingdom of Stormwind"
+L["CAT_IRONFORGE"]                  = "Dwarves of Ironforge"
+L["CAT_GNOMEREGAN"]                 = "Gnomeregan Exiles"
+L["CAT_DARNASSUS"]                  = "Night Elves of Darnassus"
+L["CAT_THERAMORE"]                  = "Theramore"
+L["CAT_WILDHAMMER"]                 = "Wildhammer Clan"
 
--- Categories (The War Within Factions)
-L["CAT_DALARAN_SURVIVORS"]           = "Survivors of Dalaran"
-L["CAT_KHAZ_ALGAR_NATIVES"]          = "Natives of Khaz Algar"
-L["CAT_HALLOWFALL_ARATHI"]           = "Hallowfall Arathi"
-L["CAT_SEVERED_THREADS"]             = "Severed Threads"
-L["CAT_XALATATHS_FORCES"]            = "Xal'atath's Forces"
-L["CAT_AZEROTHS_ARMIES"]             = "Azeroth's Armies"
-L["CAT_UNDERMINE_KARTELS"]           = "Undermine Kartels"
-L["CAT_CAT_KARESH_REMNANTS"]         = "Remnants of Ka'resh"
-L["CAT_SHANDORAH_OUTPOST"]           = "Shan'dorah Outpost"
+-- Categories (Horde)
+L["CAT_ORCS"]                       = "Orcs of the Horde"
+L["CAT_DARKSPEAR"]                  = "Darkspear Trolls"
+L["CAT_FORSAKEN"]                   = "The Forsaken"
+L["CAT_THUNDERBLUFF"]               = "Tauren of Thunder Bluff"
+
+-- Categories (Others)
+L["CAT_SKYBORNE"]                   = "Skyborne"
+L["CAT_CENARION"]                   = "Cenarion Circle"
+L["CAT_ARGENT"]                     = "Argent Dawn & Silver Hand"
+L["CAT_DALARAN"]                    = "Dalaran & the Kirin Tor"
+L["CAT_GOBLIN"]                     = "Goblin Cartels"
+L["CAT_SHENDRALAR"]                 = "Shen'dralar"
+L["CAT_DRAGONFLIGHTS"]              = "Dragonflights"
+L["CAT_ELEMENTALS"]                 = "Elementals"
+L["CAT_CENTAUR"]                    = "Centaur Clans"
+L["CAT_NEUTRAL"]                    = "Neutral/Independent"
+L["CAT_CUSTOM"]                     = "Custom"
 
 -- ============================================================
 -- TAB 2: ZONES (DASHBOARD & DETAILS)
@@ -185,19 +191,4 @@ L["CONFIRM_ENC_DESC"]               = "All content becomes visible,\nbut won't c
 L["CONFIRM_UNLOCK_TITLE"]           = "Unlock Content Preview"
 L["CONFIRM_UNLOCK_DESC"]            = "This entry will become readable but won't count toward your progress.\n\nUnlock?"
 L["BACK"]                           = "Back"
-
--- NPC Categories (Midnight / The War Within)
-L["CAT_QUELTHALAS"]                 = "Defenders of Quel'Thalas"
-L["CAT_LIGHT"]                      = "Champions of the Light"
-L["CAT_AMANI"]                      = "The Amani"
-L["CAT_HARATI"]                     = "The Harati"
-L["CAT_EBON_BLADE"]                 = "Knights of the Ebon Blade"
-L["CAT_NEUTRAL"]                    = "Neutral Forces"
-L["CAT_ARCANTINA"]                  = "The Arcantina"
-L["CAT_VOIDHUNTERS"]                = "Void Hunters"
-L["CAT_HARBINGER"]                  = "Harbingers of the Void"
-L["CAT_KIRIN_TOR"]                  = "Kirin Tor"
-L["CAT_EARTHEN"]                    = "The Earthen"
-L["CAT_ARATHI"]                     = "Children of the Arathi"
-L["CAT_HARANIR"]                    = "The Haraniir"
 
