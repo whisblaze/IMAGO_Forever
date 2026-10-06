@@ -159,13 +159,10 @@ L["CREDITS_ROLE_TRANSLATOR"]        = "Переводчики"
 L["CREDITS_ROLE_TESTER"]            = "Тестировщики"
 
 -- Защита от спойлеров
-L["SPOILER_MIDNIGHT_TITLE"]         = "События Midnight"
-L["SPOILER_MIDNIGHT_HINT"]          = "Нажмите для раскрытия"
-L["SPOILER_TWW_TITLE"]              = "События The War Within"
-L["SPOILER_TWW_HINT"]               = "Нажмите для раскрытия"
+L["SPOILER_FOREVER_TITLE"]          = "События Forever"
+L["SPOILER_FOREVER_HINT"]           = "Нажмите для раскрытия"
 L["SPOILER_TOOLTIP_TITLE"]          = "СПОЙЛЕР"
-L["SPOILER_TOOLTIP_DESC"]           = "Дополнение Midnight"
-L["SPOILER_TOOLTIP_DESC_TWW"]       = "Дополнение The War Within"
+L["SPOILER_TOOLTIP_DESC"]           = "Текущие события Forever"
 
 -- Переключение режима
 L["MODE_LABEL"]                     = "Режим"

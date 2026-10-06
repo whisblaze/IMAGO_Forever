@@ -163,13 +163,10 @@ L["CREDITS_ROLE_TRANSLATOR"]        = "Translators"
 L["CREDITS_ROLE_TESTER"]            = "Testers"
 
 -- Midnight Spoiler Protection
-L["SPOILER_MIDNIGHT_TITLE"]         = "Midnight-Ereignis"
-L["SPOILER_MIDNIGHT_HINT"]          = "Klicken zum Anzeigen"
-L["SPOILER_TWW_TITLE"]              = "The War Within-Ereignis"
-L["SPOILER_TWW_HINT"]               = "Klicken zum Anzeigen"
+L["SPOILER_FOREVER_TITLE"]          = "Forever-Ereignis"
+L["SPOILER_FOREVER_HINT"]           = "Klicken zum Anzeigen"
 L["SPOILER_TOOLTIP_TITLE"]          = "SPOILER"
-L["SPOILER_TOOLTIP_DESC"]           = "Midnight Expansion"
-L["SPOILER_TOOLTIP_DESC_TWW"]       = "The War Within-Expansion"
+L["SPOILER_TOOLTIP_DESC"]           = "Aktuelle Forever-Ereignisse"
 
 -- Mode Toggle
 L["MODE_LABEL"]                     = "Modus"

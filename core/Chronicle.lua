@@ -40,50 +40,21 @@ local eraColors = {
     ["Pre-WC3"]   = {0.45, 0.80, 0.20},     -- Plague green (the Scourge/Third War)
     ["WC3"]       = {0.45, 0.80, 0.20},     -- Plague green (the Scourge/Third War)
     ["Pre-Classic"]   = {0.7, 0.7, 0.7},        -- Neutral stone gray (old world)
-    ["Classic"]   = {0.7, 0.7, 0.7},        -- Neutral stone gray (old world)
-    ["Pre-TBC"]   = {0.12, 1.0, 0.0},       -- Darker forest/fel green (Outland)
-    ["TBC"]       = {0.12, 1.0, 0.0},       -- Darker forest/fel green (Outland)
-    ["Pre-WotLK"] = {0.0, 0.8, 1.0},        -- Frost blue (Icecrown/Arthas)
-    ["WotLK"]     = {0.0, 0.8, 1.0},        -- Frost blue (Icecrown/Arthas)
-    ["Pre-Cata"]  = {1.0, 0.27, 0.0},       -- Magma red (Deathwing)
-    ["Cata"]      = {1.0, 0.27, 0.0},       -- Magma red (Deathwing)
-    ["Pre-MoP"]   = {0.0, 1.0, 0.59},       -- Jade green (Pandaria)
-    ["MoP"]       = {0.0, 1.0, 0.59},       -- Jade green (Pandaria)
-    ["Pre-WoD"]   = {0.77, 0.12, 0.23},     -- Iron Horde dark red (Grommash)
-    ["WoD"]       = {0.77, 0.12, 0.23},     -- Iron Horde dark red (Grommash)
-    ["Pre-Legion"]= {0.19, 1.0, 0.0},       -- PIERCING FEL GREEN (Burning Legion)
-    ["Legion"]    = {0.19, 1.0, 0.0},       -- PIERCING FEL GREEN (Burning Legion)
-    ["Pre-BfA"]   = {1.0, 0.82, 0.0},       -- Azerite gold (Heart of Azeroth)
-    ["BfA"]       = {1.0, 0.82, 0.0},       -- Azerite gold (Heart of Azeroth)
-    ["Pre-SL"]    = {0.64, 0.21, 0.93},     -- Anima violet (Shadowlands)
-    ["SL"]        = {0.64, 0.21, 0.93},     -- Anima violet (Shadowlands)
-    ["Pre-DF"]    = {1.0, 0.49, 0.04},      -- Aspect amber (dragonflights)
-    ["DF"]        = {1.0, 0.49, 0.04},      -- Aspect amber (dragonflights)
-    ["Pre-TWW"]   = {0.0, 0.8, 1.0},        -- Radiant blue (the call of the Light)
-    ["TWW"]       = {0.0, 0.8, 1.0},        -- Radiant blue (the call of the Light)
-    ["Pre-MN"]    = {IMAGO_COLORS.VOID[1], IMAGO_COLORS.VOID[2], IMAGO_COLORS.VOID[3]},       -- Deep void violet (Xal'atath)
-    ["Midnight"]  = {IMAGO_COLORS.VOID[1], IMAGO_COLORS.VOID[2], IMAGO_COLORS.VOID[3]},       -- Deep void violet (Xal'atath)
+    ["Forever"]   = {0.7, 0.7, 0.7},        -- Neutral stone gray (old world)
 }
 
--- Chronological order of timeline era labels
+-- Chronological order of timeline era labels (caps at Forever)
 local ERA_ORDER = {
     Ancient = 1, ["Pre-WC1"] = 2, WC1 = 3, ["Pre-WC2"] = 4, WC2 = 5,
-    ["Pre-WC3"] = 6, WC3 = 7, ["Pre-Classic"] = 8, Classic = 9,
-    ["Pre-TBC"] = 10, TBC = 11, ["Pre-WotLK"] = 12, WotLK = 13,
-    ["Pre-Cata"] = 14, Cata = 15, ["Pre-MoP"] = 16, MoP = 17,
-    ["Pre-WoD"] = 18, WoD = 19, ["Pre-Legion"] = 20, Legion = 21,
-    ["Pre-BfA"] = 22, BfA = 23, ["Pre-SL"] = 24, SL = 25,
-    ["Pre-DF"] = 26, DF = 27, ["Pre-TWW"] = 28, TWW = 29,
-    ["Pre-MN"] = 30, Midnight = 31,
+    ["Pre-WC3"] = 6, WC3 = 7, ["Pre-Classic"] = 8, Forever = 9,
 }
 
 -- NPC records are expansion-scoped via their slug suffix: the timeline only
--- shows entries up to that expansion, and the expansion's own era entry sits
--- behind spoiler protection. Records without a suffix keep the legacy
--- behavior (full timeline, Midnight era spoiler-gated).
+-- shows entries up to that era, and the era's own entry sits behind spoiler
+-- protection. Records without a suffix show the full timeline with the
+-- Forever-era entry spoiler-gated.
 local SLUG_ERA = {
-    _midnight = "Midnight",
-    _tww      = "TWW",
+    _forever = "Forever",
 }
 
 -- Category → faction crest shown in the detail header
@@ -1562,7 +1533,7 @@ function IMAGO.Chronicle.RenderTimeline()
         if npcSlug:sub(-#suffix) == suffix then npcEra = era break end
     end
     local cutoffOrder = npcEra and ERA_ORDER[npcEra] or math.huge
-    local spoilerEra  = npcEra or "Midnight"
+    local spoilerEra  = npcEra or "Forever"
 
     local visibleEntries = {}
     for _, entry in ipairs(data.timeline) do
@@ -1631,8 +1602,8 @@ function IMAGO.Chronicle.RenderTimeline()
         if isSpoilerEntry and not isRevealed then
             local L = IMAGO.L
             local spoilerCol = eraColors[spoilerEra] or IMAGO_COLORS.VOID
-            local spoilerTitle = L["SPOILER_" .. spoilerEra .. "_TITLE"] or L["SPOILER_MIDNIGHT_TITLE"]
-            local spoilerHint  = L["SPOILER_" .. spoilerEra .. "_HINT"]  or L["SPOILER_MIDNIGHT_HINT"]
+            local spoilerTitle = L["SPOILER_" .. spoilerEra .. "_TITLE"] or L["SPOILER_FOREVER_TITLE"]
+            local spoilerHint  = L["SPOILER_" .. spoilerEra .. "_HINT"]  or L["SPOILER_FOREVER_HINT"]
             txt:SetText("[" .. spoilerTitle .. "] — " .. spoilerHint)
             txt:SetTextColor(unpack(spoilerCol))
             txt.realText = linkedEntryText

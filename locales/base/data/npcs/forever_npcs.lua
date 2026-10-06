@@ -14,7 +14,7 @@ IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"].source = "warcraft.wiki.gg/wiki/B
 IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"].timeline = {
     {era = "WC2", text = "Fought as a paladin of the Silver Hand during the Second War and its aftermath."},
     {era = "Pre-Classic", text = "Was appointed regent of Stormwind when King Varian Wrynn disappeared on his voyage to Theramore."},
-    {era = "Classic", text = "Rules Stormwind in Anduin's name while unknowingly being manipulated by Lady Katrana Prestor — the black dragon Onyxia in disguise."},
+    {era = "Forever", text = "Rules Stormwind in Anduin's name while unknowingly being manipulated by Lady Katrana Prestor — the black dragon Onyxia in disguise."},
 }
 
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].name = "Anduin Wrynn"
@@ -27,7 +27,7 @@ IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].zones = {"Stormwind City"}
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].source = "warcraft.wiki.gg/wiki/Anduin_Wrynn"
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].timeline = {
     {era = "Pre-Classic", text = "Was crowned King of Stormwind after his father Varian vanished at sea."},
-    {era = "Classic", text = "Rules under the guidance of Bolvar Fordragon while Lady Prestor secretly steers the kingdom toward ruin."},
+    {era = "Forever", text = "Rules under the guidance of Bolvar Fordragon while Lady Prestor secretly steers the kingdom toward ruin."},
 }
 
 -- CAT_IRONFORGE — Dwarves of Ironforge
@@ -42,7 +42,7 @@ IMAGOdb.npcs.CAT_IRONFORGE["magni_bronzebeard"].source = "warcraft.wiki.gg/wiki/
 IMAGOdb.npcs.CAT_IRONFORGE["magni_bronzebeard"].timeline = {
     {era = "WC2", text = "Led the dwarves of Khaz Modan in defense of their homeland against the Horde."},
     {era = "WC3", text = "Believed his brother Muradin slain by Arthas, and forged Ashbringer in his grief."},
-    {era = "Classic", text = "Rules Ironforge while Dark Iron infiltrators stir unrest and his daughter Moira's fate divides the clan."},
+    {era = "Forever", text = "Rules Ironforge while Dark Iron infiltrators stir unrest and his daughter Moira's fate divides the clan."},
 }
 
 -- CAT_GNOMEREGAN — Gnomeregan Exiles
@@ -56,7 +56,7 @@ IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].zones = {"Ironforge"}
 IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].source = "warcraft.wiki.gg/wiki/Gelbin_Mekkatorque"
 IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].timeline = {
     {era = "Pre-Classic", text = "Ordered the irradiation of Gnomeregan to stop the trogg invasion — a catastrophe that cost countless gnomes their lives and minds."},
-    {era = "Classic", text = "Leads the gnomish exiles from Tinker Town in Ironforge and quietly funds the war to retake his irradiated city."},
+    {era = "Forever", text = "Leads the gnomish exiles from Tinker Town in Ironforge and quietly funds the war to retake his irradiated city."},
 }
 
 -- CAT_DARNASSUS — Night Elves of Darnassus
@@ -71,7 +71,7 @@ IMAGOdb.npcs.CAT_DARNASSUS["tyrande_whisperwind"].source = "warcraft.wiki.gg/wik
 IMAGOdb.npcs.CAT_DARNASSUS["tyrande_whisperwind"].timeline = {
     {era = "Ancient", text = "Rose to command the Sisterhood of Elune and fought in the War of the Ancients alongside Malfurion and Illidan."},
     {era = "WC3", text = "Led the Sentinels against the Burning Legion's return, freed Illidan from his prison, and fought at the Battle of Mount Hyjal where Nordrassil was sacrificed."},
-    {era = "Classic", text = "Rules from Darnassus, newly grown as the World Tree Teldrassil — a tree she never asked for and does not fully trust."},
+    {era = "Forever", text = "Rules from Darnassus, newly grown as the World Tree Teldrassil — a tree she never asked for and does not fully trust."},
 }
 
 IMAGOdb.npcs.CAT_DARNASSUS["shandris_feathermoon"].name = "Shandris Feathermoon"
@@ -85,7 +85,7 @@ IMAGOdb.npcs.CAT_DARNASSUS["shandris_feathermoon"].source = "warcraft.wiki.gg/wi
 IMAGOdb.npcs.CAT_DARNASSUS["shandris_feathermoon"].timeline = {
     {era = "Ancient", text = "Survived the War of the Ancients as a child and was taken under Tyrande's wing."},
     {era = "WC3", text = "Commanded the Sentinels in Kalimdor's defense during the Legion's second invasion."},
-    {era = "Classic", text = "Governs Feathermoon Stronghold in Feralas as general of the Sentinel Army."},
+    {era = "Forever", text = "Governs Feathermoon Stronghold in Feralas as general of the Sentinel Army."},
 }
 
 -- CAT_THERAMORE — Theramore
@@ -100,7 +100,7 @@ IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].source = "warcraft.wiki.gg/wiki/J
 IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].timeline = {
     {era = "WC3", text = "Heeded Medivh's warning, led Lordaeron's survivors to Kalimdor, and fought at Hyjal. Later chose peace over her own father, allowing the Horde to kill Daelin Proudmoore."},
     {era = "Pre-Classic", text = "Founded the island-city of Theramore as a beacon of cooperation between the Alliance and the Horde."},
-    {era = "Classic", text = "Rules Theramore and brokers fragile peace between the factions, including the summit where Varian Wrynn vanished."},
+    {era = "Forever", text = "Rules Theramore and brokers fragile peace between the factions, including the summit where Varian Wrynn vanished."},
 }
 
 -- CAT_ORCS — Orcs of the Horde
@@ -115,7 +115,7 @@ IMAGOdb.npcs.CAT_ORCS["thrall"].source = "warcraft.wiki.gg/wiki/Thrall"
 IMAGOdb.npcs.CAT_ORCS["thrall"].timeline = {
     {era = "Pre-WC3", text = "Escaped Durnholde, learned shamanism from Drek'Thar's Frostwolves, and liberated the internment camps alongside Orgrim Doomhammer, whose armor and hammer he inherited."},
     {era = "WC3", text = "Sailed to Kalimdor, allied with Cairne's tauren and the Darkspear trolls, and fought at Mount Hyjal against the Burning Legion."},
-    {era = "Classic", text = "Rules as Warchief from Orgrimmar, holding together a young Horde surrounded by enemies and old hatreds."},
+    {era = "Forever", text = "Rules as Warchief from Orgrimmar, holding together a young Horde surrounded by enemies and old hatreds."},
 }
 
 IMAGOdb.npcs.CAT_ORCS["rexxar"].name = "Rexxar"
@@ -129,7 +129,7 @@ IMAGOdb.npcs.CAT_ORCS["rexxar"].source = "warcraft.wiki.gg/wiki/Rexxar"
 IMAGOdb.npcs.CAT_ORCS["rexxar"].timeline = {
     {era = "WC3", text = "Joined Thrall's cause in Kalimdor, rallied ogres to the Horde's banner, and fought to save Durotar from Daelin Proudmoore's invasion."},
     {era = "Pre-Classic", text = "Was named Champion of the Horde, then returned to the wilderness he calls home."},
-    {era = "Classic", text = "Wanders the wilds of Kalimdor with Misha, answering to no banner but his own — until the Horde calls again."},
+    {era = "Forever", text = "Wanders the wilds of Kalimdor with Misha, answering to no banner but his own — until the Horde calls again."},
 }
 
 -- CAT_DARKSPEAR — Darkspear Trolls
@@ -143,7 +143,7 @@ IMAGOdb.npcs.CAT_DARKSPEAR["voljin"].zones = {"Orgrimmar"}
 IMAGOdb.npcs.CAT_DARKSPEAR["voljin"].source = "warcraft.wiki.gg/wiki/Vol'jin"
 IMAGOdb.npcs.CAT_DARKSPEAR["voljin"].timeline = {
     {era = "WC3", text = "Pledged the Darkspear tribe to the Horde after Thrall saved them from the sea witch Zar'jira."},
-    {era = "Classic", text = "Advises Thrall from Grommash Hold, the quiet conscience of the Warchief's council."},
+    {era = "Forever", text = "Advises Thrall from Grommash Hold, the quiet conscience of the Warchief's council."},
 }
 
 -- CAT_FORSAKEN — The Forsaken
@@ -158,7 +158,7 @@ IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"].source = "warcraft.wiki.gg/wiki
 IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"].timeline = {
     {era = "WC3", text = "Fell to Arthas defending Quel'Thalas and was raised as a banshee. Later broke free, killed the dreadlord Balnazzar's rivals, and took Lordaeron's ruins for her Forsaken."},
     {era = "Pre-Classic", text = "Secured the Undercity and forged an uneasy pact with the Horde."},
-    {era = "Classic", text = "Rules the Forsaken and arms them against the Scourge, the Scarlet Crusade — and, some whisper, against everyone else."},
+    {era = "Forever", text = "Rules the Forsaken and arms them against the Scourge, the Scarlet Crusade — and, some whisper, against everyone else."},
 }
 
 IMAGOdb.npcs.CAT_FORSAKEN["varimathras"].name = "Varimathras"
@@ -171,7 +171,7 @@ IMAGOdb.npcs.CAT_FORSAKEN["varimathras"].zones = {"Undercity"}
 IMAGOdb.npcs.CAT_FORSAKEN["varimathras"].source = "warcraft.wiki.gg/wiki/Varimathras"
 IMAGOdb.npcs.CAT_FORSAKEN["varimathras"].timeline = {
     {era = "WC3", text = "Ruled the Plaguelands with his dreadlord brothers until Sylvanas turned him, forcing him to kill Balnazzar."},
-    {era = "Classic", text = "Serves as Sylvanas' vizier in the Undercity, ostensibly loyal, eternally patient."},
+    {era = "Forever", text = "Serves as Sylvanas' vizier in the Undercity, ostensibly loyal, eternally patient."},
 }
 
 -- CAT_THUNDERBLUFF — Tauren of Thunder Bluff
@@ -185,7 +185,7 @@ IMAGOdb.npcs.CAT_THUNDERBLUFF["cairne_bloodhoof"].zones = {"Thunder Bluff"}
 IMAGOdb.npcs.CAT_THUNDERBLUFF["cairne_bloodhoof"].source = "warcraft.wiki.gg/wiki/Cairne_Bloodhoof"
 IMAGOdb.npcs.CAT_THUNDERBLUFF["cairne_bloodhoof"].timeline = {
     {era = "WC3", text = "Led his people across the Barrens with Thrall's aid, founded Thunder Bluff, and fought beside the Horde at Hyjal."},
-    {era = "Classic", text = "Governs the united tauren tribes and counsels the Warchief — while his son Baine's safety remains his one fear."},
+    {era = "Forever", text = "Governs the united tauren tribes and counsels the Warchief — while his son Baine's safety remains his one fear."},
 }
 
 -- CAT_CENARION — Cenarion Circle
@@ -200,7 +200,7 @@ IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"].source = "warcraft.wiki.gg/wiki/Fa
 IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"].timeline = {
     {era = "Ancient", text = "Fought in the War of the Shifting Sands and lost his son Valstann to the qiraji — a grief he never set down."},
     {era = "Pre-Classic", text = "Planted Teldrassil as the new World Tree and assumed leadership of the druids while Malfurion remained lost in the Emerald Dream."},
-    {era = "Classic", text = "Leads the Cenarion Circle from the Cenarion Enclave in Darnassus, at quiet odds with Tyrande."},
+    {era = "Forever", text = "Leads the Cenarion Circle from the Cenarion Enclave in Darnassus, at quiet odds with Tyrande."},
 }
 
 -- CAT_ARGENT — Argent Dawn & Silver Hand
@@ -215,7 +215,7 @@ IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"].source = "warcraft.wiki.gg/wiki/Tirio
 IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"].timeline = {
     {era = "WC2", text = "Served as a paladin of the Silver Hand in the Second War and became Lord of Mardenholde."},
     {era = "Pre-Classic", text = "Was exiled from the Alliance and stripped of the Light's titles for saving the orc Eitrigg's life."},
-    {era = "Classic", text = "Lives in exile in the Eastern Plaguelands, still holding faith — and testing those who find him with the memory of what honor costs."},
+    {era = "Forever", text = "Lives in exile in the Eastern Plaguelands, still holding faith — and testing those who find him with the memory of what honor costs."},
 }
 
 -- CAT_GOBLIN — Goblin Cartels
@@ -229,5 +229,5 @@ IMAGOdb.npcs.CAT_GOBLIN["gazlowe"].zones = {"The Barrens"}
 IMAGOdb.npcs.CAT_GOBLIN["gazlowe"].source = "warcraft.wiki.gg/wiki/Gazlowe"
 IMAGOdb.npcs.CAT_GOBLIN["gazlowe"].timeline = {
     {era = "WC3", text = "Contracted by Thrall to engineer the founding of Orgrimmar."},
-    {era = "Classic", text = "Runs Ratchet as a neutral free port, profiting from the tensions he helps others survive."},
+    {era = "Forever", text = "Runs Ratchet as a neutral free port, profiting from the tensions he helps others survive."},
 }

@@ -20,7 +20,7 @@ IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"].source = "warcraft.wiki.gg/wiki/B
 IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"].timeline = {
     {era = "WC2", text = "Kämpfte als Paladin der Silbernen Hand im Zweiten Krieg und dessen Nachwehen."},
     {era = "Pre-Classic", text = "Wurde zum Regenten von Sturmwind ernannt, als König Varian Wrynn auf seiner Reise nach Theramore verschwand."},
-    {era = "Classic", text = "Regiert Sturmwind in Anduins Namen, während er unwissentlich von Lady Katrana Prestor manipuliert wird — dem schwarzen Drachen Onyxia in Verkleidung."},
+    {era = "Forever", text = "Regiert Sturmwind in Anduins Namen, während er unwissentlich von Lady Katrana Prestor manipuliert wird — dem schwarzen Drachen Onyxia in Verkleidung."},
 }
 
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].name = "Anduin Wrynn"
@@ -33,7 +33,7 @@ IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].zones = {"Sturmwind"}
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].source = "warcraft.wiki.gg/wiki/Anduin_Wrynn"
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].timeline = {
     {era = "Pre-Classic", text = "Wurde zum König von Sturmwind gekrönt, nachdem sein Vater Varian auf See verschwunden war."},
-    {era = "Classic", text = "Regiert unter der Führung von Bolvar Fordragon, während Lady Prestor das Königreich insgeheim in den Ruin treibt."},
+    {era = "Forever", text = "Regiert unter der Führung von Bolvar Fordragon, während Lady Prestor das Königreich insgeheim in den Ruin treibt."},
 }
 
 -- CAT_IRONFORGE — Zwerge von Eisenschmiede
@@ -48,7 +48,7 @@ IMAGOdb.npcs.CAT_IRONFORGE["magni_bronzebeard"].source = "warcraft.wiki.gg/wiki/
 IMAGOdb.npcs.CAT_IRONFORGE["magni_bronzebeard"].timeline = {
     {era = "WC2", text = "Führte die Zwerge von Khaz Modan bei der Verteidigung ihrer Heimat gegen die Horde."},
     {era = "WC3", text = "Glaubte, sein Bruder Muradin sei von Arthas erschlagen worden, und schmiedete in seiner Trauer Aschenbringer."},
-    {era = "Classic", text = "Regiert Eisenschmiede, während Dunkeleisen-Infiltratoren Unruhe stiften und das Schicksal seiner Tochter Moira den Klan spaltet."},
+    {era = "Forever", text = "Regiert Eisenschmiede, während Dunkeleisen-Infiltratoren Unruhe stiften und das Schicksal seiner Tochter Moira den Klan spaltet."},
 }
 
 -- CAT_GNOMEREGAN — Gnomeregan-Exilanten
@@ -62,7 +62,7 @@ IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].zones = {"Eisenschmiede"}
 IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].source = "warcraft.wiki.gg/wiki/Gelbin_Mekkatorque"
 IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].timeline = {
     {era = "Pre-Classic", text = "Ordnete die Verstrahlung Gnomeregans an, um die Trogg-Invasion zu stoppen — eine Katastrophe, die unzähligen Gnomen Leben und Verstand kostete."},
-    {era = "Classic", text = "Führt die gnomischen Exilanten von Tüftlerstadt in Eisenschmiede aus und finanziert still den Krieg zur Rückeroberung seiner verstrahlten Stadt."},
+    {era = "Forever", text = "Führt die gnomischen Exilanten von Tüftlerstadt in Eisenschmiede aus und finanziert still den Krieg zur Rückeroberung seiner verstrahlten Stadt."},
 }
 
 -- CAT_DARNASSUS — Nachtelfen von Darnassus
@@ -77,7 +77,7 @@ IMAGOdb.npcs.CAT_DARNASSUS["tyrande_whisperwind"].source = "warcraft.wiki.gg/wik
 IMAGOdb.npcs.CAT_DARNASSUS["tyrande_whisperwind"].timeline = {
     {era = "Ancient", text = "Übernahm das Kommando über die Schwesternschaft von Elune und kämpfte im Krieg der Urtume an der Seite von Malfurion und Illidan."},
     {era = "WC3", text = "Führte die Schildwachen gegen die Rückkehr der Brennenden Legion, befreite Illidan aus seinem Gefängnis und kämpfte in der Schlacht am Berg Hyjal, bei der Nordrassil geopfert wurde."},
-    {era = "Classic", text = "Regiert von Darnassus aus, dem neu ergrünen Weltenbaum Teldrassil — einem Baum, den sie nie wollte und dem sie nicht ganz traut."},
+    {era = "Forever", text = "Regiert von Darnassus aus, dem neu ergrünen Weltenbaum Teldrassil — einem Baum, den sie nie wollte und dem sie nicht ganz traut."},
 }
 
 IMAGOdb.npcs.CAT_DARNASSUS["shandris_feathermoon"].name = "Shandris Mondfeder"
@@ -91,7 +91,7 @@ IMAGOdb.npcs.CAT_DARNASSUS["shandris_feathermoon"].source = "warcraft.wiki.gg/wi
 IMAGOdb.npcs.CAT_DARNASSUS["shandris_feathermoon"].timeline = {
     {era = "Ancient", text = "Überlebte als Kind den Krieg der Urtume und wurde unter Tyrandes Fittiche genommen."},
     {era = "WC3", text = "Befehligte die Schildwachen bei der Verteidigung Kalimdors während der zweiten Invasion der Legion."},
-    {era = "Classic", text = "Regiert die Mondfederfeste in Feralas als Generalin der Schildwachenarmee."},
+    {era = "Forever", text = "Regiert die Mondfederfeste in Feralas als Generalin der Schildwachenarmee."},
 }
 
 -- CAT_THERAMORE — Theramore
@@ -106,7 +106,7 @@ IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].source = "warcraft.wiki.gg/wiki/J
 IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].timeline = {
     {era = "WC3", text = "Beherzigte Medivhs Warnung, führte Lordaerons Überlebende nach Kalimdor und kämpfte am Hyjal. Später wählte sie den Frieden über ihren eigenen Vater und ließ die Horde Daelin Prachtmeer töten."},
     {era = "Pre-Classic", text = "Gründete die Inselstadt Theramore als Leuchtfeuer der Zusammenarbeit zwischen Allianz und Horde."},
-    {era = "Classic", text = "Regiert Theramore und vermittelt den brüchigen Frieden zwischen den Fraktionen — darunter den Gipfel, bei dem Varian Wrynn verschwand."},
+    {era = "Forever", text = "Regiert Theramore und vermittelt den brüchigen Frieden zwischen den Fraktionen — darunter den Gipfel, bei dem Varian Wrynn verschwand."},
 }
 
 -- CAT_ORCS — Orcs der Horde
@@ -121,7 +121,7 @@ IMAGOdb.npcs.CAT_ORCS["thrall"].source = "warcraft.wiki.gg/wiki/Thrall"
 IMAGOdb.npcs.CAT_ORCS["thrall"].timeline = {
     {era = "Pre-WC3", text = "Entkam aus Durnholde, lernte den Schamanismus von Drek'Thars Frostwölfen und befreite an der Seite von Orgrim Schicksalshammer die Internierungslager — dessen Rüstung und Hammer er erbte."},
     {era = "WC3", text = "Segelte nach Kalimdor, verbündete sich mit Cairnes Tauren und den Dunkelspeertrollen und kämpfte am Berg Hyjal gegen die Brennende Legion."},
-    {era = "Classic", text = "Regiert als Kriegshäuptling von Orgrimmar aus und hält eine junge Horde zusammen, umgeben von Feinden und alten Feindschaften."},
+    {era = "Forever", text = "Regiert als Kriegshäuptling von Orgrimmar aus und hält eine junge Horde zusammen, umgeben von Feinden und alten Feindschaften."},
 }
 
 IMAGOdb.npcs.CAT_ORCS["rexxar"].name = "Rexxar"
@@ -135,7 +135,7 @@ IMAGOdb.npcs.CAT_ORCS["rexxar"].source = "warcraft.wiki.gg/wiki/Rexxar"
 IMAGOdb.npcs.CAT_ORCS["rexxar"].timeline = {
     {era = "WC3", text = "Schloss sich Thralls Sache in Kalimdor an, sammelte Oger unter dem Banner der Horde und kämpfte, um Durotar vor Daelin Prachtmeers Invasion zu retten."},
     {era = "Pre-Classic", text = "Wurde zum Champion der Horde ernannt und kehrte dann in die Wildnis zurück, die er seine Heimat nennt."},
-    {era = "Classic", text = "Streift mit Misha durch die Wildnis Kalimdors, keiner Fahne verpflichtet außer der eigenen — bis die Horde wieder ruft."},
+    {era = "Forever", text = "Streift mit Misha durch die Wildnis Kalimdors, keiner Fahne verpflichtet außer der eigenen — bis die Horde wieder ruft."},
 }
 
 -- CAT_DARKSPEAR — Dunkelspeertrolle
@@ -149,7 +149,7 @@ IMAGOdb.npcs.CAT_DARKSPEAR["voljin"].zones = {"Orgrimmar"}
 IMAGOdb.npcs.CAT_DARKSPEAR["voljin"].source = "warcraft.wiki.gg/wiki/Vol'jin"
 IMAGOdb.npcs.CAT_DARKSPEAR["voljin"].timeline = {
     {era = "WC3", text = "Schwor den Dunkelspeerstamm der Horde, nachdem Thrall sie vor der Seehexe Zar'jira gerettet hatte."},
-    {era = "Classic", text = "Berät Thrall vom Grommash-Festbau aus, das stille Gewissen im Rat des Kriegshäuptlings."},
+    {era = "Forever", text = "Berät Thrall vom Grommash-Festbau aus, das stille Gewissen im Rat des Kriegshäuptlings."},
 }
 
 -- CAT_FORSAKEN — Die Verlassenen
@@ -164,7 +164,7 @@ IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"].source = "warcraft.wiki.gg/wiki
 IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"].timeline = {
     {era = "WC3", text = "Fiel bei der Verteidigung von Quel'Thalas an Arthas und wurde als Banshee wiedererweckt. Später befreite sie sich, tötete die Rivalen des Schreckenslords Balnazzar und nahm die Ruinen Lordaerons für ihre Verlassenen."},
     {era = "Pre-Classic", text = "Sicherte Unterstadt und schmiedete einen unsicheren Pakt mit der Horde."},
-    {era = "Classic", text = "Herrscht über die Verlassenen und rüstet sie gegen die Geißel, den Scharlachroten Kreuzzug — und, wie manche munkeln, gegen alle anderen."},
+    {era = "Forever", text = "Herrscht über die Verlassenen und rüstet sie gegen die Geißel, den Scharlachroten Kreuzzug — und, wie manche munkeln, gegen alle anderen."},
 }
 
 IMAGOdb.npcs.CAT_FORSAKEN["varimathras"].name = "Varimathras"
@@ -177,7 +177,7 @@ IMAGOdb.npcs.CAT_FORSAKEN["varimathras"].zones = {"Unterstadt"}
 IMAGOdb.npcs.CAT_FORSAKEN["varimathras"].source = "warcraft.wiki.gg/wiki/Varimathras"
 IMAGOdb.npcs.CAT_FORSAKEN["varimathras"].timeline = {
     {era = "WC3", text = "Herrschte mit seinen Schreckenslord-Brüdern über die Pestländer, bis Sylvanas ihn auf ihre Seite zwang und ihn Balnazzar töten ließ."},
-    {era = "Classic", text = "Dient als Sylvanas' Wesir in Unterstadt — vorgeblich loyal, ewig geduldig."},
+    {era = "Forever", text = "Dient als Sylvanas' Wesir in Unterstadt — vorgeblich loyal, ewig geduldig."},
 }
 
 -- CAT_THUNDERBLUFF — Tauren von Donnerfels
@@ -191,7 +191,7 @@ IMAGOdb.npcs.CAT_THUNDERBLUFF["cairne_bloodhoof"].zones = {"Donnerfels"}
 IMAGOdb.npcs.CAT_THUNDERBLUFF["cairne_bloodhoof"].source = "warcraft.wiki.gg/wiki/Cairne_Bloodhoof"
 IMAGOdb.npcs.CAT_THUNDERBLUFF["cairne_bloodhoof"].timeline = {
     {era = "WC3", text = "Führte sein Volk mit Thralls Hilfe durch das Brachland, gründete Donnerfels und kämpfte an der Seite der Horde am Hyjal."},
-    {era = "Classic", text = "Regiert die vereinten Taurenstämme und berät den Kriegshäuptling — während die Sicherheit seines Sohnes Baine seine einzige Sorge bleibt."},
+    {era = "Forever", text = "Regiert die vereinten Taurenstämme und berät den Kriegshäuptling — während die Sicherheit seines Sohnes Baine seine einzige Sorge bleibt."},
 }
 
 -- CAT_CENARION — Zirkel des Cenarius
@@ -206,7 +206,7 @@ IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"].source = "warcraft.wiki.gg/wiki/Fa
 IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"].timeline = {
     {era = "Ancient", text = "Kämpfte im Krieg der Sandstürme und verlor seinen Sohn Valstann an die Qiraji — eine Trauer, die er nie ablegte."},
     {era = "Pre-Classic", text = "Pflanzte Teldrassil als neuen Weltenbaum und übernahm die Führung der Druiden, während Malfurion im Smaragdgrünen Traum verloren blieb."},
-    {era = "Classic", text = "Leitet den Zirkel des Cenarius von der Enklave des Cenarius in Darnassus aus, im stillen Widerstreit mit Tyrande."},
+    {era = "Forever", text = "Leitet den Zirkel des Cenarius von der Enklave des Cenarius in Darnassus aus, im stillen Widerstreit mit Tyrande."},
 }
 
 -- CAT_ARGENT — Argentumdämmerung & Silberne Hand
@@ -221,7 +221,7 @@ IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"].source = "warcraft.wiki.gg/wiki/Tirio
 IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"].timeline = {
     {era = "WC2", text = "Diente als Paladin der Silbernen Hand im Zweiten Krieg und wurde Lord von Mardenholde."},
     {era = "Pre-Classic", text = "Wurde aus der Allianz verstoßen und der Titel des Lichts beraubt, weil er dem Orc Eitrigg das Leben gerettet hatte."},
-    {era = "Classic", text = "Lebt im Exil in den Östlichen Pestländern, hält den Glauben aufrecht — und prüft jene, die ihn finden, mit der Erinnerung daran, was Ehre kostet."},
+    {era = "Forever", text = "Lebt im Exil in den Östlichen Pestländern, hält den Glauben aufrecht — und prüft jene, die ihn finden, mit der Erinnerung daran, was Ehre kostet."},
 }
 
 -- CAT_GOBLIN — Goblin-Kartelle
@@ -235,5 +235,5 @@ IMAGOdb.npcs.CAT_GOBLIN["gazlowe"].zones = {"Brachland"}
 IMAGOdb.npcs.CAT_GOBLIN["gazlowe"].source = "warcraft.wiki.gg/wiki/Gazlowe"
 IMAGOdb.npcs.CAT_GOBLIN["gazlowe"].timeline = {
     {era = "WC3", text = "Wurde von Thrall beauftragt, die Gründung Orgrimmars zu planen."},
-    {era = "Classic", text = "Betreibt Ratschet als neutralen Freihafen und profitiert von den Spannungen, die andere zu überleben er hilft."},
+    {era = "Forever", text = "Betreibt Ratschet als neutralen Freihafen und profitiert von den Spannungen, die andere zu überleben er hilft."},
 }
