@@ -39,8 +39,8 @@ local eraColors = {
     ["WC2"]       = {0.10, 0.30, 0.80},     -- Lordaeron blue (Alliance/Second War)
     ["Pre-WC3"]   = {0.45, 0.80, 0.20},     -- Plague green (the Scourge/Third War)
     ["WC3"]       = {0.45, 0.80, 0.20},     -- Plague green (the Scourge/Third War)
-    ["Pre-Classic"]   = {0.7, 0.7, 0.7},        -- Neutral stone gray (old world)
-    ["Forever"]   = {0.7, 0.7, 0.7},        -- Neutral stone gray (old world)
+    ["Pre-Classic"]   = {0.48, 0.29, 0.12},   -- Dark copper (old world)
+    ["Forever"]   = {0.05, 0.31, 0.46},       -- Deep petrol blue (WoW Forever)
 }
 
 -- Chronological order of timeline era labels (caps at Forever)
