@@ -88,7 +88,34 @@ L["ZONE_POI_HEADER"]                = "ОСНОВНЫЕ МЕСТА"
 L["ZONE_UNDISCOVERED"]              = "Не исследовано"
 
 -- ============================================================
--- Вкладка 3: Инстансы (скоро)
+-- Вкладка 3: Фракции
+-- ============================================================
+L["FACTIONS_OVERVIEW"]              = "ФРАКЦИИ"
+L["FOOTER_FACTIONS_PROGRESS"]       = "%d / %d Фракций задокументировано (%d%%)"
+L["STARTPAGE_FACTIONS_RANK"]        = "ДИПЛОМАТИЧЕСКИЙ РАНГ"
+L["STARTPAGE_FACTIONS_NEXT"]        = "СЛЕДУЮЩИЕ РАНГИ:"
+L["CHAT_FACTION_DISCOVERY"]         = "|cFF9370DB[IMAGO]|r Новая фракция задокументирована: |cFFFFD700%s|r"
+L["DISPLAY_PROGRESS_FACTION"]       = "Прогресс: %d%% (%d/%d Фракции)"
+L["FILTER_ALL_FACTIONS"]            = "Все Фракции"
+L["FAC_ALIGN_ALLIANCE"]             = "Альянс"
+L["FAC_ALIGN_HORDE"]                = "Орда"
+L["FAC_ALIGN_NEUTRAL"]              = "Нейтральные"
+L["HINT_FACTION_LOCKED"]            = "ПРИНАДЛЕЖНОСТЬ НЕИЗВЕСТНА"
+L["HINT_FACTION_LOCKED_DESC"]       = "Встретьте члена этой фракции в мире, чтобы раскрыть её запись в Хрониках."
+L["FAC_TAB_HISTORY"]                = "История"
+L["FAC_TAB_SUBGROUPS"]              = "Подгруппы"
+L["FAC_TAB_MEMBERS"]                = "Члены"
+L["FAC_TAB_SETTLEMENTS"]            = "Поселения"
+L["FAC_TAB_CULTURE"]                = "Культура"
+L["FAC_SEC_BIOLOGY"]                = "Биология и Общество"
+L["FAC_SEC_BELIEFS"]                = "Верования"
+L["FAC_SEC_RELATIONS"]              = "Отношения"
+L["FAC_EMPTY_SUBGROUPS"]            = "Подгруппы не записаны."
+L["FAC_EMPTY_MEMBERS"]              = "Известных членов не записано."
+L["FAC_EMPTY_SETTLEMENTS"]          = "Поселения не записаны."
+
+-- ============================================================
+-- Вкладка 4: Инстансы (скоро)
 -- ============================================================
 L["COMING_SOON_INSTANCES_TITLE"]    = "СКРЫТЫЕ ПОДЗОНЫ"
 L["COMING_SOON_INSTANCES_DESC"]     = "Подземелья, рейды и вылазки. \nОтголоски могущственных противников ждут своего часа.\n\n|cFF9370DB[ В РАЗРАБОТКЕ ]"
@@ -123,6 +150,7 @@ L["LOGIN_ALL_UNCOVERED"]            = "Все секреты раскрыты!"
 L["FOOTER_PROGRESS"]                = "%d / %d Судеб раскрыто (%d%%)"
 L["TAB_FATES"]                      = "Судьбы"
 L["TAB_ZONES"]                      = "Зоны"
+L["TAB_FACTIONS"]                   = "Фракции"
 L["TAB_INSTANCES"]                  = "Подзоны"
 L["STARTPAGE_RANK"]                 = "Ваш ранг Хроник:"
 L["STARTPAGE_COMPLETED"]            = "ДОСТИГНУТО РАНГОВ:"

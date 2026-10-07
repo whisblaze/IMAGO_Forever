@@ -16,7 +16,10 @@ local defaults = {
     seenZones     = {},
     seenNPCs      = {},
     seenInstances = {},
+    seenFactions  = {},
     viewedNPCs    = {},
+    viewedFactions = {},
+    manualFactionUnlocks = {},
     favorites     = {},
     history       = {},
     migratedSlugSuffix = false,
@@ -160,8 +163,15 @@ function IMAGO.Scanner.DiscoverNPC(npcID, questName)
                 IMAGO.Chronicle.UpdateList()
             end
 
+            if npcData and npcData.faction then
+                IMAGO.Scanner.DiscoverFaction(npcData.faction)
+            end
+
             isNewDiscovery = true
         else
+            if npcData and npcData.faction then
+                IMAGO.Scanner.DiscoverFaction(npcData.faction)
+            end
             if not IMAGO.Scanner.IsShowOnceOnlyEnabled("npc") then
                 if IMAGO.Display and IMAGO.Display.Show then
                     local msgKnown = IMAGO.L["CHAT_KNOWN"] and string.format(IMAGO.L["CHAT_KNOWN"], name) or ("|cFF888888[IMAGO]|r Archiv-Eintrag abgerufen: |cFFCCCCCC" .. name .. "|r")
@@ -176,6 +186,35 @@ function IMAGO.Scanner.DiscoverNPC(npcID, questName)
         return true, isNewDiscovery
     end
     return false, false
+end
+
+--- Unlocks a faction record (Factions tab). Triggered when a member NPC is discovered.
+function IMAGO.Scanner.DiscoverFaction(factionSlug)
+    if not IMAGOSaved or not IMAGOSaved.enabled then return false end
+    if not IMAGOdb or not IMAGOdb.factions then return false end
+    local data = IMAGOdb.factions[factionSlug]
+    if not data then return false end
+
+    IMAGOSaved.seenFactions = IMAGOSaved.seenFactions or {}
+    if IMAGOSaved.seenFactions[factionSlug] then return true end
+
+    IMAGOSaved.seenFactions[factionSlug] = true
+
+    local name = data.name or factionSlug
+    local msg = IMAGO.L["CHAT_FACTION_DISCOVERY"] and string.format(IMAGO.L["CHAT_FACTION_DISCOVERY"], name)
+        or ("|cFF9370DB[IMAGO]|r New faction documented: |cFFFFD700" .. name .. "|r")
+    print(msg)
+    PlaySound(3175, "Master")
+
+    if IMAGO.Display and IMAGO.Display.Show then
+        IMAGO.Display.Show(name, data.history, "faction", true, factionSlug)
+    end
+
+    if IMAGO.Chronicle and IMAGO.Chronicle.frame and IMAGO.Chronicle.frame:IsShown() then
+        IMAGO.Chronicle.UpdateList()
+    end
+
+    return true
 end
 
 --- Scans all quest_ids with an NPC they unlock and reveal those whose quest is completed.
@@ -925,7 +964,10 @@ function IMAGO.Init()
             IMAGOSaved.discoveredZones = IMAGOSaved.seenZones
             IMAGOSaved.seenNPCs      = {}
             IMAGOSaved.seenInstances = {}
+            IMAGOSaved.seenFactions  = {}
             IMAGOSaved.viewedNPCs    = {}
+            IMAGOSaved.viewedFactions = {}
+            IMAGOSaved.manualFactionUnlocks = {}
             IMAGOSaved.favorites     = {}
             IMAGOSaved.history       = {}
             print("|cFFFFD700IMAGO:|r " .. (IMAGO.L["RESET_DONE"] or "Historie zurückgesetzt."))
@@ -989,7 +1031,15 @@ function IMAGO.Init()
                     count = count + 1
                 end
             end
-            
+
+            -- 3. Unlock factions
+            for slug, _ in pairs(IMAGOdb.factions or {}) do
+                if not IMAGOSaved.seenFactions[slug] then
+                    IMAGOSaved.seenFactions[slug] = true
+                    count = count + 1
+                end
+            end
+
             -- Output in chat
             local successMsg = IMAGO.L["CMD_UNLOCKALL_SUCCESS"] and string.format(IMAGO.L["CMD_UNLOCKALL_SUCCESS"], count) or string.format("|cFF9370DB[IMAGO]|r Alle Archive geöffnet. %d neue Einträge entschlüsselt.", count)
             print(successMsg)

@@ -57,6 +57,9 @@ function IMAGO.Options.Init()
         IMAGOSaved.discoveredZones = IMAGOSaved.seenZones
         IMAGOSaved.seenNPCs = {}
         IMAGOSaved.seenInstances = {}
+        IMAGOSaved.seenFactions = {}
+        IMAGOSaved.viewedFactions = {}
+        IMAGOSaved.manualFactionUnlocks = {}
         print("|cFFFFD700IMAGO:|r " .. IMAGO.L["RESET_DONE"])
     end)
 

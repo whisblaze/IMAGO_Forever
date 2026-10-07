@@ -91,7 +91,34 @@ L["ZONE_POI_HEADER"]                = "POINTS OF INTEREST"
 L["ZONE_UNDISCOVERED"]              = "Undiscovered"
 
 -- ============================================================
--- TAB 3: INSTANCES (COMING SOON)
+-- TAB 3: FACTIONS
+-- ============================================================
+L["FACTIONS_OVERVIEW"]              = "FACTIONS"
+L["FOOTER_FACTIONS_PROGRESS"]       = "%d / %d Factions documented (%d%%)"
+L["STARTPAGE_FACTIONS_RANK"]        = "DIPLOMATIC STANDING"
+L["STARTPAGE_FACTIONS_NEXT"]        = "UPCOMING STANDINGS:"
+L["CHAT_FACTION_DISCOVERY"]         = "|cFF9370DB[IMAGO]|r New faction documented: |cFFFFD700%s|r"
+L["DISPLAY_PROGRESS_FACTION"]       = "Progress: %d%% (%d/%d Factions)"
+L["FILTER_ALL_FACTIONS"]            = "All Factions"
+L["FAC_ALIGN_ALLIANCE"]             = "Alliance"
+L["FAC_ALIGN_HORDE"]                = "Horde"
+L["FAC_ALIGN_NEUTRAL"]              = "Neutral"
+L["HINT_FACTION_LOCKED"]            = "ALLEGIANCE UNKNOWN"
+L["HINT_FACTION_LOCKED_DESC"]       = "Meet a member of this faction in the world to reveal its chronicle entry."
+L["FAC_TAB_HISTORY"]                = "History"
+L["FAC_TAB_SUBGROUPS"]              = "Subgroups"
+L["FAC_TAB_MEMBERS"]                = "Members"
+L["FAC_TAB_SETTLEMENTS"]            = "Settlements"
+L["FAC_TAB_CULTURE"]                = "Culture"
+L["FAC_SEC_BIOLOGY"]                = "Biology & Society"
+L["FAC_SEC_BELIEFS"]                = "Beliefs"
+L["FAC_SEC_RELATIONS"]              = "Relations"
+L["FAC_EMPTY_SUBGROUPS"]            = "No subgroups recorded."
+L["FAC_EMPTY_MEMBERS"]              = "No notable members recorded."
+L["FAC_EMPTY_SETTLEMENTS"]          = "No settlements recorded."
+
+-- ============================================================
+-- TAB 4: INSTANCES (COMING SOON)
 -- ============================================================
 L["COMING_SOON_INSTANCES_TITLE"]    = "HIDDEN INSTANCES"
 L["COMING_SOON_INSTANCES_DESC"]     = "Dungeons, raids, and delves.\nThe echoes of the most powerful enemies await their discovery.\n\n|cFF9370DB[ IN DEVELOPMENT ]|r"
@@ -127,6 +154,7 @@ L["LOGIN_ALL_UNCOVERED"]            = "All secrets have been revealed!"
 L["FOOTER_PROGRESS"]                = "%d / %d Fates uncovered (%d%%)"
 L["TAB_FATES"]                      = "Fates"
 L["TAB_ZONES"]                      = "Zones"
+L["TAB_FACTIONS"]                   = "Factions"
 L["TAB_INSTANCES"]                  = "Instances"
 L["STARTPAGE_RANK"]                 = "Your Standing in the Chronicle:"
 L["STARTPAGE_COMPLETED"]            = "REACHED MILESTONES:"

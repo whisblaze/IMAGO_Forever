@@ -91,7 +91,34 @@ L["ZONE_POI_HEADER"]                = "INTERESSANTE ORTE"
 L["ZONE_UNDISCOVERED"]              = "Unentdeckt"
 
 -- ============================================================
--- TAB 3: INSTANCES (COMING SOON)
+-- TAB 3: FACTIONS
+-- ============================================================
+L["FACTIONS_OVERVIEW"]              = "FRAKTIONEN"
+L["FOOTER_FACTIONS_PROGRESS"]       = "%d / %d Fraktionen dokumentiert (%d%%)"
+L["STARTPAGE_FACTIONS_RANK"]        = "DIPLOMATISCHER RANG"
+L["STARTPAGE_FACTIONS_NEXT"]        = "KOMMENDE RÄNGE:"
+L["CHAT_FACTION_DISCOVERY"]         = "|cFF9370DB[IMAGO]|r Neue Fraktion dokumentiert: |cFFFFD700%s|r"
+L["DISPLAY_PROGRESS_FACTION"]       = "Fortschritt: %d%% (%d/%d Fraktionen)"
+L["FILTER_ALL_FACTIONS"]            = "Alle Fraktionen"
+L["FAC_ALIGN_ALLIANCE"]             = "Allianz"
+L["FAC_ALIGN_HORDE"]                = "Horde"
+L["FAC_ALIGN_NEUTRAL"]              = "Neutral"
+L["HINT_FACTION_LOCKED"]            = "ZUGEHÖRIGKEIT UNBEKANNT"
+L["HINT_FACTION_LOCKED_DESC"]       = "Begegne einem Mitglied dieser Fraktion in der Welt, um ihren Chronik-Eintrag zu enthüllen."
+L["FAC_TAB_HISTORY"]                = "Geschichte"
+L["FAC_TAB_SUBGROUPS"]              = "Untergruppen"
+L["FAC_TAB_MEMBERS"]                = "Mitglieder"
+L["FAC_TAB_SETTLEMENTS"]            = "Siedlungen"
+L["FAC_TAB_CULTURE"]                = "Kultur"
+L["FAC_SEC_BIOLOGY"]                = "Biologie & Gesellschaft"
+L["FAC_SEC_BELIEFS"]                = "Glauben"
+L["FAC_SEC_RELATIONS"]              = "Beziehungen"
+L["FAC_EMPTY_SUBGROUPS"]            = "Keine Untergruppen verzeichnet."
+L["FAC_EMPTY_MEMBERS"]              = "Keine nennenswerten Mitglieder verzeichnet."
+L["FAC_EMPTY_SETTLEMENTS"]          = "Keine Siedlungen verzeichnet."
+
+-- ============================================================
+-- TAB 4: INSTANCES (COMING SOON)
 -- ============================================================
 L["COMING_SOON_INSTANCES_TITLE"]    = "VERBORGENE INSTANZEN"
 L["COMING_SOON_INSTANCES_DESC"]     = "Dungeons, Raids und Tiefen.\nDie Echos der mächtigsten Feinde warten auf ihre Entdeckung.\n\n|cFF9370DB[ IN ENTWICKLUNG ]|r"
@@ -127,6 +154,7 @@ L["LOGIN_ALL_UNCOVERED"]            = "Alle Geheimnisse gelüftet!"
 L["FOOTER_PROGRESS"]                = "%d / %d Schicksale entschlüsselt (%d%%)"
 L["TAB_FATES"]                      = "Schicksale"
 L["TAB_ZONES"]                      = "Zonen"
+L["TAB_FACTIONS"]                   = "Fraktionen"
 L["TAB_INSTANCES"]                  = "Instanzen"
 L["STARTPAGE_RANK"]                 = "Dein Stand in der Chronik:"
 L["STARTPAGE_COMPLETED"]            = "ERREICHTE MEILENSTEINE:"

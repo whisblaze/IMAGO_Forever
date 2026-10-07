@@ -71,6 +71,13 @@ local FACTION_ICONS = {
     CAT_THUNDERBLUFF = "Interface\\Timer\\Horde-Logo",
 }
 
+-- Faction alignment → crest shown in the faction detail header
+local FACTION_ALIGN_ICONS = {
+    Alliance = "Interface\\Timer\\Alliance-Logo",
+    Horde    = "Interface\\Timer\\Horde-Logo",
+    Neutral  = "Interface\\AddOns\\IMAGO_forever\\media\\worldmap.tga",
+}
+
 IMAGO.Chronicle.ranks = IMAGO.Chronicle.ranks or {}
 IMAGO.Chronicle.zoneRanks = IMAGO.Chronicle.zoneRanks or {}
 
@@ -420,20 +427,30 @@ function IMAGO.Chronicle.CreateFrame()
 
     f.filterMenu.Rebuild = function()
         for _, b in ipairs(f.filterMenu.pool) do b:Hide() end
-        local allItems = {
-            {id = "ALL",  name = IMAGO.L["FILTER_ALL"]  or "All Echoes"},
-            {id = "HIST", name = IMAGO.L["FILTER_HIST"] or "Recently Discovered"},
-            {id = "FAV",  name = IMAGO.L["FILTER_FAV"]  or "Favorites"},
-        }
-        local catSet, catList = {}, {}
-        for cat, entries in pairs(IMAGOdb.npcs or {}) do
-            if type(entries) == "table" and next(entries) then
-                catSet[cat] = true
-                table.insert(catList, {id = cat, name = IMAGO.L[cat] or cat})
+        local allItems
+        if f.activeTabIndex == 3 then
+            allItems = {
+                {id = "ALL",      name = IMAGO.L["FILTER_ALL_FACTIONS"] or "All Factions"},
+                {id = "Alliance", name = IMAGO.L["FAC_ALIGN_ALLIANCE"]  or "Alliance"},
+                {id = "Horde",    name = IMAGO.L["FAC_ALIGN_HORDE"]     or "Horde"},
+                {id = "Neutral",  name = IMAGO.L["FAC_ALIGN_NEUTRAL"]   or "Neutral"},
+            }
+        else
+            allItems = {
+                {id = "ALL",  name = IMAGO.L["FILTER_ALL"]  or "All Echoes"},
+                {id = "HIST", name = IMAGO.L["FILTER_HIST"] or "Recently Discovered"},
+                {id = "FAV",  name = IMAGO.L["FILTER_FAV"]  or "Favorites"},
+            }
+            local catSet, catList = {}, {}
+            for cat, entries in pairs(IMAGOdb.npcs or {}) do
+                if type(entries) == "table" and next(entries) then
+                    catSet[cat] = true
+                    table.insert(catList, {id = cat, name = IMAGO.L[cat] or cat})
+                end
             end
+            table.sort(catList, function(a, b) return a.name < b.name end)
+            for _, c in ipairs(catList) do table.insert(allItems, c) end
         end
-        table.sort(catList, function(a, b) return a.name < b.name end)
-        for _, c in ipairs(catList) do table.insert(allItems, c) end
         local menuY = -8
         for i, item in ipairs(allItems) do
             local btn = GetOrCreateMenuBtn(i)
@@ -499,6 +516,37 @@ function IMAGO.Chronicle.CreateFrame()
     end)
     f.sidebar.zonesHeader:Hide()
 
+    -- Factions fixed sidebar header (outside the scroll area)
+    f.sidebar.factionsHeader = CreateFrame("Button", nil, f.sidebar)
+    f.sidebar.factionsHeader:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, LAYOUT.SIDEBAR_HEADER_HEIGHT)
+    f.sidebar.factionsHeader:SetPoint("TOPLEFT", f.sidebar, "TOPLEFT", 0, 0)
+
+    f.sidebar.factionsHeader.bg = f.sidebar.factionsHeader:CreateTexture(nil, "BACKGROUND")
+    f.sidebar.factionsHeader.bg:SetAllPoints()
+    f.sidebar.factionsHeader.bg:SetColorTexture(IMAGO_COLORS.BG_PANEL[1], IMAGO_COLORS.BG_PANEL[2], IMAGO_COLORS.BG_PANEL[3], IMAGO_COLORS.BG_PANEL[4])
+
+    local fhl = f.sidebar.factionsHeader:CreateTexture(nil, "HIGHLIGHT")
+    fhl:SetAllPoints()
+    fhl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.3)
+
+    f.sidebar.factionsHeader.t = f.sidebar.factionsHeader:CreateFontString(nil, "OVERLAY")
+    IMAGO.ApplyTextStyle(f.sidebar.factionsHeader.t, "SIDEBAR_HEADER")
+    f.sidebar.factionsHeader.t:SetPoint("CENTER", 0, 0)
+    f.sidebar.factionsHeader.t:SetText(IMAGO.L["FACTIONS_OVERVIEW"] or "FACTIONS OVERVIEW")
+
+    f.sidebar.factionsHeader:SetScript("OnClick", function()
+        if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+        IMAGO.Chronicle.SetDetailAction(nil)
+        for _, fb in pairs(IMAGO.Chronicle.factionButtons or {}) do
+            if fb.activeBar then fb.activeBar:Hide() end
+            fb.bg:SetColorTexture(1, 1, 1, (fb._zebra and 0.03) or 0)
+        end
+        f.selectedFaction = nil
+        f.selectedFactionSlug = nil
+        if f.ShowDashboard then f.ShowDashboard() end
+    end)
+    f.sidebar.factionsHeader:Hide()
+
     -- ============================================================
     -- RIGHT SIDE: THE DETAIL FRAME
     -- ============================================================
@@ -514,6 +562,13 @@ function IMAGO.Chronicle.CreateFrame()
     f.factionIcon:SetPoint("TOPRIGHT", f.detailFrame, "TOPRIGHT", -20, -10)
     f.factionIcon:SetAlpha(0.7)
     f.factionIcon:Hide()
+
+    -- Large emblem in the left column of faction detail pages
+    f.factionEmblem = f.detailFrame:CreateTexture(nil, "ARTWORK")
+    f.factionEmblem:SetSize(180, 180)
+    f.factionEmblem:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 55, -160)
+    f.factionEmblem:SetAlpha(0.85)
+    f.factionEmblem:Hide()
 
     f.detailTitle = f.detailFrame:CreateFontString(nil, "OVERLAY")
     IMAGO.ApplyTextStyle(f.detailTitle, "DISPLAY")
@@ -556,9 +611,9 @@ function IMAGO.Chronicle.CreateFrame()
     f.detailSeparator:SetAlpha(0.6)
     f.detailSeparator:Hide()
 
-    local function CreateTab(parent, text, xOffset)
+    local function CreateTab(parent, text, xOffset, width)
         local tab = CreateFrame("Button", nil, parent)
-        tab:SetSize(100, 25)
+        tab:SetSize(width or 100, 25)
         tab:SetPoint("TOPLEFT", parent, "TOPLEFT", 300 + xOffset, -80)
 
         tab.text = tab:CreateFontString(nil, "OVERLAY")
@@ -577,6 +632,31 @@ function IMAGO.Chronicle.CreateFrame()
 
     f.tabLore = CreateTab(f.detailFrame, IMAGO.L["TAB_DETAIL_LORE"], 0)
     f.tabTime = CreateTab(f.detailFrame, IMAGO.L["TAB_DETAIL_TIMELINE"], 100)
+
+    -- Faction detail sub-tabs (Factions tab, index 3)
+    f.factionTabKeys = {"history", "subgroups", "members", "settlements", "culture"}
+    local factionTabLocale = {
+        history     = "FAC_TAB_HISTORY",
+        subgroups   = "FAC_TAB_SUBGROUPS",
+        members     = "FAC_TAB_MEMBERS",
+        settlements = "FAC_TAB_SETTLEMENTS",
+        culture     = "FAC_TAB_CULTURE",
+    }
+    f.factionTabs = {}
+    for i, key in ipairs(f.factionTabKeys) do
+        local tab = CreateTab(f.detailFrame, IMAGO.L[factionTabLocale[key]] or key, (i - 1) * 108, 104)
+        tab.text:SetFont(FONT_BODY, 12, "OUTLINE")
+        tab.factionTabKey = key
+        tab:SetScript("OnClick", function()
+            f.activeFactionTab = key
+            if f.selectedFaction then
+                IMAGO.Chronicle.RenderFactionTab(key)
+            end
+            if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+        end)
+        tab:Hide()
+        f.factionTabs[i] = tab
+    end
 
     f.infoScroll = CreateFrame("ScrollFrame", "IMAGOChronicleInfoScroll", f.detailFrame, "UIPanelScrollFrameTemplate")
     f.infoScroll:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 310, -115)
@@ -1128,6 +1208,8 @@ function IMAGO.Chronicle.CreateFrame()
             IMAGO.Chronicle.OpenToNPCSlug(prev.slug, { skipDiscoveryCinematic = true })
         elseif prev.type == "zone" then
             IMAGO.Chronicle.OpenToZoneMapID(prev.mapID)
+        elseif prev.type == "faction" then
+            IMAGO.Chronicle.OpenToFaction(prev.slug)
         end
         C_Timer.After(0, function()
             isNavigatingBack = false
@@ -1163,8 +1245,8 @@ function IMAGO.Chronicle.CreateFrame()
     -- ==-- ==========================================
     -- NEW: MAIN TABS (BOTTOM TABS) LOCALIZED
     -- ==========================================
-    f.numTabs = 4
-    local tabNames = {IMAGO.L["TAB_FATES"], IMAGO.L["TAB_ZONES"], IMAGO.L["TAB_INSTANCES"], IMAGO.L["TAB_CREDITS"]}
+    f.numTabs = 5
+    local tabNames = {IMAGO.L["TAB_FATES"], IMAGO.L["TAB_ZONES"], IMAGO.L["TAB_FACTIONS"], IMAGO.L["TAB_INSTANCES"], IMAGO.L["TAB_CREDITS"]}
     for i = 1, f.numTabs do
         -- Fallback so a missing/mistimed locale string can never break tab creation
         local name = tabNames[i] or ("Tab " .. i)
@@ -1219,8 +1301,14 @@ function IMAGO.Chronicle.CreateFrame()
     -- NEW: TAB SWITCHING LOGIC (LOCALIZED)
     -- ==========================================
     function IMAGO.Chronicle.SelectMainTab(index)
-        PanelTemplates_SetTab(f, index) 
-        f.activeTabIndex = index 
+        PanelTemplates_SetTab(f, index)
+        f.activeTabIndex = index
+        f.activeFilter = "ALL"
+        if f.filterBtn then
+            f.filterBtn:SetText(index == 3
+                and (IMAGO.L["FILTER_ALL_FACTIONS"] or "All Factions")
+                or  (IMAGO.L["FILTER_ALL"] or "All Echoes"))
+        end
         
         -- RESET: Safely hide everything on the right side
         if f.detailTitle then f.detailTitle:Hide() end
@@ -1236,25 +1324,29 @@ function IMAGO.Chronicle.CreateFrame()
         if f.detailImage then f.detailImage:Hide() end
         if f.detailImageBorder then f.detailImageBorder:Hide() end -- NEW: hide the border
         if f.detailSeparator then f.detailSeparator:Hide() end
-        
+
         if f.detailImage then f.detailImage:Hide() end
         if f.detailImageBorder then f.detailImageBorder:Hide() end
         if f.detailSeparator then f.detailSeparator:Hide() end
         if f.creditsPage then f.creditsPage:Hide() end
         if f.creditsHeader then f.creditsHeader:Hide() end
+        if f.factionTabs then for _, t in ipairs(f.factionTabs) do t:Hide() end end
+        if f.factionContainer then f.factionContainer:Hide() end
+        if f.factionEmblem then f.factionEmblem:Hide() end
         IMAGO.Chronicle.SetDetailAction(nil)
         if f.filterMenu         then f.filterMenu:Hide()         end
 
-        if index == 1 or index == 2 then
+        if index == 1 or index == 2 or index == 3 then
             f.comingSoonPage:Hide()
-            -- Fates/Zones: flat list (no expansion picker)
-            f.searchBox:SetShown(index == 1)
-            f.filterBtn:SetShown(index == 1)
+            -- Fates/Zones/Factions: flat list (no expansion picker)
+            f.searchBox:SetShown(index == 1 or index == 3)
+            f.filterBtn:SetShown(index == 1 or index == 3)
             f.sidebar:Show(); f.detailFrame:Show()
             if f.sidebar.zonesHeader then f.sidebar.zonesHeader:SetShown(index == 2) end
+            if f.sidebar.factionsHeader then f.sidebar.factionsHeader:SetShown(index == 3) end
             IMAGO.Chronicle.UpdateList()
             if f.ShowDashboard then f.ShowDashboard() end
-        elseif index == 3 then
+        elseif index == 4 then
             -- Hide main UI (for the instances tab)
             f.searchBox:Hide()
             f.filterBtn:Hide()
@@ -1264,7 +1356,7 @@ function IMAGO.Chronicle.CreateFrame()
             f.comingSoonPage.title:SetText(IMAGO.L["COMING_SOON_INSTANCES_TITLE"])
             f.comingSoonPage.desc:SetText(IMAGO.L["COMING_SOON_INSTANCES_DESC"])
             f.comingSoonPage:Show()
-        elseif index == 4 then
+        elseif index == 5 then
             -- Credits tab
             f.searchBox:Hide()
             f.filterBtn:Hide()
@@ -1441,8 +1533,11 @@ function IMAGO.Chronicle.CreateFrame()
         f.infoScroll:Hide()
         if f.loreSource then f.loreSource:Hide() end
         f.detailModel:Hide()
-        f.hintPage:Hide() 
+        f.hintPage:Hide()
         f.factionIcon:Hide()
+        if f.factionTabs then for _, t in ipairs(f.factionTabs) do t:Hide() end end
+        if f.factionContainer then f.factionContainer:Hide() end
+        if f.factionEmblem then f.factionEmblem:Hide() end
         if f.detailImage then f.detailImage:Hide() end
         if f.detailImageBorder then f.detailImageBorder:Hide() end
         if f.detailSeparator then f.detailSeparator:Hide() end
@@ -1671,6 +1766,7 @@ function IMAGO.Chronicle.UpdateList()
     for _, b in pairs(IMAGO.Chronicle.buttons or {}) do b:Hide() end
     for _, h in pairs(IMAGO.Chronicle.headers or {}) do h:Hide() end
     for _, zb in pairs(IMAGO.Chronicle.zoneButtons or {}) do zb:Hide() end
+    for _, fb in pairs(IMAGO.Chronicle.factionButtons or {}) do fb:Hide() end
     if IMAGO.Chronicle.homeBtn then IMAGO.Chronicle.homeBtn:Hide() end
 
     -- ============================================================
@@ -1678,6 +1774,9 @@ function IMAGO.Chronicle.UpdateList()
     -- ============================================================
     if f.sidebar.zonesHeader then
         f.sidebar.zonesHeader:Hide()
+    end
+    if f.sidebar.factionsHeader then
+        f.sidebar.factionsHeader:Hide()
     end
 
     -- ============================================================
@@ -2046,6 +2145,8 @@ function IMAGO.Chronicle.UpdateList()
                                 entry = { type = "npc", slug = f.selectedNPCSlug }
                             elseif f.selectedZoneMapID then
                                 entry = { type = "zone", mapID = f.selectedZoneMapID }
+                            elseif f.selectedFactionSlug then
+                                entry = { type = "faction", slug = f.selectedFactionSlug }
                             end
                             if entry then
                                 table.insert(navStack, entry)
@@ -2055,6 +2156,7 @@ function IMAGO.Chronicle.UpdateList()
                             end
                         end
                         f.selectedZoneMapID = nil
+                        f.selectedFactionSlug = nil
 
                         f.selectedNPC = npc.data
                         f.selectedNPCSlug = npc.slug
@@ -2066,7 +2168,10 @@ function IMAGO.Chronicle.UpdateList()
                         
                         if isVisible then
                             f.hintPage:Hide()
-                            
+                            if f.factionTabs then for _, t in ipairs(f.factionTabs) do t:Hide() end end
+                            if f.factionContainer then f.factionContainer:Hide() end
+                            if f.factionEmblem then f.factionEmblem:Hide() end
+
                             local function OpenLoreTab()
                                 f.detailTitle:Show()
                                 f.detailLineLeft:Show()
@@ -2365,6 +2470,8 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "npc", slug = f.selectedNPCSlug }
                     elseif f.selectedZoneMapID and f.selectedZoneMapID ~= mapID then
                         entry = { type = "zone", mapID = f.selectedZoneMapID }
+                    elseif f.selectedFactionSlug then
+                        entry = { type = "faction", slug = f.selectedFactionSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -2372,14 +2479,18 @@ function IMAGO.Chronicle.UpdateList()
                     end
                 end
                 f.selectedNPCSlug = nil
+                f.selectedFactionSlug = nil
                 f.selectedZoneMapID = mapID
 
                 f.startPage:Hide()
                 f.hintPage:Hide()
-                f.tabLore:Hide() 
+                f.tabLore:Hide()
                 f.tabTime:Hide()
                 f.detailModel:Hide()
                 f.factionIcon:Hide()
+                if f.factionTabs then for _, t in ipairs(f.factionTabs) do t:Hide() end end
+                if f.factionContainer then f.factionContainer:Hide() end
+                if f.factionEmblem then f.factionEmblem:Hide() end
                 if f.timelineContainer then f.timelineContainer:Hide() end
 
                 f.detailTitle:Show()
@@ -2483,6 +2594,8 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "npc", slug = f.selectedNPCSlug }
                     elseif f.selectedZoneMapID and f.selectedZoneMapID ~= mapID then
                         entry = { type = "zone", mapID = f.selectedZoneMapID }
+                    elseif f.selectedFactionSlug then
+                        entry = { type = "faction", slug = f.selectedFactionSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -2490,6 +2603,7 @@ function IMAGO.Chronicle.UpdateList()
                     end
                 end
                 f.selectedNPCSlug = nil
+                f.selectedFactionSlug = nil
                 f.selectedZoneMapID = mapID
 
                 f.startPage:Hide()
@@ -2498,6 +2612,9 @@ function IMAGO.Chronicle.UpdateList()
                 f.tabTime:Hide()
                 f.detailModel:Hide()
                 f.factionIcon:Hide()
+                if f.factionTabs then for _, t in ipairs(f.factionTabs) do t:Hide() end end
+                if f.factionContainer then f.factionContainer:Hide() end
+                if f.factionEmblem then f.factionEmblem:Hide() end
                 if f.timelineContainer then f.timelineContainer:Hide() end
 
                 f.detailLineLeft:Hide()
@@ -2558,7 +2675,621 @@ function IMAGO.Chronicle.UpdateList()
 
     f.content:SetHeight(math.max(1, yOffset))
     IMAGO.UpdateScrollBarVisibility(f.scrollFrame)
+
+    -- ============================================================
+    -- TAB 3: FACTIONS
+    -- ============================================================
+    elseif activeTab == 3 then
+        if f.sidebar.factionsHeader then f.sidebar.factionsHeader:Show() end
+        IMAGOSaved.seenFactions = IMAGOSaved.seenFactions or {}
+        IMAGOSaved.viewedFactions = IMAGOSaved.viewedFactions or {}
+        IMAGOSaved.manualFactionUnlocks = IMAGOSaved.manualFactionUnlocks or {}
+
+        local totalFac, seenFac = 0, 0
+        for slug, _ in pairs(IMAGOdb.factions or {}) do
+            totalFac = totalFac + 1
+            if IMAGOSaved.seenFactions[slug] then seenFac = seenFac + 1 end
+        end
+
+        local perc = totalFac > 0 and (seenFac / totalFac) * 100 or 0
+
+        local rankTitle = IMAGO.Chronicle.factionRanks and IMAGO.Chronicle.factionRanks[1] and IMAGO.Chronicle.factionRanks[1].title or ""
+        for _, r in ipairs(IMAGO.Chronicle.factionRanks or {}) do
+            if perc >= r.perc then rankTitle = r.title end
+        end
+
+        IMAGO.UpdateProgressFooter(f.footer, perc, 100, rankTitle, string.format(IMAGO.L["FOOTER_FACTIONS_PROGRESS"] or "%d / %d Factions documented (%d%%)", seenFac, totalFac, math.floor(perc)))
+
+        f.startPage.rankLabel:SetText(IMAGO.L["STARTPAGE_FACTIONS_RANK"] or "FACTION ARCHIVES")
+        f.startPage.rankName:SetText(rankTitle)
+        f.startPage.completedLabel:SetText(IMAGO.L["STARTPAGE_COMPLETED"])
+        f.startPage.nextLabel:SetText(IMAGO.L["STARTPAGE_FACTIONS_NEXT"] or "UPCOMING ARCHIVES:")
+
+        local completedRanksStr, nextRanksStr = "", ""
+        for _, r in ipairs(IMAGO.Chronicle.factionRanks or {}) do
+            local rTitle = r.title or ""
+            if r.perc <= perc then
+                completedRanksStr = completedRanksStr .. string.format("|c%s%s (%s %d%%)|r\n", IMAGO_HEX.GOLD, rTitle, IMAGO.L["WORD_AT"], r.perc)
+            else
+                nextRanksStr = nextRanksStr .. string.format("|c%s%s (%s %d%%)|r\n", IMAGO_HEX.TEXT_MUTED, rTitle, IMAGO.L["WORD_AT"], r.perc)
+            end
+        end
+
+        f.startPage.completedMilestones:SetText(completedRanksStr == "" and IMAGO.L["STARTPAGE_NO_MILESTONES"] or completedRanksStr)
+        f.startPage.milestones:SetText(nextRanksStr == "" and "|c" .. IMAGO_HEX.SUCCESS .. (IMAGO.L["STARTPAGE_MAX_REACHED"] or "MAXIMUM REACHED!") .. "|r" or nextRanksStr)
+
+        local searchString = f.searchBox:GetText():lower()
+        local activeFilter = f.activeFilter or "ALL"
+
+        local sortedFactions = {}
+        for slug, data in pairs(IMAGOdb.factions or {}) do
+            local name = data.name or slug
+            local isSeen = IMAGOSaved.seenFactions[slug]
+            local isEncyclopedia = IMAGOSaved.encyclopediaMode
+            local isManual = IMAGOSaved.manualFactionUnlocks[slug]
+            local isVisible = isSeen or isEncyclopedia or isManual
+
+            local matchesSearch = true
+            if searchString ~= "" then
+                if isVisible then
+                    if not name:lower():find(searchString) then matchesSearch = false end
+                else
+                    local undiscoveredText = (IMAGO.L["UNDISCOVERED"] or "undiscovered"):lower()
+                    if not undiscoveredText:find(searchString) then matchesSearch = false end
+                end
+            end
+
+            local matchesFilter = true
+            if activeFilter ~= "ALL" and not activeFilter:find("CAT_") then
+                if data.alignment ~= activeFilter then matchesFilter = false end
+            end
+
+            if matchesSearch and matchesFilter then
+                table.insert(sortedFactions, {slug = slug, data = data, isVisible = isVisible, isSeen = isSeen, isManual = isManual})
+            end
+        end
+        table.sort(sortedFactions, function(a, b)
+            if a.isVisible ~= b.isVisible then return a.isVisible end
+            return (a.data.name or a.slug) < (b.data.name or b.slug)
+        end)
+
+        IMAGO.Chronicle.factionButtons = IMAGO.Chronicle.factionButtons or {}
+        local fIdx = 1
+        for _, fac in ipairs(sortedFactions) do
+            local btn = IMAGO.Chronicle.factionButtons[fIdx]
+            if not btn then
+                btn = CreateFrame("Button", nil, f.content)
+                btn:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, 35)
+
+                btn.bg = btn:CreateTexture(nil, "BACKGROUND")
+                btn.bg:SetAllPoints()
+
+                btn.activeBar = btn:CreateTexture(nil, "OVERLAY")
+                btn.activeBar:SetWidth(2)
+                btn.activeBar:SetPoint("TOPLEFT",    btn, "TOPLEFT",    0, -3)
+                btn.activeBar:SetPoint("BOTTOMLEFT", btn, "BOTTOMLEFT", 0,  3)
+                btn.activeBar:SetColorTexture(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+                btn.activeBar:Hide()
+
+                local hl = btn:CreateTexture(nil, "HIGHLIGHT")
+                hl:SetAllPoints()
+                hl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.2)
+
+                btn.crest = btn:CreateTexture(nil, "ARTWORK")
+                btn.crest:SetSize(20, 20)
+                btn.crest:SetPoint("LEFT", btn, "LEFT", 8, 0)
+
+                btn.t = btn:CreateFontString(nil, "OVERLAY")
+                IMAGO.ApplyTextStyle(btn.t, "NAV_ITEM")
+                btn.t:SetPoint("LEFT", btn, "LEFT", 34, 0)
+                btn.t:SetPoint("RIGHT", btn, "RIGHT", -10, 0)
+                btn.t:SetJustifyH("LEFT")
+                btn.t:SetWordWrap(false)
+
+                btn.newTag = btn:CreateFontString(nil, "OVERLAY")
+                IMAGO.ApplyTextStyle(btn.newTag, "NAV_META", IMAGO_COLORS.GOLD)
+                btn.newTag:SetPoint("RIGHT", btn, "RIGHT", -5, 0)
+                btn.newTag:SetText(IMAGO.L["TAG_NEW"])
+
+                btn:SetScript("OnEnter", function(self)
+                    IMAGO.ShowTooltipIfTruncated(self, self.t)
+                end)
+                btn:SetScript("OnLeave", function()
+                    GameTooltip:Hide()
+                end)
+
+                IMAGO.Chronicle.factionButtons[fIdx] = btn
+            end
+
+            btn:SetPoint("TOPLEFT", f.content, "TOPLEFT", 0, -yOffset)
+            btn.factionSlug = fac.slug
+            btn._listScrollY = yOffset
+            btn.isSeen = fac.isSeen
+            btn.isManual = fac.isManual
+            btn.isEncyclopedia = IMAGOSaved.encyclopediaMode
+            btn.isVisible = fac.isVisible
+            btn._zebra = (fIdx % 2 == 0)
+            btn.bg:SetColorTexture(1, 1, 1, (btn._zebra and 0.03) or 0)
+
+            local facData = fac.data
+            local displayName = fac.isVisible and (facData.name or fac.slug) or GetCrypticName(facData.name or fac.slug)
+
+            local crest = FACTION_ALIGN_ICONS[facData.alignment]
+            if crest and fac.isVisible then
+                btn.crest:SetTexture(crest)
+                btn.crest:SetDesaturated(false)
+                btn.crest:Show()
+            elseif crest then
+                btn.crest:SetTexture(crest)
+                btn.crest:SetDesaturated(true)
+                btn.crest:Show()
+            else
+                btn.crest:Hide()
+            end
+
+            if fac.isVisible then
+                local newMark = facData.isNew and (" |c" .. IMAGO_HEX.GOLD_BRIGHT .. "✦|r") or ""
+                btn.t:SetText(displayName .. newMark)
+                btn.t:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
+            else
+                btn.t:SetText(displayName)
+                btn.t:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
+            end
+
+            local hasViewed = IMAGOSaved.viewedFactions[fac.slug]
+            if fac.isSeen and not hasViewed and not btn.isEncyclopedia then
+                btn.newTag:Show()
+            else
+                btn.newTag:Hide()
+            end
+
+            if f.selectedFactionSlug == fac.slug then
+                btn.activeBar:Show()
+                btn.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+            else
+                btn.activeBar:Hide()
+            end
+
+            btn:SetScript("OnClick", function(self)
+                if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+
+                for _, fb in pairs(IMAGO.Chronicle.factionButtons or {}) do
+                    if fb ~= self then
+                        if fb.activeBar then fb.activeBar:Hide() end
+                    end
+                end
+                self.activeBar:Show()
+
+                if not isNavigatingBack then
+                    local entry = nil
+                    if f.selectedNPCSlug and f.selectedNPCSlug ~= "" then
+                        entry = { type = "npc", slug = f.selectedNPCSlug }
+                    elseif f.selectedZoneMapID then
+                        entry = { type = "zone", mapID = f.selectedZoneMapID }
+                    elseif f.selectedFactionSlug and f.selectedFactionSlug ~= self.factionSlug then
+                        entry = { type = "faction", slug = f.selectedFactionSlug }
+                    end
+                    if entry then
+                        table.insert(navStack, entry)
+                        if IMAGO.Chronicle.SetBackEnabled then IMAGO.Chronicle.SetBackEnabled(true) end
+                    end
+                end
+                f.selectedNPCSlug = nil
+                f.selectedZoneMapID = nil
+                f.selectedFaction = self._facData
+                f.selectedFactionSlug = self.factionSlug
+                f.activeFactionTab = f.activeFactionTab or "history"
+
+                IMAGOSaved.viewedFactions[self.factionSlug] = true
+                self.newTag:Hide()
+
+                IMAGO.Chronicle.RenderFaction(self.factionSlug, self._facData, self.isVisible)
+            end)
+
+            btn._facData = facData
+
+            btn:SetScript("OnMouseUp", function(self, mouseBtn)
+                if mouseBtn == "RightButton" and not self.isSeen and not self.isEncyclopedia then
+                    if self.isManual then
+                        IMAGOSaved.manualFactionUnlocks[self.factionSlug] = nil
+                        IMAGO.Chronicle.UpdateList()
+                    else
+                        f.ShowConfirm(
+                            IMAGO.L["CONFIRM_UNLOCK_TITLE"],
+                            IMAGO.L["CONFIRM_UNLOCK_DESC"],
+                            function()
+                                IMAGOSaved.manualFactionUnlocks = IMAGOSaved.manualFactionUnlocks or {}
+                                IMAGOSaved.manualFactionUnlocks[self.factionSlug] = true
+                                IMAGO.Chronicle.UpdateList()
+                            end
+                        )
+                    end
+                end
+            end)
+
+            btn:Show()
+            yOffset = yOffset + 35
+            fIdx = fIdx + 1
+        end
+
+        for i = fIdx, #IMAGO.Chronicle.factionButtons do
+            IMAGO.Chronicle.factionButtons[i]:Hide()
+        end
+
+        f.content:SetHeight(math.max(1, yOffset))
+        IMAGO.UpdateScrollBarVisibility(f.scrollFrame)
     end
+end
+
+-- ============================================================
+-- FACTION DETAIL RENDERER (TAB 3)
+-- ============================================================
+
+--- Renders the detail page for a faction into the detailFrame.
+function IMAGO.Chronicle.RenderFaction(slug, data, isVisible)
+    local f = IMAGO.Chronicle.frame
+    if not f then return end
+
+    f.startPage:Hide()
+    f.hintPage:Hide()
+    f.tabLore:Hide()
+    f.tabTime:Hide()
+    if f.loreBody then f.loreBody:Hide() end
+    if f.loreSource then f.loreSource:Hide() end
+    if f.timelineContainer then f.timelineContainer:Hide() end
+    if f.detailImage then f.detailImage:Hide() end
+    if f.detailImageBorder then f.detailImageBorder:Hide() end
+    if f.detailSeparator then f.detailSeparator:Hide() end
+    IMAGO.Chronicle.SetDetailAction(nil)
+
+    if not isVisible then
+        -- Undiscovered faction: cryptic title + hint page
+        for _, t in ipairs(f.factionTabs or {}) do t:Hide() end
+        if f.factionContainer then f.factionContainer:Hide() end
+        f.factionEmblem:Hide()
+        f.detailModel:Hide()
+        f.factionIcon:Hide()
+        f.infoScroll:Hide()
+
+        f.detailTitle:Show()
+        f.detailLineLeft:Show()
+        f.detailLineRight:Show()
+        f.detailTitle:SetText(GetCrypticName(data.name or slug))
+        f.detailTitle:SetTextColor(0.4, 0.3, 0.5, 0.9)
+
+        f.hintPage:Show()
+        f.hintPage.aura:Show()
+        f.hintPage.warning:SetText(IMAGO.L["HINT_FACTION_LOCKED"] or "ALLEGIANCE UNKNOWN")
+        f.hintPage.icon:SetTexture("Interface\\AddOns\\IMAGO_forever\\media\\undiscovered.tga")
+        f.hintPage.icon:SetTexCoord(0, 1, 0, 1)
+        f.hintPage.desc:SetText(IMAGO.L["HINT_FACTION_LOCKED_DESC"] or "Meet a member of this faction in the world to reveal its chronicle entry.")
+        return
+    end
+
+    f.detailTitle:Show()
+    f.detailLineLeft:Show()
+    f.detailLineRight:Show()
+    f.detailTitle:SetText(data.name or slug)
+    f.detailTitle:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+
+    local crest = data.icon or FACTION_ALIGN_ICONS[data.alignment]
+    if crest then
+        f.factionIcon:SetTexture(crest)
+        f.factionIcon:Show()
+        f.factionEmblem:SetTexture(crest)
+    else
+        f.factionIcon:Hide()
+    end
+    -- Emblem fills the left column on tabs without a model; RenderFactionTab toggles it
+    f.factionEmblem:Hide()
+
+    for _, t in ipairs(f.factionTabs or {}) do t:Show() end
+    f.infoScroll:Show()
+    IMAGO.Chronicle.RenderFactionTab(f.activeFactionTab or "history")
+end
+
+--- Renders one sub-tab's content into f.infoContent via a pooled container.
+function IMAGO.Chronicle.RenderFactionTab(tabKey)
+    local f = IMAGO.Chronicle.frame
+    local data = f and f.selectedFaction
+    if not f or not data then return end
+
+    -- Reuse the NPC scroll geometry: model column left, text right
+    f.infoScroll:ClearAllPoints()
+    f.infoScroll:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 300, -115)
+    f.infoScroll:SetPoint("BOTTOMRIGHT", f.detailFrame, "BOTTOMRIGHT", 0, 100)
+    f.infoScroll:SetVerticalScroll(0)
+
+    -- Tab highlight states
+    for _, t in ipairs(f.factionTabs or {}) do
+        local active = (t.factionTabKey == tabKey)
+        t.text:SetTextColor(active and IMAGO_COLORS.GOLD_BRIGHT[1] or IMAGO_COLORS.TEXT_MUTED[1],
+            active and IMAGO_COLORS.GOLD_BRIGHT[2] or IMAGO_COLORS.TEXT_MUTED[2],
+            active and IMAGO_COLORS.GOLD_BRIGHT[3] or IMAGO_COLORS.TEXT_MUTED[3])
+        if active then t.activeLine:Show() else t.activeLine:Hide() end
+    end
+
+    -- Lazy-create the container + pooled widgets inside infoContent
+    if not f.factionContainer then
+        f.factionContainer = CreateFrame("Frame", nil, f.infoContent)
+        f.factionContainer:SetPoint("TOPLEFT", 10, 0)
+        f.factionContainer:SetSize(420, 1)
+        f.factionContainer.lines = {}   -- FontString pool
+        f.factionContainer.rows = {}    -- Button pool (clickable members/settlements)
+        f.factionContainer.headers = {} -- Button pool (accordion headers)
+        f.factionContainer:EnableMouse(true)
+        f.factionContainer:SetHyperlinksEnabled(true)
+        f.factionContainer:SetScript("OnHyperlinkClick", function(self, link, text, button)
+            if IMAGO.TextLinker and IMAGO.TextLinker.OnHyperlinkClick then
+                IMAGO.TextLinker.OnHyperlinkClick(self, link, text, button)
+            end
+        end)
+    end
+    local c = f.factionContainer
+    c:Show()
+    for _, l in ipairs(c.lines) do l:Hide() end
+    for _, r in ipairs(c.rows) do r:Hide() end
+    for _, h in ipairs(c.headers) do h:Hide() end
+
+    local lineIdx, rowIdx, hdrIdx = 0, 0, 0
+    local y = 0
+    local contentW = math.max(1, (f.infoScroll:GetWidth() or 0) - IMAGO.LAYOUT.SCROLLBAR_GUTTER - 30)
+
+    local function GetLine()
+        lineIdx = lineIdx + 1
+        local l = c.lines[lineIdx]
+        if not l then
+            l = c:CreateFontString(nil, "OVERLAY")
+            l:SetFont(FONT_BODY, 13)
+            l:SetJustifyH("LEFT")
+            l:SetSpacing(5)
+            l:SetWidth(contentW)
+            c.lines[lineIdx] = l
+        end
+        l:SetWidth(contentW)
+        return l
+    end
+
+    -- AddText(text, color, size) — stacks a wrapped FontString line
+    local function AddText(text, color, size)
+        local l = GetLine()
+        l:SetFont(FONT_BODY, size or 13)
+        l:SetPoint("TOPLEFT", c, "TOPLEFT", 0, -y)
+        l:SetText(text)
+        l:SetTextColor(color[1], color[2], color[3])
+        l:Show()
+        y = y + l:GetStringHeight() + 10
+    end
+
+    local function AddGap(px) y = y + (px or 6) end
+
+    -- Clickable row: label + optional title, gold when linkTarget set
+    local function AddRow(name, title, onClick)
+        rowIdx = rowIdx + 1
+        local r = c.rows[rowIdx]
+        if not r then
+            r = CreateFrame("Button", nil, c)
+            r:SetSize(contentW, 40)
+            r.name = r:CreateFontString(nil, "OVERLAY")
+            r.name:SetFont(FONT_BODY, 14, "")
+            r.name:SetPoint("TOPLEFT", 20, -4)
+            r.name:SetJustifyH("LEFT")
+            r.title = r:CreateFontString(nil, "OVERLAY")
+            r.title:SetFont(FONT_BODY, 12, "")
+            r.title:SetPoint("TOPLEFT", 20, -20)
+            r.title:SetPoint("TOPRIGHT", -10, -20)
+            r.title:SetJustifyH("LEFT")
+            r.title:SetWordWrap(false)
+            local hl = r:CreateTexture(nil, "HIGHLIGHT")
+            hl:SetAllPoints()
+            hl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.15)
+            c.rows[rowIdx] = r
+        end
+        r:SetPoint("TOPLEFT", c, "TOPLEFT", 0, -y)
+        r:SetWidth(contentW)
+        if onClick then
+            r.name:SetText("|TInterface\\Buttons\\UI-SpellbookIcon-NextPage-Up:12:12|t |c" .. IMAGO_HEX.GOLD_BRIGHT .. name .. "|r")
+            r:EnableMouse(true)
+            r:SetScript("OnClick", onClick)
+        else
+            r.name:SetText("|c" .. IMAGO_HEX.TEXT_SECONDARY .. "◆ " .. name .. "|r")
+            r:EnableMouse(false)
+            r:SetScript("OnClick", nil)
+        end
+        r.title:SetText(title or "")
+        r.title:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
+        r:Show()
+        y = y + (title and title ~= "" and 44 or 28)
+    end
+
+    -- Accordion header: toggles f.factionExpanded[key]
+    f.factionExpanded = f.factionExpanded or {}
+    local function AddSection(key, label, body)
+        hdrIdx = hdrIdx + 1
+        local h = c.headers[hdrIdx]
+        if not h then
+            h = CreateFrame("Button", nil, c)
+            h:SetSize(contentW, 26)
+            h.bg = h:CreateTexture(nil, "BACKGROUND")
+            h.bg:SetAllPoints()
+            h.bg:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+            h.bg:SetGradient("HORIZONTAL", CreateColor(IMAGO_COLORS.BG_PANEL[1], IMAGO_COLORS.BG_PANEL[2], IMAGO_COLORS.BG_PANEL[3], 0.3), CreateColor(0, 0, 0, 0))
+            h.icon = h:CreateFontString(nil, "OVERLAY")
+            h.icon:SetFont(FONT_BODY, 13, "OUTLINE")
+            h.icon:SetPoint("LEFT", 5, 0)
+            h.t = h:CreateFontString(nil, "OVERLAY")
+            h.t:SetFont(FONT_BODY, 13, "OUTLINE")
+            h.t:SetPoint("LEFT", 20, 0)
+            h.line = h:CreateTexture(nil, "ARTWORK")
+            h.line:SetSize(contentW, 1)
+            h.line:SetPoint("BOTTOM", 0, 0)
+            h.line:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+            h.line:SetGradient("HORIZONTAL", CreateColor(IMAGO_COLORS.DIVIDER[1], IMAGO_COLORS.DIVIDER[2], IMAGO_COLORS.DIVIDER[3], 0.5), CreateColor(0, 0, 0, 0))
+            h:SetScript("OnClick", function(self)
+                f.factionExpanded[self._key] = not f.factionExpanded[self._key]
+                if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+                IMAGO.Chronicle.RenderFactionTab(tabKey)
+            end)
+            c.headers[hdrIdx] = h
+        end
+        h._key = key
+        h:SetWidth(contentW)
+        h.line:SetWidth(contentW)
+        h:SetPoint("TOPLEFT", c, "TOPLEFT", 0, -y)
+        local open = f.factionExpanded[key]
+        h.icon:SetText(open and "-" or "+")
+        h.icon:SetTextColor(open and IMAGO_COLORS.GOLD[1] or IMAGO_COLORS.GOLD_MUTED[1],
+            open and IMAGO_COLORS.GOLD[2] or IMAGO_COLORS.GOLD_MUTED[2],
+            open and IMAGO_COLORS.GOLD[3] or IMAGO_COLORS.GOLD_MUTED[3])
+        h.t:SetText(label)
+        h.t:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+        h:Show()
+        y = y + 30
+
+        if open and body and body ~= "" then
+            AddText(body, IMAGO_COLORS.TEXT_SECONDARY)
+        end
+    end
+
+    -- Model column: leader/mount PlayerModel, else the big faction emblem
+    local function SetDetailModel(creatureID)
+        if not creatureID then
+            f.detailModel:Hide()
+            if f.factionEmblem:GetTexture() then f.factionEmblem:Show() end
+            return
+        end
+        f.factionEmblem:Hide()
+        f.detailModel:Show()
+        f.detailModel:ClearModel()
+        f.detailModel:SetCreature(creatureID)
+        f.detailModel:SetCamDistanceScale(1.0)
+        f.detailModel:SetPosition(0, 0, 0)
+        f.detailModel:SetFacing(0)
+        C_Timer.After(0.2, function()
+            if f.detailModel:IsShown() then
+                f.detailModel:SetCreature(creatureID)
+                f.detailModel:SetAnimation(0)
+            end
+        end)
+    end
+
+    -- ---- CONTENT PER TAB ------------------------------------
+    if tabKey == "history" then
+        SetDetailModel(data.leaderID)
+        local hist = data.history or ""
+        local firstByte = string.byte(hist, 1)
+        local charLen = firstByte and firstByte >= 192 and 2 or 1
+        local linked = IMAGO.TextLinker.LinkNames("|cffc8a84b" .. hist:sub(1, charLen) .. "|r" .. hist:sub(charLen + 1), nil, nil, nil, nil)
+        AddText(linked, IMAGO_COLORS.TEXT_PRIMARY, 14)
+        if data.source and data.source ~= "" then
+            AddGap(10)
+            AddText(string.format(IMAGO.L["LORE_AUTHOR"] or "Written by %s", data.source), IMAGO_COLORS.GOLD_MUTED, 11)
+        end
+
+    elseif tabKey == "subgroups" then
+        SetDetailModel(nil)
+        local any = false
+        for _, key in ipairs(data.subgroups or {}) do
+            local sg = data.subgroups[key]
+            if type(sg) == "table" then
+                any = true
+                AddSection("sg:" .. key, sg.name or key, sg.lore)
+            end
+        end
+        if not any then
+            AddText(IMAGO.L["FAC_EMPTY_SUBGROUPS"] or "No subgroups recorded.", IMAGO_COLORS.TEXT_MUTED)
+        end
+
+    elseif tabKey == "members" then
+        SetDetailModel(data.leaderID)
+        local any = false
+        for _, m in ipairs(data.members or {}) do
+            if m.slug then
+                local npcData = IMAGO.GetNPCData(m.slug)
+                if npcData then
+                    any = true
+                    local extra = data.memberText and data.memberText[m.slug]
+                    AddRow(npcData.name or m.slug, extra and extra.title or npcData.race, function()
+                        IMAGO.Chronicle.OpenToNPCSlug(m.slug)
+                    end)
+                end
+            elseif m.key then
+                local extra = data.memberText and data.memberText[m.key]
+                if extra then
+                    any = true
+                    AddRow(extra.name or m.key, extra.title)
+                end
+            end
+        end
+        if not any then
+            AddText(IMAGO.L["FAC_EMPTY_MEMBERS"] or "No notable members recorded.", IMAGO_COLORS.TEXT_MUTED)
+        end
+
+    elseif tabKey == "settlements" then
+        SetDetailModel(nil)
+        local any = false
+        for _, mapID in ipairs(data.settlements or {}) do
+            local st = data.settlementText and data.settlementText[mapID]
+            local zoneData = IMAGOdb.zones and IMAGOdb.zones[mapID]
+            local name = (st and st.name) or (zoneData and zoneData.name) or ("Region " .. mapID)
+            local lore = (st and st.lore) or (zoneData and zoneData.lore)
+            any = true
+            if zoneData then
+                AddRow(name, lore, function()
+                    IMAGO.Chronicle.OpenToZoneMapID(mapID)
+                end)
+            else
+                AddRow(name, lore)
+            end
+        end
+        if not any then
+            AddText(IMAGO.L["FAC_EMPTY_SETTLEMENTS"] or "No settlements recorded.", IMAGO_COLORS.TEXT_MUTED)
+        end
+
+    elseif tabKey == "culture" then
+        SetDetailModel(data.mountID)
+        local cult = data.culture or {}
+        AddSection("cult:biology",  IMAGO.L["FAC_SEC_BIOLOGY"]   or "Biology & Society", cult.biology)
+        AddSection("cult:beliefs",  IMAGO.L["FAC_SEC_BELIEFS"]   or "Beliefs",           cult.beliefs)
+        AddSection("cult:relations",IMAGO.L["FAC_SEC_RELATIONS"] or "Relations",         cult.relations)
+    end
+
+    c:SetHeight(math.max(1, y))
+    f.infoContent:SetHeight(math.max(1, y + 20))
+    IMAGO.UpdateScrollBarVisibility(f.infoScroll)
+end
+
+--- Navigate to a faction by slug: switches to the Factions tab and clicks its button.
+function IMAGO.Chronicle.OpenToFaction(slug)
+    if not slug or not (IMAGOdb.factions and IMAGOdb.factions[slug]) then return false end
+
+    if not IMAGO.Chronicle.frame then
+        IMAGO.Chronicle.CreateFrame()
+    end
+
+    local f = IMAGO.Chronicle.frame
+    IMAGO.Chronicle.SelectMainTab(3)
+    f:Show()
+
+    local function scrollToButton(btn)
+        if not btn or not f.scrollFrame or not f.content then return end
+        local range = math.max(0, (f.content:GetHeight() or 0) - (f.scrollFrame:GetHeight() or 0))
+        local target = math.max(0, math.min(range, (btn._listScrollY or 0) - 40))
+        f.scrollFrame:SetVerticalScroll(target)
+    end
+
+    for _, btn in pairs(IMAGO.Chronicle.factionButtons or {}) do
+        if btn.factionSlug == slug and btn:IsShown() then
+            local fn = btn:GetScript("OnClick")
+            if fn then fn(btn) end
+            C_Timer.After(0, function()
+                if f:IsShown() then scrollToButton(btn) end
+            end)
+            return true
+        end
+    end
+
+    return false
 end
 
 --- Opens the Chronicle (Fates tab), prepares the list, and runs the same logic as a click on the NPC.
@@ -2583,6 +3314,8 @@ function IMAGO.Chronicle.OpenToNPCSlug(slug, opts)
             entry = { type = "npc", slug = f.selectedNPCSlug }
         elseif f.selectedZoneMapID then
             entry = { type = "zone", mapID = f.selectedZoneMapID }
+        elseif f.selectedFactionSlug then
+            entry = { type = "faction", slug = f.selectedFactionSlug }
         end
         if entry then
             table.insert(navStack, entry)
@@ -2590,6 +3323,7 @@ function IMAGO.Chronicle.OpenToNPCSlug(slug, opts)
         end
     end
     f.selectedZoneMapID = nil
+    f.selectedFactionSlug = nil
 
     local data = IMAGO.GetNPCData(slug)
     if not data then return false end
