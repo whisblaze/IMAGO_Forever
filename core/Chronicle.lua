@@ -2151,8 +2151,6 @@ function IMAGO.Chronicle.UpdateList()
 
                                             if C_AddOns and C_AddOns.LoadAddOn then
                                                 C_AddOns.LoadAddOn("Blizzard_EncounterJournal")
-                                            elseif LoadAddOn then
-                                                LoadAddOn("Blizzard_EncounterJournal")
                                             end
                                             local _, _, _, _, _, _, _, _, _, _, _, isRaid = EJ_GetInstanceInfo(journalInstanceID)
                                             local difficulty = isRaid and 15 or 2
