@@ -39,14 +39,14 @@ local eraColors = {
     ["WC2"]       = {0.10, 0.30, 0.80},     -- Lordaeron blue (Alliance/Second War)
     ["Pre-WC3"]   = {0.45, 0.80, 0.20},     -- Plague green (the Scourge/Third War)
     ["WC3"]       = {0.45, 0.80, 0.20},     -- Plague green (the Scourge/Third War)
-    ["Pre-Classic"]   = {0.48, 0.29, 0.12},   -- Dark copper (old world)
-    ["Forever"]   = {0.05, 0.31, 0.46},       -- Deep petrol blue (WoW Forever)
+    ["Pre-Forever"]   = {0.48, 0.29, 0.12},   -- Dark copper (old world)
+    ["Forever"]   = {0.10, 0.44, 0.62},       -- Petrol blue, brightened for dark bg (WoW Forever)
 }
 
 -- Chronological order of timeline era labels (caps at Forever)
 local ERA_ORDER = {
     Ancient = 1, ["Pre-WC1"] = 2, WC1 = 3, ["Pre-WC2"] = 4, WC2 = 5,
-    ["Pre-WC3"] = 6, WC3 = 7, ["Pre-Classic"] = 8, Forever = 9,
+    ["Pre-WC3"] = 6, WC3 = 7, ["Pre-Forever"] = 8, Forever = 9,
 }
 
 -- NPC records are expansion-scoped via their slug suffix: the timeline only
@@ -57,7 +57,7 @@ local SLUG_ERA = {
     _forever = "Forever",
 }
 
--- Category → faction crest shown in the detail header
+-- Category → alignment crest shown in the NPC detail header
 local FACTION_ICONS = {
     CAT_STORMWIND    = "Interface\\Timer\\Alliance-Logo",
     CAT_IRONFORGE    = "Interface\\Timer\\Alliance-Logo",
@@ -71,8 +71,8 @@ local FACTION_ICONS = {
     CAT_THUNDERBLUFF = "Interface\\Timer\\Horde-Logo",
 }
 
--- Faction alignment → crest shown in the faction detail header
-local FACTION_ALIGN_ICONS = {
+-- Race alignment → crest shown in the race detail header
+local RACE_ALIGN_ICONS = {
     Alliance = "Interface\\Timer\\Alliance-Logo",
     Horde    = "Interface\\Timer\\Horde-Logo",
     Neutral  = "Interface\\AddOns\\IMAGO_forever\\media\\worldmap.tga",
@@ -430,10 +430,10 @@ function IMAGO.Chronicle.CreateFrame()
         local allItems
         if f.activeTabIndex == 3 then
             allItems = {
-                {id = "ALL",      name = IMAGO.L["FILTER_ALL_FACTIONS"] or "All Factions"},
-                {id = "Alliance", name = IMAGO.L["FAC_ALIGN_ALLIANCE"]  or "Alliance"},
-                {id = "Horde",    name = IMAGO.L["FAC_ALIGN_HORDE"]     or "Horde"},
-                {id = "Neutral",  name = IMAGO.L["FAC_ALIGN_NEUTRAL"]   or "Neutral"},
+                {id = "ALL",      name = IMAGO.L["FILTER_ALL_RACES"] or "All Races"},
+                {id = "Alliance", name = IMAGO.L["RACE_ALIGN_ALLIANCE"]  or "Alliance"},
+                {id = "Horde",    name = IMAGO.L["RACE_ALIGN_HORDE"]     or "Horde"},
+                {id = "Neutral",  name = IMAGO.L["RACE_ALIGN_NEUTRAL"]   or "Neutral"},
             }
         else
             allItems = {
@@ -516,36 +516,66 @@ function IMAGO.Chronicle.CreateFrame()
     end)
     f.sidebar.zonesHeader:Hide()
 
-    -- Factions fixed sidebar header (outside the scroll area)
-    f.sidebar.factionsHeader = CreateFrame("Button", nil, f.sidebar)
-    f.sidebar.factionsHeader:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, LAYOUT.SIDEBAR_HEADER_HEIGHT)
-    f.sidebar.factionsHeader:SetPoint("TOPLEFT", f.sidebar, "TOPLEFT", 0, 0)
+    -- Races fixed sidebar header (outside the scroll area)
+    f.sidebar.racesHeader = CreateFrame("Button", nil, f.sidebar)
+    f.sidebar.racesHeader:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, LAYOUT.SIDEBAR_HEADER_HEIGHT)
+    f.sidebar.racesHeader:SetPoint("TOPLEFT", f.sidebar, "TOPLEFT", 0, 0)
 
-    f.sidebar.factionsHeader.bg = f.sidebar.factionsHeader:CreateTexture(nil, "BACKGROUND")
-    f.sidebar.factionsHeader.bg:SetAllPoints()
-    f.sidebar.factionsHeader.bg:SetColorTexture(IMAGO_COLORS.BG_PANEL[1], IMAGO_COLORS.BG_PANEL[2], IMAGO_COLORS.BG_PANEL[3], IMAGO_COLORS.BG_PANEL[4])
+    f.sidebar.racesHeader.bg = f.sidebar.racesHeader:CreateTexture(nil, "BACKGROUND")
+    f.sidebar.racesHeader.bg:SetAllPoints()
+    f.sidebar.racesHeader.bg:SetColorTexture(IMAGO_COLORS.BG_PANEL[1], IMAGO_COLORS.BG_PANEL[2], IMAGO_COLORS.BG_PANEL[3], IMAGO_COLORS.BG_PANEL[4])
 
-    local fhl = f.sidebar.factionsHeader:CreateTexture(nil, "HIGHLIGHT")
+    local fhl = f.sidebar.racesHeader:CreateTexture(nil, "HIGHLIGHT")
     fhl:SetAllPoints()
     fhl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.3)
 
-    f.sidebar.factionsHeader.t = f.sidebar.factionsHeader:CreateFontString(nil, "OVERLAY")
-    IMAGO.ApplyTextStyle(f.sidebar.factionsHeader.t, "SIDEBAR_HEADER")
-    f.sidebar.factionsHeader.t:SetPoint("CENTER", 0, 0)
-    f.sidebar.factionsHeader.t:SetText(IMAGO.L["FACTIONS_OVERVIEW"] or "FACTIONS OVERVIEW")
+    f.sidebar.racesHeader.t = f.sidebar.racesHeader:CreateFontString(nil, "OVERLAY")
+    IMAGO.ApplyTextStyle(f.sidebar.racesHeader.t, "SIDEBAR_HEADER")
+    f.sidebar.racesHeader.t:SetPoint("CENTER", 0, 0)
+    f.sidebar.racesHeader.t:SetText(IMAGO.L["RACES_OVERVIEW"] or "RACES")
 
-    f.sidebar.factionsHeader:SetScript("OnClick", function()
+    f.sidebar.racesHeader:SetScript("OnClick", function()
         if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
         IMAGO.Chronicle.SetDetailAction(nil)
-        for _, fb in pairs(IMAGO.Chronicle.factionButtons or {}) do
+        for _, fb in pairs(IMAGO.Chronicle.raceButtons or {}) do
             if fb.activeBar then fb.activeBar:Hide() end
             fb.bg:SetColorTexture(1, 1, 1, (fb._zebra and 0.03) or 0)
         end
-        f.selectedFaction = nil
-        f.selectedFactionSlug = nil
+        f.selectedRace = nil
+        f.selectedRaceSlug = nil
         if f.ShowDashboard then f.ShowDashboard() end
     end)
-    f.sidebar.factionsHeader:Hide()
+    f.sidebar.racesHeader:Hide()
+
+    f.sidebar.classesHeader = CreateFrame("Button", nil, f.sidebar)
+    f.sidebar.classesHeader:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, LAYOUT.SIDEBAR_HEADER_HEIGHT)
+    f.sidebar.classesHeader:SetPoint("TOPLEFT", f.sidebar, "TOPLEFT", 0, 0)
+
+    f.sidebar.classesHeader.bg = f.sidebar.classesHeader:CreateTexture(nil, "BACKGROUND")
+    f.sidebar.classesHeader.bg:SetAllPoints()
+    f.sidebar.classesHeader.bg:SetColorTexture(IMAGO_COLORS.BG_PANEL[1], IMAGO_COLORS.BG_PANEL[2], IMAGO_COLORS.BG_PANEL[3], IMAGO_COLORS.BG_PANEL[4])
+
+    local chl = f.sidebar.classesHeader:CreateTexture(nil, "HIGHLIGHT")
+    chl:SetAllPoints()
+    chl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.3)
+
+    f.sidebar.classesHeader.t = f.sidebar.classesHeader:CreateFontString(nil, "OVERLAY")
+    IMAGO.ApplyTextStyle(f.sidebar.classesHeader.t, "SIDEBAR_HEADER")
+    f.sidebar.classesHeader.t:SetPoint("CENTER", 0, 0)
+    f.sidebar.classesHeader.t:SetText(IMAGO.L["CLASSES_OVERVIEW"] or "CLASSES")
+
+    f.sidebar.classesHeader:SetScript("OnClick", function()
+        if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+        IMAGO.Chronicle.SetDetailAction(nil)
+        for _, fb in pairs(IMAGO.Chronicle.classButtons or {}) do
+            if fb.activeBar then fb.activeBar:Hide() end
+            fb.bg:SetColorTexture(1, 1, 1, (fb._zebra and 0.03) or 0)
+        end
+        f.selectedClass = nil
+        f.selectedClassSlug = nil
+        if f.ShowDashboard then f.ShowDashboard() end
+    end)
+    f.sidebar.classesHeader:Hide()
 
     -- ============================================================
     -- RIGHT SIDE: THE DETAIL FRAME
@@ -556,19 +586,75 @@ function IMAGO.Chronicle.CreateFrame()
     f.detailFrame:SetBackdrop((IMAGOSaved and IMAGOSaved.opaqueUI) and detailBackdropOpaque or detailBackdropDefault)
     f.detailFrame:SetBackdropColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], (IMAGOSaved and IMAGOSaved.opaqueUI) and 1.0 or 0.95)
 
-    -- NEW: The faction icon (fix for the current bug!)
+    -- NEW: The race icon (fix for the current bug!)
     f.factionIcon = f.detailFrame:CreateTexture(nil, "ARTWORK")
     f.factionIcon:SetSize(50, 50)
     f.factionIcon:SetPoint("TOPRIGHT", f.detailFrame, "TOPRIGHT", -20, -10)
     f.factionIcon:SetAlpha(0.7)
     f.factionIcon:Hide()
 
-    -- Large emblem in the left column of faction detail pages
-    f.factionEmblem = f.detailFrame:CreateTexture(nil, "ARTWORK")
-    f.factionEmblem:SetSize(180, 180)
-    f.factionEmblem:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 55, -160)
-    f.factionEmblem:SetAlpha(0.85)
-    f.factionEmblem:Hide()
+    -- Race emblem box: male+female icons side by side (thin gold border each),
+    -- tabard below at near-native size.
+    f.raceEmblemBox = CreateFrame("Frame", nil, f.detailFrame)
+    f.raceEmblemBox:SetSize(230, 250)
+    f.raceEmblemBox:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 35, -140)
+    f.raceEmblemBox:Hide()
+
+    local function MakeRaceIcon(parent, xOffset)
+        local t = parent:CreateTexture(nil, "ARTWORK")
+        t:SetSize(64, 64)
+        t:SetPoint("TOP", parent, "TOP", xOffset, -15)
+        t:SetAlpha(0.95)
+        local ring = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+        ring:SetPoint("TOPLEFT", t, "TOPLEFT", -2, 2)
+        ring:SetPoint("BOTTOMRIGHT", t, "BOTTOMRIGHT", 2, -2)
+        ring:SetBackdrop({
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            edgeSize = 10,
+        })
+        ring:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.9)
+        return t
+    end
+
+    f.raceEmblem  = MakeRaceIcon(f.raceEmblemBox, -42)
+    f.raceEmblem2 = MakeRaceIcon(f.raceEmblemBox,  42)
+
+    f.raceEmblemCap = f.raceEmblemBox:CreateFontString(nil, "OVERLAY")
+    f.raceEmblemCap:SetFont(FONT_BODY, 11)
+    f.raceEmblemCap:SetPoint("TOP", f.raceEmblem, "BOTTOM", 0, -5)
+    f.raceEmblemCap:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+
+    f.raceEmblem2Cap = f.raceEmblemBox:CreateFontString(nil, "OVERLAY")
+    f.raceEmblem2Cap:SetFont(FONT_BODY, 11)
+    f.raceEmblem2Cap:SetPoint("TOP", f.raceEmblem2, "BOTTOM", 0, -5)
+    f.raceEmblem2Cap:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+
+    f.raceTabard = f.raceEmblemBox:CreateTexture(nil, "ARTWORK")
+    f.raceTabard:SetSize(48, 62)
+    f.raceTabard:SetPoint("TOP", f.raceEmblemBox, "TOP", 0, -112)
+    f.raceTabard:SetAlpha(0.95)
+
+    f.raceTabardCap = f.raceEmblemBox:CreateFontString(nil, "OVERLAY")
+    f.raceTabardCap:SetFont(FONT_BODY, 11)
+    f.raceTabardCap:SetPoint("TOP", f.raceTabard, "BOTTOM", 0, -5)
+    f.raceTabardCap:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+
+    -- Zone image for the Settlements sub-tab (left column)
+    f.raceZoneImage = f.detailFrame:CreateTexture(nil, "ARTWORK")
+    f.raceZoneImage:SetSize(230, 130)
+    f.raceZoneImage:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 35, -160)
+    f.raceZoneImage:SetAlpha(0.9)
+    f.raceZoneImage:Hide()
+
+    f.raceZoneBorder = CreateFrame("Frame", nil, f.detailFrame, "BackdropTemplate")
+    f.raceZoneBorder:SetPoint("TOPLEFT", f.raceZoneImage, "TOPLEFT", -2, 2)
+    f.raceZoneBorder:SetPoint("BOTTOMRIGHT", f.raceZoneImage, "BOTTOMRIGHT", 2, -2)
+    f.raceZoneBorder:SetBackdrop({
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        edgeSize = 12,
+    })
+    f.raceZoneBorder:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.8)
+    f.raceZoneBorder:Hide()
 
     f.detailTitle = f.detailFrame:CreateFontString(nil, "OVERLAY")
     IMAGO.ApplyTextStyle(f.detailTitle, "DISPLAY")
@@ -633,30 +719,60 @@ function IMAGO.Chronicle.CreateFrame()
     f.tabLore = CreateTab(f.detailFrame, IMAGO.L["TAB_DETAIL_LORE"], 0)
     f.tabTime = CreateTab(f.detailFrame, IMAGO.L["TAB_DETAIL_TIMELINE"], 100)
 
-    -- Faction detail sub-tabs (Factions tab, index 3)
-    f.factionTabKeys = {"history", "subgroups", "members", "settlements", "culture"}
-    local factionTabLocale = {
-        history     = "FAC_TAB_HISTORY",
-        subgroups   = "FAC_TAB_SUBGROUPS",
-        members     = "FAC_TAB_MEMBERS",
-        settlements = "FAC_TAB_SETTLEMENTS",
-        culture     = "FAC_TAB_CULTURE",
+    -- Race detail sub-tabs (Races tab, index 3)
+    f.raceTabKeys = {"history", "groups", "figures", "settlements", "culture"}
+    local raceTabLocale = {
+        history     = "RACE_TAB_HISTORY",
+        groups      = "RACE_TAB_GROUPS",
+        figures     = "RACE_TAB_FIGURES",
+        settlements = "RACE_TAB_SETTLEMENTS",
+        culture     = "RACE_TAB_CULTURE",
     }
-    f.factionTabs = {}
-    for i, key in ipairs(f.factionTabKeys) do
-        local tab = CreateTab(f.detailFrame, IMAGO.L[factionTabLocale[key]] or key, (i - 1) * 108, 104)
+    f.raceTabs = {}
+    for i, key in ipairs(f.raceTabKeys) do
+        local tab = CreateTab(f.detailFrame, IMAGO.L[raceTabLocale[key]] or key, (i - 1) * 108, 104)
         tab.text:SetFont(FONT_BODY, 12, "OUTLINE")
-        tab.factionTabKey = key
+        tab.raceTabKey = key
         tab:SetScript("OnClick", function()
-            f.activeFactionTab = key
-            if f.selectedFaction then
-                IMAGO.Chronicle.RenderFactionTab(key)
+            f.activeRaceTab = key
+            if f.selectedRace then
+                IMAGO.Chronicle.RenderRaceTab(key)
             end
             if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
         end)
         tab:Hide()
-        f.factionTabs[i] = tab
+        f.raceTabs[i] = tab
     end
+
+    -- Class sub-tabs (skeleton)
+    f.classTabKeys = { "overview", "mechanics", "talents", "trainers" }
+    local classTabLocale = {
+        overview  = "CLASS_TAB_OVERVIEW",
+        mechanics = "CLASS_TAB_MECHANICS",
+        talents   = "CLASS_TAB_TALENTS",
+        trainers  = "CLASS_TAB_TRAINERS",
+    }
+    f.classTabs = {}
+    for i, key in ipairs(f.classTabKeys) do
+        local tab = CreateTab(f.detailFrame, IMAGO.L[classTabLocale[key]] or key, (i - 1) * 108, 104)
+        tab.text:SetFont(FONT_BODY, 12, "OUTLINE")
+        tab.classTabKey = key
+        tab:SetScript("OnClick", function()
+            f.activeClassTab = key
+            if f.selectedClass then
+                IMAGO.Chronicle.RenderClassTab(key)
+            end
+            if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+        end)
+        tab:Hide()
+        f.classTabs[i] = tab
+    end
+
+    -- Class icon (left column, skeleton visual)
+    f.classIcon = f.detailFrame:CreateTexture(nil, "ARTWORK")
+    f.classIcon:SetSize(64, 64)
+    f.classIcon:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 35, -160)
+    f.classIcon:Hide()
 
     f.infoScroll = CreateFrame("ScrollFrame", "IMAGOChronicleInfoScroll", f.detailFrame, "UIPanelScrollFrameTemplate")
     f.infoScroll:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 310, -115)
@@ -720,13 +836,6 @@ function IMAGO.Chronicle.CreateFrame()
         IMAGO.UpdateScrollBarVisibility(f.infoScroll)
     end
 
-    f.detailModel = CreateFrame("PlayerModel", nil, f.detailFrame)
-    f.detailModel:SetSize(280, 400)
-    f.detailModel:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 10, -80)
-    -- No border - the model floats freely
-
-    -- Animation switcher buttons
-    f.detailModel.animButtons = {}
     local anims = {
         {id=3, label="St", name="Static"},
         {id=5, label="Ru", name="Run"},
@@ -734,104 +843,116 @@ function IMAGO.Chronicle.CreateFrame()
         {id=18, label="At", name="Attack"}
     }
 
-    local function UpdateAnimButtons(activeId)
-        for _, btn in ipairs(f.detailModel.animButtons) do
-            if btn.animId == activeId then
-                btn.bg:SetVertexColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.4)
-            else
-                btn.bg:SetVertexColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], 0.6)
+    -- Full interaction setup for a PlayerModel: anim buttons, zoom, rotate, pan.
+    -- Applied to detailModel immediately and to detailModel2 on first use.
+    local function ApplyModelUI(mdl)
+        mdl.animButtons = {}
+        local function UpdateAnimButtons(activeId)
+            for _, btn in ipairs(mdl.animButtons) do
+                if btn.animId == activeId then
+                    btn.bg:SetVertexColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.4)
+                else
+                    btn.bg:SetVertexColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], 0.6)
+                end
             end
         end
-    end
 
-    for i, anim in ipairs(anims) do
-        local btn = CreateFrame("Button", nil, f.detailModel)
-        btn:SetSize(20, 18)
-        btn:SetPoint("BOTTOMLEFT", 8 + (i-1)*24, 8)
-        btn.animId = anim.id
+        for i, anim in ipairs(anims) do
+            local btn = CreateFrame("Button", nil, mdl)
+            btn:SetSize(20, 18)
+            btn:SetPoint("BOTTOMLEFT", 8 + (i-1)*24, 8)
+            btn.animId = anim.id
 
-        -- Background
-        btn.bg = btn:CreateTexture(nil, "BACKGROUND")
-        btn.bg:SetAllPoints()
-        btn.bg:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+            -- Background
+            btn.bg = btn:CreateTexture(nil, "BACKGROUND")
+            btn.bg:SetAllPoints()
+            btn.bg:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
 
-        -- Text
-        btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-        btn.text:SetPoint("CENTER")
-        btn.text:SetText(anim.label)
-        btn.text:SetTextColor(IMAGO_COLORS.TEXT_SECONDARY[1], IMAGO_COLORS.TEXT_SECONDARY[2], IMAGO_COLORS.TEXT_SECONDARY[3])
-
-        -- Click
-        btn:SetScript("OnClick", function()
-            f.detailModel:SetAnimation(anim.id)
-            f.detailModel.currentAnim = anim.id
-            UpdateAnimButtons(anim.id)
-        end)
-
-        -- Hover
-        btn:SetScript("OnEnter", function()
-            btn.text:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
-        end)
-        btn:SetScript("OnLeave", function()
+            -- Text
+            btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+            btn.text:SetPoint("CENTER")
+            btn.text:SetText(anim.label)
             btn.text:SetTextColor(IMAGO_COLORS.TEXT_SECONDARY[1], IMAGO_COLORS.TEXT_SECONDARY[2], IMAGO_COLORS.TEXT_SECONDARY[3])
+
+            -- Click
+            btn:SetScript("OnClick", function()
+                mdl:SetAnimation(anim.id)
+                mdl.currentAnim = anim.id
+                UpdateAnimButtons(anim.id)
+            end)
+
+            -- Hover
+            btn:SetScript("OnEnter", function()
+                btn.text:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+            end)
+            btn:SetScript("OnLeave", function()
+                btn.text:SetTextColor(IMAGO_COLORS.TEXT_SECONDARY[1], IMAGO_COLORS.TEXT_SECONDARY[2], IMAGO_COLORS.TEXT_SECONDARY[3])
+            end)
+
+            table.insert(mdl.animButtons, btn)
+        end
+
+        mdl.UpdateAnimButtons = UpdateAnimButtons
+
+        -- Start OnShow animation
+        mdl:SetScript("OnShow", function(self)
+            self:SetAnimation(0) -- Idle as default
+            if self.UpdateAnimButtons then
+                self.UpdateAnimButtons(0)
+            end
         end)
 
-        table.insert(f.detailModel.animButtons, btn)
+        mdl:EnableMouse(true)
+        mdl:EnableMouseWheel(true)
+        mdl:SetScript("OnMouseWheel", function(self, delta)
+            local zoom = self.zoomLevel or 1.0
+            zoom = zoom - (delta * 0.15)
+            if zoom < 0.2 then zoom = 0.2 end
+            if zoom > 3.0 then zoom = 3.0 end
+            self:SetCamDistanceScale(zoom)
+            self.zoomLevel = zoom
+        end)
+        mdl:SetScript("OnMouseDown", function(self, button)
+            if button == "LeftButton" then
+                self.isRotating = true
+                self.lastX, self.lastY = GetCursorPosition()
+            elseif button == "RightButton" then
+                self.isPanning = true
+                self.lastX, self.lastY = GetCursorPosition()
+            end
+        end)
+        mdl:SetScript("OnMouseUp", function(self, button)
+            if button == "LeftButton" then self.isRotating = false end
+            if button == "RightButton" then self.isPanning = false end
+        end)
+        mdl:SetScript("OnHide", function(self)
+            self.isRotating = false
+            self.isPanning = false
+        end)
+        mdl:SetScript("OnUpdate", function(self)
+            local x, y = GetCursorPosition()
+            if self.isRotating then
+                local diff = (x - self.lastX) * 0.01
+                self.lastX = x
+                self:SetFacing((self:GetFacing() or 0) + diff)
+            elseif self.isPanning then
+                local diffX = (x - self.lastX) * 0.01
+                local diffY = (y - self.lastY) * 0.01
+                self.lastX = x
+                self.lastY = y
+                self.posY = (self.posY or 0) + diffX
+                self.posZ = (self.posZ or 0) + diffY
+                self:SetPosition(self.posX or 0, self.posY, self.posZ)
+            end
+        end)
     end
 
-    f.detailModel.UpdateAnimButtons = UpdateAnimButtons
-
-    -- Start OnShow animation
-    f.detailModel:SetScript("OnShow", function(self)
-        self:SetAnimation(0) -- Idle as default
-        if self.UpdateAnimButtons then
-            self.UpdateAnimButtons(0)
-        end
-    end)
-    
-    f.detailModel:EnableMouse(true)
-    f.detailModel:EnableMouseWheel(true)
-    f.detailModel:SetScript("OnMouseWheel", function(self, delta)
-        local zoom = self.zoomLevel or 1.0
-        zoom = zoom - (delta * 0.15)
-        if zoom < 0.2 then zoom = 0.2 end
-        if zoom > 3.0 then zoom = 3.0 end
-        self:SetCamDistanceScale(zoom)
-        self.zoomLevel = zoom
-    end)
-    f.detailModel:SetScript("OnMouseDown", function(self, button)
-        if button == "LeftButton" then
-            self.isRotating = true
-            self.lastX, self.lastY = GetCursorPosition()
-        elseif button == "RightButton" then
-            self.isPanning = true
-            self.lastX, self.lastY = GetCursorPosition()
-        end
-    end)
-    f.detailModel:SetScript("OnMouseUp", function(self, button)
-        if button == "LeftButton" then self.isRotating = false end
-        if button == "RightButton" then self.isPanning = false end
-    end)
-    f.detailModel:SetScript("OnHide", function(self)
-        self.isRotating = false
-        self.isPanning = false
-    end)
-    f.detailModel:SetScript("OnUpdate", function(self)
-        local x, y = GetCursorPosition()
-        if self.isRotating then
-            local diff = (x - self.lastX) * 0.01
-            self.lastX = x
-            self:SetFacing((self:GetFacing() or 0) + diff)
-        elseif self.isPanning then
-            local diffX = (x - self.lastX) * 0.01
-            local diffY = (y - self.lastY) * 0.01
-            self.lastX = x
-            self.lastY = y
-            self.posY = (self.posY or 0) + diffX
-            self.posZ = (self.posZ or 0) + diffY
-            self:SetPosition(self.posX or 0, self.posY, self.posZ)
-        end
-    end)
+    f.detailModel = CreateFrame("PlayerModel", nil, f.detailFrame)
+    f.detailModel:SetSize(280, 400)
+    f.detailModel:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 10, -80)
+    -- No border - the model floats freely
+    ApplyModelUI(f.detailModel)
+    f.ApplyModelUI = ApplyModelUI
 
     f.startPage = CreateFrame("Frame", nil, f.detailFrame)
     f.startPage:SetAllPoints()
@@ -1208,8 +1329,8 @@ function IMAGO.Chronicle.CreateFrame()
             IMAGO.Chronicle.OpenToNPCSlug(prev.slug, { skipDiscoveryCinematic = true })
         elseif prev.type == "zone" then
             IMAGO.Chronicle.OpenToZoneMapID(prev.mapID)
-        elseif prev.type == "faction" then
-            IMAGO.Chronicle.OpenToFaction(prev.slug)
+        elseif prev.type == "race" then
+            IMAGO.Chronicle.OpenToRace(prev.slug)
         end
         C_Timer.After(0, function()
             isNavigatingBack = false
@@ -1246,7 +1367,7 @@ function IMAGO.Chronicle.CreateFrame()
     -- NEW: MAIN TABS (BOTTOM TABS) LOCALIZED
     -- ==========================================
     f.numTabs = 5
-    local tabNames = {IMAGO.L["TAB_FATES"], IMAGO.L["TAB_ZONES"], IMAGO.L["TAB_FACTIONS"], IMAGO.L["TAB_INSTANCES"], IMAGO.L["TAB_CREDITS"]}
+    local tabNames = {IMAGO.L["TAB_FATES"], IMAGO.L["TAB_ZONES"], IMAGO.L["TAB_RACES"], IMAGO.L["TAB_CLASSES"], IMAGO.L["TAB_CREDITS"]}
     for i = 1, f.numTabs do
         -- Fallback so a missing/mistimed locale string can never break tab creation
         local name = tabNames[i] or ("Tab " .. i)
@@ -1265,39 +1386,6 @@ function IMAGO.Chronicle.CreateFrame()
     end
 
     -- ==========================================
-    -- NEW: THE "COMING SOON" SCREEN
-    -- ==========================================
-    f.comingSoonPage = CreateFrame("Frame", nil, f)
-    f.comingSoonPage:SetAllPoints()
-    f.comingSoonPage:Hide()
-
-    f.comingSoonPage.bg = f.comingSoonPage:CreateTexture(nil, "BACKGROUND")
-    f.comingSoonPage.bg:SetAllPoints()
-    f.comingSoonPage.bg:SetColorTexture(0.04, 0.04, 0.04, 0.98)
-
-    f.comingSoonPage.icon = f.comingSoonPage:CreateTexture(nil, "ARTWORK")
-    f.comingSoonPage.icon:SetSize(250, 250)
-    f.comingSoonPage.icon:SetPoint("TOP", 0, -100)
-    f.comingSoonPage.icon:SetTexture("Interface\\AddOns\\IMAGO_forever\\media\\Logo.tga")
-    f.comingSoonPage.icon:SetAlpha(0.1)
-    f.comingSoonPage.icon:SetDesaturated(true)
-
-    f.comingSoonPage.title = f.comingSoonPage:CreateFontString(nil, "OVERLAY")
-    f.comingSoonPage.title:SetFont(FONT_TITLE, 36, "OUTLINE")
-    f.comingSoonPage.title:SetPoint("CENTER", 0, -30)
-    f.comingSoonPage.title:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
-    f.comingSoonPage.title:SetShadowColor(0, 0, 0, 1)
-    f.comingSoonPage.title:SetShadowOffset(2, -2)
-
-    f.comingSoonPage.desc = f.comingSoonPage:CreateFontString(nil, "OVERLAY")
-    f.comingSoonPage.desc:SetFont(FONT_BODY, 15)
-    f.comingSoonPage.desc:SetPoint("TOP", f.comingSoonPage.title, "BOTTOM", 0, -20)
-    f.comingSoonPage.desc:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
-    f.comingSoonPage.desc:SetJustifyH("CENTER")
-    f.comingSoonPage.desc:SetSpacing(8)
-
-
-    -- ==========================================
     -- NEW: TAB SWITCHING LOGIC (LOCALIZED)
     -- ==========================================
     function IMAGO.Chronicle.SelectMainTab(index)
@@ -1306,7 +1394,7 @@ function IMAGO.Chronicle.CreateFrame()
         f.activeFilter = "ALL"
         if f.filterBtn then
             f.filterBtn:SetText(index == 3
-                and (IMAGO.L["FILTER_ALL_FACTIONS"] or "All Factions")
+                and (IMAGO.L["FILTER_ALL_RACES"] or "All Races")
                 or  (IMAGO.L["FILTER_ALL"] or "All Echoes"))
         end
         
@@ -1318,6 +1406,7 @@ function IMAGO.Chronicle.CreateFrame()
         if f.tabTime then f.tabTime:Hide() end
         if f.infoScroll then f.infoScroll:Hide() end
         if f.detailModel then f.detailModel:Hide() end
+        if f.detailModel2 then f.detailModel2:Hide() end
         if f.factionIcon then f.factionIcon:Hide() end
         if f.hintPage then f.hintPage:Hide() end
         if f.startPage then f.startPage:Hide() end
@@ -1330,39 +1419,32 @@ function IMAGO.Chronicle.CreateFrame()
         if f.detailSeparator then f.detailSeparator:Hide() end
         if f.creditsPage then f.creditsPage:Hide() end
         if f.creditsHeader then f.creditsHeader:Hide() end
-        if f.factionTabs then for _, t in ipairs(f.factionTabs) do t:Hide() end end
-        if f.factionContainer then f.factionContainer:Hide() end
-        if f.factionEmblem then f.factionEmblem:Hide() end
+        if f.raceTabs then for _, t in ipairs(f.raceTabs) do t:Hide() end end
+        if f.classTabs then for _, t in ipairs(f.classTabs) do t:Hide() end end
+        if f.raceContainer then f.raceContainer:Hide() end
+        if f.raceEmblemBox then f.raceEmblemBox:Hide() end
+        if f.raceZoneImage then f.raceZoneImage:Hide() end
+        if f.raceZoneBorder then f.raceZoneBorder:Hide() end
+        if f.classIcon then f.classIcon:Hide() end
         IMAGO.Chronicle.SetDetailAction(nil)
         if f.filterMenu         then f.filterMenu:Hide()         end
 
-        if index == 1 or index == 2 or index == 3 then
-            f.comingSoonPage:Hide()
-            -- Fates/Zones/Factions: flat list (no expansion picker)
-            f.searchBox:SetShown(index == 1 or index == 3)
+        if index == 1 or index == 2 or index == 3 or index == 4 then
+            -- Fates/Zones/Races/Classes: flat list (no expansion picker)
+            f.searchBox:SetShown(index == 1 or index == 3 or index == 4)
             f.filterBtn:SetShown(index == 1 or index == 3)
             f.sidebar:Show(); f.detailFrame:Show()
             if f.sidebar.zonesHeader then f.sidebar.zonesHeader:SetShown(index == 2) end
-            if f.sidebar.factionsHeader then f.sidebar.factionsHeader:SetShown(index == 3) end
+            if f.sidebar.racesHeader then f.sidebar.racesHeader:SetShown(index == 3) end
+            if f.sidebar.classesHeader then f.sidebar.classesHeader:SetShown(index == 4) end
             IMAGO.Chronicle.UpdateList()
             if f.ShowDashboard then f.ShowDashboard() end
-        elseif index == 4 then
-            -- Hide main UI (for the instances tab)
-            f.searchBox:Hide()
-            f.filterBtn:Hide()
-            f.sidebar:Hide()
-            f.detailFrame:Hide()
-
-            f.comingSoonPage.title:SetText(IMAGO.L["COMING_SOON_INSTANCES_TITLE"])
-            f.comingSoonPage.desc:SetText(IMAGO.L["COMING_SOON_INSTANCES_DESC"])
-            f.comingSoonPage:Show()
         elseif index == 5 then
             -- Credits tab
             f.searchBox:Hide()
             f.filterBtn:Hide()
             f.sidebar:Hide()
             f.detailFrame:Hide()
-            f.comingSoonPage:Hide()
 
             if not f.creditsPage then
                 -- Static header area (not scrollable)
@@ -1533,11 +1615,17 @@ function IMAGO.Chronicle.CreateFrame()
         f.infoScroll:Hide()
         if f.loreSource then f.loreSource:Hide() end
         f.detailModel:Hide()
+
+        if f.detailModel2 then f.detailModel2:Hide() end
         f.hintPage:Hide()
         f.factionIcon:Hide()
-        if f.factionTabs then for _, t in ipairs(f.factionTabs) do t:Hide() end end
-        if f.factionContainer then f.factionContainer:Hide() end
-        if f.factionEmblem then f.factionEmblem:Hide() end
+        if f.raceTabs then for _, t in ipairs(f.raceTabs) do t:Hide() end end
+                if f.classTabs then for _, t in ipairs(f.classTabs) do t:Hide() end end
+                if f.classIcon then f.classIcon:Hide() end
+        if f.raceContainer then f.raceContainer:Hide() end
+        if f.raceEmblemBox then f.raceEmblemBox:Hide() end
+        if f.raceZoneImage then f.raceZoneImage:Hide() end
+        if f.raceZoneBorder then f.raceZoneBorder:Hide() end
         if f.detailImage then f.detailImage:Hide() end
         if f.detailImageBorder then f.detailImageBorder:Hide() end
         if f.detailSeparator then f.detailSeparator:Hide() end
@@ -1766,7 +1854,8 @@ function IMAGO.Chronicle.UpdateList()
     for _, b in pairs(IMAGO.Chronicle.buttons or {}) do b:Hide() end
     for _, h in pairs(IMAGO.Chronicle.headers or {}) do h:Hide() end
     for _, zb in pairs(IMAGO.Chronicle.zoneButtons or {}) do zb:Hide() end
-    for _, fb in pairs(IMAGO.Chronicle.factionButtons or {}) do fb:Hide() end
+    for _, fb in pairs(IMAGO.Chronicle.raceButtons or {}) do fb:Hide() end
+    for _, cb in pairs(IMAGO.Chronicle.classButtons or {}) do cb:Hide() end
     if IMAGO.Chronicle.homeBtn then IMAGO.Chronicle.homeBtn:Hide() end
 
     -- ============================================================
@@ -1775,8 +1864,11 @@ function IMAGO.Chronicle.UpdateList()
     if f.sidebar.zonesHeader then
         f.sidebar.zonesHeader:Hide()
     end
-    if f.sidebar.factionsHeader then
-        f.sidebar.factionsHeader:Hide()
+    if f.sidebar.racesHeader then
+        f.sidebar.racesHeader:Hide()
+    end
+    if f.sidebar.classesHeader then
+        f.sidebar.classesHeader:Hide()
     end
 
     -- ============================================================
@@ -2145,8 +2237,8 @@ function IMAGO.Chronicle.UpdateList()
                                 entry = { type = "npc", slug = f.selectedNPCSlug }
                             elseif f.selectedZoneMapID then
                                 entry = { type = "zone", mapID = f.selectedZoneMapID }
-                            elseif f.selectedFactionSlug then
-                                entry = { type = "faction", slug = f.selectedFactionSlug }
+                            elseif f.selectedRaceSlug then
+                                entry = { type = "race", slug = f.selectedRaceSlug }
                             end
                             if entry then
                                 table.insert(navStack, entry)
@@ -2156,7 +2248,7 @@ function IMAGO.Chronicle.UpdateList()
                             end
                         end
                         f.selectedZoneMapID = nil
-                        f.selectedFactionSlug = nil
+                        f.selectedRaceSlug = nil
 
                         f.selectedNPC = npc.data
                         f.selectedNPCSlug = npc.slug
@@ -2168,9 +2260,13 @@ function IMAGO.Chronicle.UpdateList()
                         
                         if isVisible then
                             f.hintPage:Hide()
-                            if f.factionTabs then for _, t in ipairs(f.factionTabs) do t:Hide() end end
-                            if f.factionContainer then f.factionContainer:Hide() end
-                            if f.factionEmblem then f.factionEmblem:Hide() end
+                            if f.raceTabs then for _, t in ipairs(f.raceTabs) do t:Hide() end end
+                if f.classTabs then for _, t in ipairs(f.classTabs) do t:Hide() end end
+                if f.classIcon then f.classIcon:Hide() end
+                            if f.raceContainer then f.raceContainer:Hide() end
+                            if f.raceEmblemBox then f.raceEmblemBox:Hide() end
+        if f.raceZoneImage then f.raceZoneImage:Hide() end
+        if f.raceZoneBorder then f.raceZoneBorder:Hide() end
 
                             local function OpenLoreTab()
                                 f.detailTitle:Show()
@@ -2280,6 +2376,8 @@ function IMAGO.Chronicle.UpdateList()
                                 f.tabTime:Hide()
                                 f.infoScroll:Hide()
                                 f.detailModel:Hide()
+
+                                if f.detailModel2 then f.detailModel2:Hide() end
                                 f.factionIcon:Hide()
                                 IMAGO.Chronicle.ShowCinematic(npc.data, OpenLoreTab)
                             else
@@ -2290,6 +2388,8 @@ function IMAGO.Chronicle.UpdateList()
                             f.tabTime:Hide()
                             f.infoScroll:Hide()
                             f.detailModel:Hide()
+
+                            if f.detailModel2 then f.detailModel2:Hide() end
                             f.factionIcon:Hide()
                             f.detailTitle:Show()
                             f.detailLineLeft:Show()
@@ -2470,8 +2570,8 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "npc", slug = f.selectedNPCSlug }
                     elseif f.selectedZoneMapID and f.selectedZoneMapID ~= mapID then
                         entry = { type = "zone", mapID = f.selectedZoneMapID }
-                    elseif f.selectedFactionSlug then
-                        entry = { type = "faction", slug = f.selectedFactionSlug }
+                    elseif f.selectedRaceSlug then
+                        entry = { type = "race", slug = f.selectedRaceSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -2479,7 +2579,7 @@ function IMAGO.Chronicle.UpdateList()
                     end
                 end
                 f.selectedNPCSlug = nil
-                f.selectedFactionSlug = nil
+                f.selectedRaceSlug = nil
                 f.selectedZoneMapID = mapID
 
                 f.startPage:Hide()
@@ -2487,10 +2587,16 @@ function IMAGO.Chronicle.UpdateList()
                 f.tabLore:Hide()
                 f.tabTime:Hide()
                 f.detailModel:Hide()
+
+                if f.detailModel2 then f.detailModel2:Hide() end
                 f.factionIcon:Hide()
-                if f.factionTabs then for _, t in ipairs(f.factionTabs) do t:Hide() end end
-                if f.factionContainer then f.factionContainer:Hide() end
-                if f.factionEmblem then f.factionEmblem:Hide() end
+                if f.raceTabs then for _, t in ipairs(f.raceTabs) do t:Hide() end end
+                if f.classTabs then for _, t in ipairs(f.classTabs) do t:Hide() end end
+                if f.classIcon then f.classIcon:Hide() end
+                if f.raceContainer then f.raceContainer:Hide() end
+                if f.raceEmblemBox then f.raceEmblemBox:Hide() end
+        if f.raceZoneImage then f.raceZoneImage:Hide() end
+        if f.raceZoneBorder then f.raceZoneBorder:Hide() end
                 if f.timelineContainer then f.timelineContainer:Hide() end
 
                 f.detailTitle:Show()
@@ -2594,8 +2700,8 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "npc", slug = f.selectedNPCSlug }
                     elseif f.selectedZoneMapID and f.selectedZoneMapID ~= mapID then
                         entry = { type = "zone", mapID = f.selectedZoneMapID }
-                    elseif f.selectedFactionSlug then
-                        entry = { type = "faction", slug = f.selectedFactionSlug }
+                    elseif f.selectedRaceSlug then
+                        entry = { type = "race", slug = f.selectedRaceSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -2603,7 +2709,7 @@ function IMAGO.Chronicle.UpdateList()
                     end
                 end
                 f.selectedNPCSlug = nil
-                f.selectedFactionSlug = nil
+                f.selectedRaceSlug = nil
                 f.selectedZoneMapID = mapID
 
                 f.startPage:Hide()
@@ -2611,10 +2717,16 @@ function IMAGO.Chronicle.UpdateList()
                 f.tabLore:Hide()
                 f.tabTime:Hide()
                 f.detailModel:Hide()
+
+                if f.detailModel2 then f.detailModel2:Hide() end
                 f.factionIcon:Hide()
-                if f.factionTabs then for _, t in ipairs(f.factionTabs) do t:Hide() end end
-                if f.factionContainer then f.factionContainer:Hide() end
-                if f.factionEmblem then f.factionEmblem:Hide() end
+                if f.raceTabs then for _, t in ipairs(f.raceTabs) do t:Hide() end end
+                if f.classTabs then for _, t in ipairs(f.classTabs) do t:Hide() end end
+                if f.classIcon then f.classIcon:Hide() end
+                if f.raceContainer then f.raceContainer:Hide() end
+                if f.raceEmblemBox then f.raceEmblemBox:Hide() end
+        if f.raceZoneImage then f.raceZoneImage:Hide() end
+        if f.raceZoneBorder then f.raceZoneBorder:Hide() end
                 if f.timelineContainer then f.timelineContainer:Hide() end
 
                 f.detailLineLeft:Hide()
@@ -2677,36 +2789,36 @@ function IMAGO.Chronicle.UpdateList()
     IMAGO.UpdateScrollBarVisibility(f.scrollFrame)
 
     -- ============================================================
-    -- TAB 3: FACTIONS
+    -- TAB 3: RACES
     -- ============================================================
     elseif activeTab == 3 then
-        if f.sidebar.factionsHeader then f.sidebar.factionsHeader:Show() end
-        IMAGOSaved.seenFactions = IMAGOSaved.seenFactions or {}
-        IMAGOSaved.viewedFactions = IMAGOSaved.viewedFactions or {}
-        IMAGOSaved.manualFactionUnlocks = IMAGOSaved.manualFactionUnlocks or {}
+        if f.sidebar.racesHeader then f.sidebar.racesHeader:Show() end
+        IMAGOSaved.seenRaces = IMAGOSaved.seenRaces or {}
+        IMAGOSaved.viewedRaces = IMAGOSaved.viewedRaces or {}
+        IMAGOSaved.manualRaceUnlocks = IMAGOSaved.manualRaceUnlocks or {}
 
-        local totalFac, seenFac = 0, 0
-        for slug, _ in pairs(IMAGOdb.factions or {}) do
-            totalFac = totalFac + 1
-            if IMAGOSaved.seenFactions[slug] then seenFac = seenFac + 1 end
+        local totalRaces, seenRaces = 0, 0
+        for slug, _ in pairs(IMAGOdb.races or {}) do
+            totalRaces = totalRaces + 1
+            if IMAGOSaved.seenRaces[slug] then seenRaces = seenRaces + 1 end
         end
 
-        local perc = totalFac > 0 and (seenFac / totalFac) * 100 or 0
+        local perc = totalRaces > 0 and (seenRaces / totalRaces) * 100 or 0
 
-        local rankTitle = IMAGO.Chronicle.factionRanks and IMAGO.Chronicle.factionRanks[1] and IMAGO.Chronicle.factionRanks[1].title or ""
-        for _, r in ipairs(IMAGO.Chronicle.factionRanks or {}) do
+        local rankTitle = IMAGO.Chronicle.raceRanks and IMAGO.Chronicle.raceRanks[1] and IMAGO.Chronicle.raceRanks[1].title or ""
+        for _, r in ipairs(IMAGO.Chronicle.raceRanks or {}) do
             if perc >= r.perc then rankTitle = r.title end
         end
 
-        IMAGO.UpdateProgressFooter(f.footer, perc, 100, rankTitle, string.format(IMAGO.L["FOOTER_FACTIONS_PROGRESS"] or "%d / %d Factions documented (%d%%)", seenFac, totalFac, math.floor(perc)))
+        IMAGO.UpdateProgressFooter(f.footer, perc, 100, rankTitle, string.format(IMAGO.L["FOOTER_RACES_PROGRESS"] or "%d / %d Races documented (%d%%)", seenRaces, totalRaces, math.floor(perc)))
 
-        f.startPage.rankLabel:SetText(IMAGO.L["STARTPAGE_FACTIONS_RANK"] or "FACTION ARCHIVES")
+        f.startPage.rankLabel:SetText(IMAGO.L["STARTPAGE_RACES_RANK"] or "RACE ARCHIVES")
         f.startPage.rankName:SetText(rankTitle)
         f.startPage.completedLabel:SetText(IMAGO.L["STARTPAGE_COMPLETED"])
-        f.startPage.nextLabel:SetText(IMAGO.L["STARTPAGE_FACTIONS_NEXT"] or "UPCOMING ARCHIVES:")
+        f.startPage.nextLabel:SetText(IMAGO.L["STARTPAGE_RACES_NEXT"] or "UPCOMING ARCHIVES:")
 
         local completedRanksStr, nextRanksStr = "", ""
-        for _, r in ipairs(IMAGO.Chronicle.factionRanks or {}) do
+        for _, r in ipairs(IMAGO.Chronicle.raceRanks or {}) do
             local rTitle = r.title or ""
             if r.perc <= perc then
                 completedRanksStr = completedRanksStr .. string.format("|c%s%s (%s %d%%)|r\n", IMAGO_HEX.GOLD, rTitle, IMAGO.L["WORD_AT"], r.perc)
@@ -2721,12 +2833,12 @@ function IMAGO.Chronicle.UpdateList()
         local searchString = f.searchBox:GetText():lower()
         local activeFilter = f.activeFilter or "ALL"
 
-        local sortedFactions = {}
-        for slug, data in pairs(IMAGOdb.factions or {}) do
+        local sortedRaces = {}
+        for slug, data in pairs(IMAGOdb.races or {}) do
             local name = data.name or slug
-            local isSeen = IMAGOSaved.seenFactions[slug]
+            local isSeen = IMAGOSaved.seenRaces[slug]
             local isEncyclopedia = IMAGOSaved.encyclopediaMode
-            local isManual = IMAGOSaved.manualFactionUnlocks[slug]
+            local isManual = IMAGOSaved.manualRaceUnlocks[slug]
             local isVisible = isSeen or isEncyclopedia or isManual
 
             local matchesSearch = true
@@ -2741,22 +2853,26 @@ function IMAGO.Chronicle.UpdateList()
 
             local matchesFilter = true
             if activeFilter ~= "ALL" and not activeFilter:find("CAT_") then
-                if data.alignment ~= activeFilter then matchesFilter = false end
+                if data.alignment == "Both" then
+                    if activeFilter == "Neutral" then matchesFilter = false end
+                elseif data.alignment ~= activeFilter then
+                    matchesFilter = false
+                end
             end
 
             if matchesSearch and matchesFilter then
-                table.insert(sortedFactions, {slug = slug, data = data, isVisible = isVisible, isSeen = isSeen, isManual = isManual})
+                table.insert(sortedRaces, {slug = slug, data = data, isVisible = isVisible, isSeen = isSeen, isManual = isManual})
             end
         end
-        table.sort(sortedFactions, function(a, b)
+        table.sort(sortedRaces, function(a, b)
             if a.isVisible ~= b.isVisible then return a.isVisible end
             return (a.data.name or a.slug) < (b.data.name or b.slug)
         end)
 
-        IMAGO.Chronicle.factionButtons = IMAGO.Chronicle.factionButtons or {}
-        local fIdx = 1
-        for _, fac in ipairs(sortedFactions) do
-            local btn = IMAGO.Chronicle.factionButtons[fIdx]
+        IMAGO.Chronicle.raceButtons = IMAGO.Chronicle.raceButtons or {}
+        local rIdx = 1
+        for _, race in ipairs(sortedRaces) do
+            local btn = IMAGO.Chronicle.raceButtons[rIdx]
             if not btn then
                 btn = CreateFrame("Button", nil, f.content)
                 btn:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, 35)
@@ -2798,37 +2914,53 @@ function IMAGO.Chronicle.UpdateList()
                     GameTooltip:Hide()
                 end)
 
-                IMAGO.Chronicle.factionButtons[fIdx] = btn
+                IMAGO.Chronicle.raceButtons[rIdx] = btn
             end
 
             btn:SetPoint("TOPLEFT", f.content, "TOPLEFT", 0, -yOffset)
-            btn.factionSlug = fac.slug
+            btn.raceSlug = race.slug
             btn._listScrollY = yOffset
-            btn.isSeen = fac.isSeen
-            btn.isManual = fac.isManual
+            btn.isSeen = race.isSeen
+            btn.isManual = race.isManual
             btn.isEncyclopedia = IMAGOSaved.encyclopediaMode
-            btn.isVisible = fac.isVisible
-            btn._zebra = (fIdx % 2 == 0)
+            btn.isVisible = race.isVisible
+            btn._zebra = (rIdx % 2 == 0)
             btn.bg:SetColorTexture(1, 1, 1, (btn._zebra and 0.03) or 0)
 
-            local facData = fac.data
-            local displayName = fac.isVisible and (facData.name or fac.slug) or GetCrypticName(facData.name or fac.slug)
+            local raceData = race.data
+            local displayName = race.isVisible and (raceData.name or race.slug) or GetCrypticName(raceData.name or race.slug)
 
-            local crest = FACTION_ALIGN_ICONS[facData.alignment]
-            if crest and fac.isVisible then
+            local isDual = (raceData.alignment == "Both")
+            local crest = RACE_ALIGN_ICONS[isDual and "Alliance" or raceData.alignment]
+            if crest then
+                if isDual then
+                    if not btn.crest2 then
+                        btn.crest2 = btn:CreateTexture(nil, "ARTWORK")
+                        btn.crest2:SetSize(14, 14)
+                        btn.crest2:SetPoint("LEFT", btn, "LEFT", 21, 0)
+                    end
+                    btn.crest:SetSize(14, 14)
+                    btn.crest:ClearAllPoints()
+                    btn.crest:SetPoint("LEFT", btn, "LEFT", 5, 0)
+                    btn.crest2:SetTexture(RACE_ALIGN_ICONS.Horde)
+                    btn.crest2:SetDesaturated(not race.isVisible)
+                    btn.crest2:Show()
+                else
+                    if btn.crest2 then btn.crest2:Hide() end
+                    btn.crest:SetSize(20, 20)
+                    btn.crest:ClearAllPoints()
+                    btn.crest:SetPoint("LEFT", btn, "LEFT", 8, 0)
+                end
                 btn.crest:SetTexture(crest)
-                btn.crest:SetDesaturated(false)
-                btn.crest:Show()
-            elseif crest then
-                btn.crest:SetTexture(crest)
-                btn.crest:SetDesaturated(true)
+                btn.crest:SetDesaturated(not race.isVisible)
                 btn.crest:Show()
             else
                 btn.crest:Hide()
+                if btn.crest2 then btn.crest2:Hide() end
             end
 
-            if fac.isVisible then
-                local newMark = facData.isNew and (" |c" .. IMAGO_HEX.GOLD_BRIGHT .. "✦|r") or ""
+            if race.isVisible then
+                                local newMark = raceData.isNew and (" |TInterface\\TARGETINGFRAME\\UI-RaidTargetingIcon_1:14:14|t") or ""
                 btn.t:SetText(displayName .. newMark)
                 btn.t:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
             else
@@ -2836,14 +2968,14 @@ function IMAGO.Chronicle.UpdateList()
                 btn.t:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
             end
 
-            local hasViewed = IMAGOSaved.viewedFactions[fac.slug]
-            if fac.isSeen and not hasViewed and not btn.isEncyclopedia then
+            local hasViewed = IMAGOSaved.viewedRaces[race.slug]
+            if race.isSeen and not hasViewed and not btn.isEncyclopedia then
                 btn.newTag:Show()
             else
                 btn.newTag:Hide()
             end
 
-            if f.selectedFactionSlug == fac.slug then
+            if f.selectedRaceSlug == race.slug then
                 btn.activeBar:Show()
                 btn.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
             else
@@ -2853,7 +2985,7 @@ function IMAGO.Chronicle.UpdateList()
             btn:SetScript("OnClick", function(self)
                 if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
 
-                for _, fb in pairs(IMAGO.Chronicle.factionButtons or {}) do
+                for _, fb in pairs(IMAGO.Chronicle.raceButtons or {}) do
                     if fb ~= self then
                         if fb.activeBar then fb.activeBar:Hide() end
                     end
@@ -2866,8 +2998,8 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "npc", slug = f.selectedNPCSlug }
                     elseif f.selectedZoneMapID then
                         entry = { type = "zone", mapID = f.selectedZoneMapID }
-                    elseif f.selectedFactionSlug and f.selectedFactionSlug ~= self.factionSlug then
-                        entry = { type = "faction", slug = f.selectedFactionSlug }
+                    elseif f.selectedRaceSlug and f.selectedRaceSlug ~= self.raceSlug then
+                        entry = { type = "race", slug = f.selectedRaceSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -2876,30 +3008,30 @@ function IMAGO.Chronicle.UpdateList()
                 end
                 f.selectedNPCSlug = nil
                 f.selectedZoneMapID = nil
-                f.selectedFaction = self._facData
-                f.selectedFactionSlug = self.factionSlug
-                f.activeFactionTab = f.activeFactionTab or "history"
+                f.selectedRace = self._raceData
+                f.selectedRaceSlug = self.raceSlug
+                f.activeRaceTab = f.activeRaceTab or "history"
 
-                IMAGOSaved.viewedFactions[self.factionSlug] = true
+                IMAGOSaved.viewedRaces[self.raceSlug] = true
                 self.newTag:Hide()
 
-                IMAGO.Chronicle.RenderFaction(self.factionSlug, self._facData, self.isVisible)
+                IMAGO.Chronicle.RenderRace(self.raceSlug, self._raceData, self.isVisible)
             end)
 
-            btn._facData = facData
+            btn._raceData = raceData
 
             btn:SetScript("OnMouseUp", function(self, mouseBtn)
                 if mouseBtn == "RightButton" and not self.isSeen and not self.isEncyclopedia then
                     if self.isManual then
-                        IMAGOSaved.manualFactionUnlocks[self.factionSlug] = nil
+                        IMAGOSaved.manualRaceUnlocks[self.raceSlug] = nil
                         IMAGO.Chronicle.UpdateList()
                     else
                         f.ShowConfirm(
                             IMAGO.L["CONFIRM_UNLOCK_TITLE"],
                             IMAGO.L["CONFIRM_UNLOCK_DESC"],
                             function()
-                                IMAGOSaved.manualFactionUnlocks = IMAGOSaved.manualFactionUnlocks or {}
-                                IMAGOSaved.manualFactionUnlocks[self.factionSlug] = true
+                                IMAGOSaved.manualRaceUnlocks = IMAGOSaved.manualRaceUnlocks or {}
+                                IMAGOSaved.manualRaceUnlocks[self.raceSlug] = true
                                 IMAGO.Chronicle.UpdateList()
                             end
                         )
@@ -2909,11 +3041,147 @@ function IMAGO.Chronicle.UpdateList()
 
             btn:Show()
             yOffset = yOffset + 35
-            fIdx = fIdx + 1
+            rIdx = rIdx + 1
         end
 
-        for i = fIdx, #IMAGO.Chronicle.factionButtons do
-            IMAGO.Chronicle.factionButtons[i]:Hide()
+        for i = rIdx, #IMAGO.Chronicle.raceButtons do
+            IMAGO.Chronicle.raceButtons[i]:Hide()
+        end
+
+        f.content:SetHeight(math.max(1, yOffset))
+        IMAGO.UpdateScrollBarVisibility(f.scrollFrame)
+
+    -- ============================================================
+    -- TAB 4: CLASSES (skeleton — all visible, placeholder content)
+    -- ============================================================
+    elseif activeTab == 4 then
+        if f.sidebar.classesHeader then f.sidebar.classesHeader:Show() end
+
+        local totalClasses = 0
+        for _ in pairs(IMAGOdb.classes or {}) do totalClasses = totalClasses + 1 end
+
+        IMAGO.UpdateProgressFooter(f.footer, 0, 100, "", string.format(IMAGO.L["FOOTER_CLASSES_PROGRESS"] or "%d Classes", totalClasses))
+
+        f.startPage.rankLabel:SetText(IMAGO.L["STARTPAGE_CLASSES_RANK"] or "CLASS ARCHIVES")
+        f.startPage.rankName:SetText("")
+        f.startPage.completedLabel:SetText(IMAGO.L["STARTPAGE_COMPLETED"])
+        f.startPage.nextLabel:SetText("")
+        f.startPage.completedMilestones:SetText("")
+        f.startPage.milestones:SetText("")
+
+        local searchString = f.searchBox:GetText():lower()
+
+        local classOrder = {"warrior", "paladin", "hunter", "rogue", "priest", "shaman", "mage", "warlock", "druid"}
+        local sortedClasses = {}
+        for _, slug in ipairs(classOrder) do
+            local data = IMAGOdb.classes and IMAGOdb.classes[slug]
+            if data then
+                local name = data.name or slug
+                if searchString == "" or name:lower():find(searchString) then
+                    table.insert(sortedClasses, {slug = slug, data = data})
+                end
+            end
+        end
+
+        IMAGO.Chronicle.classButtons = IMAGO.Chronicle.classButtons or {}
+        local cIdx = 1
+        for _, cls in ipairs(sortedClasses) do
+            local btn = IMAGO.Chronicle.classButtons[cIdx]
+            if not btn then
+                btn = CreateFrame("Button", nil, f.content)
+                btn:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, 35)
+
+                btn.bg = btn:CreateTexture(nil, "BACKGROUND")
+                btn.bg:SetAllPoints()
+
+                btn.activeBar = btn:CreateTexture(nil, "OVERLAY")
+                btn.activeBar:SetWidth(2)
+                btn.activeBar:SetPoint("TOPLEFT",    btn, "TOPLEFT",    0, -3)
+                btn.activeBar:SetPoint("BOTTOMLEFT", btn, "BOTTOMLEFT", 0,  3)
+                btn.activeBar:SetColorTexture(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+                btn.activeBar:Hide()
+
+                local hl = btn:CreateTexture(nil, "HIGHLIGHT")
+                hl:SetAllPoints()
+                hl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.2)
+
+                btn.icon = btn:CreateTexture(nil, "ARTWORK")
+                btn.icon:SetSize(20, 20)
+                btn.icon:SetPoint("LEFT", btn, "LEFT", 8, 0)
+
+                btn.t = btn:CreateFontString(nil, "OVERLAY")
+                IMAGO.ApplyTextStyle(btn.t, "NAV_ITEM")
+                btn.t:SetPoint("LEFT", btn, "LEFT", 34, 0)
+                btn.t:SetPoint("RIGHT", btn, "RIGHT", -10, 0)
+                btn.t:SetJustifyH("LEFT")
+                btn.t:SetWordWrap(false)
+
+                btn:SetScript("OnEnter", function(self)
+                    IMAGO.ShowTooltipIfTruncated(self, self.t)
+                end)
+                btn:SetScript("OnLeave", function()
+                    GameTooltip:Hide()
+                end)
+
+                IMAGO.Chronicle.classButtons[cIdx] = btn
+            end
+
+            btn:SetPoint("TOPLEFT", f.content, "TOPLEFT", 0, -yOffset)
+            btn.classSlug = cls.slug
+            btn._classData = cls.data
+            btn._zebra = (cIdx % 2 == 0)
+            btn.bg:SetColorTexture(1, 1, 1, (btn._zebra and 0.03) or 0)
+
+            local coords = CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[cls.data.classFile]
+            if coords then
+                btn.icon:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES")
+                btn.icon:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
+                btn.icon:Show()
+            else
+                btn.icon:Hide()
+            end
+
+            local classColor = RAID_CLASS_COLORS and RAID_CLASS_COLORS[cls.data.classFile]
+            btn.t:SetText(cls.data.name or cls.slug)
+            if classColor then
+                btn.t:SetTextColor(classColor.r, classColor.g, classColor.b)
+            else
+                btn.t:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
+            end
+
+            if f.selectedClassSlug == cls.slug then
+                btn.activeBar:Show()
+                btn.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+            else
+                btn.activeBar:Hide()
+            end
+
+            btn:SetScript("OnClick", function(self)
+                if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+
+                for _, fb in pairs(IMAGO.Chronicle.classButtons or {}) do
+                    if fb ~= self and fb.activeBar then fb.activeBar:Hide() end
+                end
+                self.activeBar:Show()
+
+                f.selectedNPCSlug = nil
+                f.selectedZoneMapID = nil
+                f.selectedRace = nil
+                f.selectedRaceSlug = nil
+                f.selectedClass = self._classData
+                f.selectedClassSlug = self.classSlug
+                f.activeClassTab = f.activeClassTab or "overview"
+
+                IMAGO.Chronicle.RenderClass(self.classSlug, self._classData)
+            end)
+
+            btn:Show()
+            yOffset = yOffset + 35
+            cIdx = cIdx + 1
+        end
+
+        for i = cIdx, #IMAGO.Chronicle.classButtons do
+            IMAGO.Chronicle.classButtons[i]:Hide()
         end
 
         f.content:SetHeight(math.max(1, yOffset))
@@ -2922,11 +3190,11 @@ function IMAGO.Chronicle.UpdateList()
 end
 
 -- ============================================================
--- FACTION DETAIL RENDERER (TAB 3)
+-- RACE DETAIL RENDERER (TAB 3)
 -- ============================================================
 
---- Renders the detail page for a faction into the detailFrame.
-function IMAGO.Chronicle.RenderFaction(slug, data, isVisible)
+--- Renders the detail page for a race into the detailFrame.
+function IMAGO.Chronicle.RenderRace(slug, data, isVisible)
     local f = IMAGO.Chronicle.frame
     if not f then return end
 
@@ -2943,11 +3211,15 @@ function IMAGO.Chronicle.RenderFaction(slug, data, isVisible)
     IMAGO.Chronicle.SetDetailAction(nil)
 
     if not isVisible then
-        -- Undiscovered faction: cryptic title + hint page
-        for _, t in ipairs(f.factionTabs or {}) do t:Hide() end
-        if f.factionContainer then f.factionContainer:Hide() end
-        f.factionEmblem:Hide()
+        -- Undiscovered race: cryptic title + hint page
+        for _, t in ipairs(f.raceTabs or {}) do t:Hide() end
+        if f.raceContainer then f.raceContainer:Hide() end
+        if f.raceEmblemBox then f.raceEmblemBox:Hide() end
+        if f.raceZoneImage then f.raceZoneImage:Hide() end
+        if f.raceZoneBorder then f.raceZoneBorder:Hide() end
         f.detailModel:Hide()
+
+        if f.detailModel2 then f.detailModel2:Hide() end
         f.factionIcon:Hide()
         f.infoScroll:Hide()
 
@@ -2959,10 +3231,10 @@ function IMAGO.Chronicle.RenderFaction(slug, data, isVisible)
 
         f.hintPage:Show()
         f.hintPage.aura:Show()
-        f.hintPage.warning:SetText(IMAGO.L["HINT_FACTION_LOCKED"] or "ALLEGIANCE UNKNOWN")
+        f.hintPage.warning:SetText(IMAGO.L["HINT_RACE_LOCKED"] or "PEOPLE UNKNOWN")
         f.hintPage.icon:SetTexture("Interface\\AddOns\\IMAGO_forever\\media\\undiscovered.tga")
         f.hintPage.icon:SetTexCoord(0, 1, 0, 1)
-        f.hintPage.desc:SetText(IMAGO.L["HINT_FACTION_LOCKED_DESC"] or "Meet a member of this faction in the world to reveal its chronicle entry.")
+        f.hintPage.desc:SetText(IMAGO.L["HINT_RACE_LOCKED_DESC"] or "Meet a member of this race in the world to reveal its chronicle entry.")
         return
     end
 
@@ -2972,26 +3244,54 @@ function IMAGO.Chronicle.RenderFaction(slug, data, isVisible)
     f.detailTitle:SetText(data.name or slug)
     f.detailTitle:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
 
-    local crest = data.icon or FACTION_ALIGN_ICONS[data.alignment]
-    if crest then
-        f.factionIcon:SetTexture(crest)
+    local isDual = (data.alignment == "Both")
+    local alignCrest = RACE_ALIGN_ICONS[isDual and "Alliance" or data.alignment]
+    if alignCrest and not isDual then
+        f.factionIcon:SetTexture(alignCrest)
         f.factionIcon:Show()
-        f.factionEmblem:SetTexture(crest)
     else
         f.factionIcon:Hide()
     end
-    -- Emblem fills the left column on tabs without a model; RenderFactionTab toggles it
-    f.factionEmblem:Hide()
 
-    for _, t in ipairs(f.factionTabs or {}) do t:Show() end
+    if isDual then
+        -- Dual-faction race (Skyborne): both faction crests, no tabard yet
+        f.raceEmblem:SetTexture(RACE_ALIGN_ICONS.Alliance)
+        f.raceEmblem2:SetTexture(RACE_ALIGN_ICONS.Horde)
+        f.raceEmblem2:Show()
+        f.raceEmblemCap:SetText("Alliance")
+        f.raceEmblem2Cap:SetText("Horde")
+        f.raceTabard:Hide()
+        f.raceTabardCap:Hide()
+    else
+        f.raceEmblem:SetTexture(data.iconM)
+        f.raceEmblem2:SetTexture(data.iconF)
+        f.raceEmblem2:Show()
+        f.raceEmblemCap:SetText(IMAGO.L["RACE_CAP_MALE"] or "Male")
+        f.raceEmblem2Cap:SetText(IMAGO.L["RACE_CAP_FEMALE"] or "Female")
+        f.raceTabardCap:SetText(IMAGO.L["RACE_CAP_TABARD"] or "Tabard")
+        if data.tabard then
+            f.raceTabard:SetTexture(data.tabard)
+            f.raceTabard:Show()
+            f.raceTabardCap:Show()
+        else
+            f.raceTabard:Hide()
+            f.raceTabardCap:Hide()
+        end
+    end
+    -- Emblem box fills the left column on tabs without a model; RenderRaceTab toggles it
+    f.raceEmblemBox:Hide()
+
+    if f.classTabs then for _, t in ipairs(f.classTabs) do t:Hide() end end
+    if f.classIcon then f.classIcon:Hide() end
+    for _, t in ipairs(f.raceTabs or {}) do t:Show() end
     f.infoScroll:Show()
-    IMAGO.Chronicle.RenderFactionTab(f.activeFactionTab or "history")
+    IMAGO.Chronicle.RenderRaceTab(f.activeRaceTab or "history")
 end
 
 --- Renders one sub-tab's content into f.infoContent via a pooled container.
-function IMAGO.Chronicle.RenderFactionTab(tabKey)
+function IMAGO.Chronicle.RenderRaceTab(tabKey)
     local f = IMAGO.Chronicle.frame
-    local data = f and f.selectedFaction
+    local data = f and f.selectedRace
     if not f or not data then return end
 
     -- Reuse the NPC scroll geometry: model column left, text right
@@ -3001,8 +3301,8 @@ function IMAGO.Chronicle.RenderFactionTab(tabKey)
     f.infoScroll:SetVerticalScroll(0)
 
     -- Tab highlight states
-    for _, t in ipairs(f.factionTabs or {}) do
-        local active = (t.factionTabKey == tabKey)
+    for _, t in ipairs(f.raceTabs or {}) do
+        local active = (t.raceTabKey == tabKey)
         t.text:SetTextColor(active and IMAGO_COLORS.GOLD_BRIGHT[1] or IMAGO_COLORS.TEXT_MUTED[1],
             active and IMAGO_COLORS.GOLD_BRIGHT[2] or IMAGO_COLORS.TEXT_MUTED[2],
             active and IMAGO_COLORS.GOLD_BRIGHT[3] or IMAGO_COLORS.TEXT_MUTED[3])
@@ -3010,22 +3310,22 @@ function IMAGO.Chronicle.RenderFactionTab(tabKey)
     end
 
     -- Lazy-create the container + pooled widgets inside infoContent
-    if not f.factionContainer then
-        f.factionContainer = CreateFrame("Frame", nil, f.infoContent)
-        f.factionContainer:SetPoint("TOPLEFT", 10, 0)
-        f.factionContainer:SetSize(420, 1)
-        f.factionContainer.lines = {}   -- FontString pool
-        f.factionContainer.rows = {}    -- Button pool (clickable members/settlements)
-        f.factionContainer.headers = {} -- Button pool (accordion headers)
-        f.factionContainer:EnableMouse(true)
-        f.factionContainer:SetHyperlinksEnabled(true)
-        f.factionContainer:SetScript("OnHyperlinkClick", function(self, link, text, button)
+    if not f.raceContainer then
+        f.raceContainer = CreateFrame("Frame", nil, f.infoContent)
+        f.raceContainer:SetPoint("TOPLEFT", 10, 0)
+        f.raceContainer:SetSize(420, 1)
+        f.raceContainer.lines = {}   -- FontString pool
+        f.raceContainer.rows = {}    -- Button pool (clickable figures/settlements)
+        f.raceContainer.headers = {} -- Button pool (accordion headers)
+        f.raceContainer:EnableMouse(true)
+        f.raceContainer:SetHyperlinksEnabled(true)
+        f.raceContainer:SetScript("OnHyperlinkClick", function(self, link, text, button)
             if IMAGO.TextLinker and IMAGO.TextLinker.OnHyperlinkClick then
                 IMAGO.TextLinker.OnHyperlinkClick(self, link, text, button)
             end
         end)
     end
-    local c = f.factionContainer
+    local c = f.raceContainer
     c:Show()
     for _, l in ipairs(c.lines) do l:Hide() end
     for _, r in ipairs(c.rows) do r:Hide() end
@@ -3092,7 +3392,7 @@ function IMAGO.Chronicle.RenderFactionTab(tabKey)
             r:EnableMouse(true)
             r:SetScript("OnClick", onClick)
         else
-            r.name:SetText("|c" .. IMAGO_HEX.TEXT_SECONDARY .. "◆ " .. name .. "|r")
+            r.name:SetText("|TInterface\\Buttons\\UI-SpellbookIcon-NextPage-Disabled:12:12|t |c" .. IMAGO_HEX.TEXT_SECONDARY .. name .. "|r")
             r:EnableMouse(false)
             r:SetScript("OnClick", nil)
         end
@@ -3102,8 +3402,8 @@ function IMAGO.Chronicle.RenderFactionTab(tabKey)
         y = y + (title and title ~= "" and 44 or 28)
     end
 
-    -- Accordion header: toggles f.factionExpanded[key]
-    f.factionExpanded = f.factionExpanded or {}
+    -- Accordion header: toggles f.raceExpanded[key]
+    f.raceExpanded = f.raceExpanded or {}
     local function AddSection(key, label, body)
         hdrIdx = hdrIdx + 1
         local h = c.headers[hdrIdx]
@@ -3126,17 +3426,18 @@ function IMAGO.Chronicle.RenderFactionTab(tabKey)
             h.line:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
             h.line:SetGradient("HORIZONTAL", CreateColor(IMAGO_COLORS.DIVIDER[1], IMAGO_COLORS.DIVIDER[2], IMAGO_COLORS.DIVIDER[3], 0.5), CreateColor(0, 0, 0, 0))
             h:SetScript("OnClick", function(self)
-                f.factionExpanded[self._key] = not f.factionExpanded[self._key]
+                f.raceExpanded[self._key] = not f.raceExpanded[self._key]
                 if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
-                IMAGO.Chronicle.RenderFactionTab(tabKey)
+                IMAGO.Chronicle.RenderRaceTab(self._tabKey)
             end)
             c.headers[hdrIdx] = h
         end
         h._key = key
+        h._tabKey = tabKey
         h:SetWidth(contentW)
         h.line:SetWidth(contentW)
         h:SetPoint("TOPLEFT", c, "TOPLEFT", 0, -y)
-        local open = f.factionExpanded[key]
+        local open = f.raceExpanded[key]
         h.icon:SetText(open and "-" or "+")
         h.icon:SetTextColor(open and IMAGO_COLORS.GOLD[1] or IMAGO_COLORS.GOLD_MUTED[1],
             open and IMAGO_COLORS.GOLD[2] or IMAGO_COLORS.GOLD_MUTED[2],
@@ -3151,31 +3452,105 @@ function IMAGO.Chronicle.RenderFactionTab(tabKey)
         end
     end
 
-    -- Model column: leader/mount PlayerModel, else the big faction emblem
-    local function SetDetailModel(creatureID)
-        if not creatureID then
-            f.detailModel:Hide()
-            if f.factionEmblem:GetTexture() then f.factionEmblem:Show() end
-            return
-        end
-        f.factionEmblem:Hide()
-        f.detailModel:Show()
-        f.detailModel:ClearModel()
-        f.detailModel:SetCreature(creatureID)
-        f.detailModel:SetCamDistanceScale(1.0)
-        f.detailModel:SetPosition(0, 0, 0)
-        f.detailModel:SetFacing(0)
+    -- Left column presenter: emblem box, 1-2 PlayerModels, or zone image.
+    local function HideLeftColumn()
+        f.detailModel:Hide()
+        if f.detailModel2 then f.detailModel2:Hide() end
+        if f.detailModelCap then f.detailModelCap:Hide() end
+        if f.detailModel2Cap then f.detailModel2Cap:Hide() end
+        f.raceEmblemBox:Hide()
+        f.raceZoneImage:Hide()
+        f.raceZoneBorder:Hide()
+    end
+
+    local function SetupModel(mdl, creatureID)
+        mdl:Show()
+        mdl:ClearModel()
+        mdl:SetCreature(creatureID)
+        mdl:SetCamDistanceScale(1.0)
+        mdl:SetPosition(0, 0, 0)
+        mdl:SetFacing(0)
         C_Timer.After(0.2, function()
-            if f.detailModel:IsShown() then
-                f.detailModel:SetCreature(creatureID)
-                f.detailModel:SetAnimation(0)
+            if mdl:IsShown() then
+                mdl:SetCreature(creatureID)
+                mdl:SetAnimation(0)
             end
         end)
     end
 
+    local function MakeModelCaption(key, fallback)
+        local cap = f.detailFrame:CreateFontString(nil, "OVERLAY")
+        cap:SetFont(FONT_BODY, 11)
+        cap:SetJustifyH("CENTER")
+        cap:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+        cap:SetText((key and (IMAGO.L[key] or fallback)) or "")
+        return cap
+    end
+
+    -- id1 = leader/mount creature, id2 = optional second creature (epic mount)
+    local function SetDetailModels(id1, id2, cap1, cap2)
+        HideLeftColumn()
+        if not id1 then
+            f.raceEmblemBox:Show()
+            return
+        end
+        if not f.detailModelCap then
+            f.detailModelCap  = MakeModelCaption()
+            f.detailModel2Cap = MakeModelCaption()
+        end
+        f.detailModel:ClearAllPoints()
+        if id2 then
+            -- Two stacked models (racial mount + epic mount)
+            f.detailModel:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 10, -80)
+            f.detailModel:SetSize(280, 185)
+            if not f.detailModel2 then
+                f.detailModel2 = CreateFrame("PlayerModel", nil, f.detailFrame)
+                f.detailModel2:SetFrameLevel(f.detailModel:GetFrameLevel())
+                if f.ApplyModelUI then f.ApplyModelUI(f.detailModel2) end
+            end
+            f.detailModel2:ClearAllPoints()
+            f.detailModel2:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 10, -295)
+            f.detailModel2:SetSize(280, 185)
+            f.detailModelCap:ClearAllPoints()
+            f.detailModelCap:SetPoint("TOP", f.detailModel, "BOTTOM", 0, -2)
+            f.detailModelCap:SetText(IMAGO.L[cap1] or cap1 or "")
+            f.detailModelCap:Show()
+            f.detailModel2Cap:ClearAllPoints()
+            f.detailModel2Cap:SetPoint("TOP", f.detailModel2, "BOTTOM", 0, -2)
+            f.detailModel2Cap:SetText(IMAGO.L[cap2] or cap2 or "")
+            f.detailModel2Cap:Show()
+            SetupModel(f.detailModel, id1)
+            SetupModel(f.detailModel2, id2)
+        else
+            f.detailModel:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 10, -80)
+            f.detailModel:SetSize(280, 400)
+            if cap1 then
+                f.detailModelCap:ClearAllPoints()
+                f.detailModelCap:SetPoint("TOP", f.detailModel, "BOTTOM", 0, -6)
+                f.detailModelCap:SetText(IMAGO.L[cap1] or cap1)
+                f.detailModelCap:Show()
+            end
+            SetupModel(f.detailModel, id1)
+        end
+    end
+
+    -- Shows a zone image in the left column; falls back to the emblem box
+    local function SetZoneImage(mapID)
+        HideLeftColumn()
+        local zoneData = mapID and IMAGOdb.zones and IMAGOdb.zones[mapID]
+        local tex = zoneData and zoneData.texturePath or nil
+        if not tex then
+            f.raceEmblemBox:Show()
+            return
+        end
+        f.raceZoneImage:SetTexture(tex)
+        f.raceZoneImage:Show()
+        f.raceZoneBorder:Show()
+    end
+
     -- ---- CONTENT PER TAB ------------------------------------
     if tabKey == "history" then
-        SetDetailModel(data.leaderID)
+        SetDetailModels(nil)
         local hist = data.history or ""
         local firstByte = string.byte(hist, 1)
         local charLen = firstByte and firstByte >= 192 and 2 or 1
@@ -3186,35 +3561,35 @@ function IMAGO.Chronicle.RenderFactionTab(tabKey)
             AddText(string.format(IMAGO.L["LORE_AUTHOR"] or "Written by %s", data.source), IMAGO_COLORS.GOLD_MUTED, 11)
         end
 
-    elseif tabKey == "subgroups" then
-        SetDetailModel(nil)
+    elseif tabKey == "groups" then
+        SetDetailModels(nil)
         local any = false
-        for _, key in ipairs(data.subgroups or {}) do
-            local sg = data.subgroups[key]
+        for _, key in ipairs(data.groups or {}) do
+            local sg = data.groups[key]
             if type(sg) == "table" then
                 any = true
-                AddSection("sg:" .. key, sg.name or key, sg.lore)
+                AddSection("grp:" .. key, sg.name or key, sg.lore)
             end
         end
         if not any then
-            AddText(IMAGO.L["FAC_EMPTY_SUBGROUPS"] or "No subgroups recorded.", IMAGO_COLORS.TEXT_MUTED)
+            AddText(IMAGO.L["RACE_EMPTY_GROUPS"] or "No groups recorded.", IMAGO_COLORS.TEXT_MUTED)
         end
 
-    elseif tabKey == "members" then
-        SetDetailModel(data.leaderID)
+    elseif tabKey == "figures" then
+        SetDetailModels(data.leaderID, nil, "RACE_CAP_LEADER")
         local any = false
-        for _, m in ipairs(data.members or {}) do
+        for _, m in ipairs(data.figures or {}) do
             if m.slug then
                 local npcData = IMAGO.GetNPCData(m.slug)
                 if npcData then
                     any = true
-                    local extra = data.memberText and data.memberText[m.slug]
+                    local extra = data.figureText and data.figureText[m.slug]
                     AddRow(npcData.name or m.slug, extra and extra.title or npcData.race, function()
                         IMAGO.Chronicle.OpenToNPCSlug(m.slug)
                     end)
                 end
             elseif m.key then
-                local extra = data.memberText and data.memberText[m.key]
+                local extra = data.figureText and data.figureText[m.key]
                 if extra then
                     any = true
                     AddRow(extra.name or m.key, extra.title)
@@ -3222,13 +3597,21 @@ function IMAGO.Chronicle.RenderFactionTab(tabKey)
             end
         end
         if not any then
-            AddText(IMAGO.L["FAC_EMPTY_MEMBERS"] or "No notable members recorded.", IMAGO_COLORS.TEXT_MUTED)
+            AddText(IMAGO.L["RACE_EMPTY_FIGURES"] or "No notable figures recorded.", IMAGO_COLORS.TEXT_MUTED)
         end
 
     elseif tabKey == "settlements" then
-        SetDetailModel(nil)
+        -- Show the first settlement's zone image (falls back to emblem)
         local any = false
+        local shownImage = false
         for _, mapID in ipairs(data.settlements or {}) do
+            if not shownImage then
+                local zd = IMAGOdb.zones and IMAGOdb.zones[mapID]
+                if zd and zd.texturePath then
+                    SetZoneImage(mapID)
+                    shownImage = true
+                end
+            end
             local st = data.settlementText and data.settlementText[mapID]
             local zoneData = IMAGOdb.zones and IMAGOdb.zones[mapID]
             local name = (st and st.name) or (zoneData and zoneData.name) or ("Region " .. mapID)
@@ -3243,15 +3626,16 @@ function IMAGO.Chronicle.RenderFactionTab(tabKey)
             end
         end
         if not any then
-            AddText(IMAGO.L["FAC_EMPTY_SETTLEMENTS"] or "No settlements recorded.", IMAGO_COLORS.TEXT_MUTED)
+            AddText(IMAGO.L["RACE_EMPTY_SETTLEMENTS"] or "No settlements recorded.", IMAGO_COLORS.TEXT_MUTED)
         end
 
     elseif tabKey == "culture" then
-        SetDetailModel(data.mountID)
+        -- Racial mount + epic mount models, stacked
+        SetDetailModels(data.mountID, data.epicMountID, "RACE_CAP_MOUNT", "RACE_CAP_EPIC_MOUNT")
         local cult = data.culture or {}
-        AddSection("cult:biology",  IMAGO.L["FAC_SEC_BIOLOGY"]   or "Biology & Society", cult.biology)
-        AddSection("cult:beliefs",  IMAGO.L["FAC_SEC_BELIEFS"]   or "Beliefs",           cult.beliefs)
-        AddSection("cult:relations",IMAGO.L["FAC_SEC_RELATIONS"] or "Relations",         cult.relations)
+        AddSection("cult:biology",  IMAGO.L["RACE_SEC_BIOLOGY"]   or "Biology & Society", cult.biology)
+        AddSection("cult:beliefs",  IMAGO.L["RACE_SEC_BELIEFS"]   or "Beliefs",           cult.beliefs)
+        AddSection("cult:relations",IMAGO.L["RACE_SEC_RELATIONS"] or "Relations",         cult.relations)
     end
 
     c:SetHeight(math.max(1, y))
@@ -3259,9 +3643,92 @@ function IMAGO.Chronicle.RenderFactionTab(tabKey)
     IMAGO.UpdateScrollBarVisibility(f.infoScroll)
 end
 
---- Navigate to a faction by slug: switches to the Factions tab and clicks its button.
-function IMAGO.Chronicle.OpenToFaction(slug)
-    if not slug or not (IMAGOdb.factions and IMAGOdb.factions[slug]) then return false end
+-- ============================================================
+-- CLASS DETAIL RENDERER (TAB 4 — skeleton, placeholder content)
+-- ============================================================
+
+--- Renders the detail page for a class into the detailFrame.
+function IMAGO.Chronicle.RenderClass(slug, data)
+    local f = IMAGO.Chronicle.frame
+    if not f or not data then return end
+
+    f.startPage:Hide()
+    f.hintPage:Hide()
+    f.tabLore:Hide()
+    f.tabTime:Hide()
+    if f.loreSource then f.loreSource:Hide() end
+    if f.timelineContainer then f.timelineContainer:Hide() end
+    if f.detailImage then f.detailImage:Hide() end
+    if f.detailImageBorder then f.detailImageBorder:Hide() end
+    if f.detailSeparator then f.detailSeparator:Hide() end
+    if f.raceTabs then for _, t in ipairs(f.raceTabs) do t:Hide() end end
+                if f.classTabs then for _, t in ipairs(f.classTabs) do t:Hide() end end
+                if f.classIcon then f.classIcon:Hide() end
+    if f.raceContainer then f.raceContainer:Hide() end
+    if f.raceEmblemBox then f.raceEmblemBox:Hide() end
+    if f.raceZoneImage then f.raceZoneImage:Hide() end
+    if f.raceZoneBorder then f.raceZoneBorder:Hide() end
+    if f.detailModel then f.detailModel:Hide() end
+    if f.detailModel2 then f.detailModel2:Hide() end
+    if f.detailModelCap then f.detailModelCap:Hide() end
+    if f.detailModel2Cap then f.detailModel2Cap:Hide() end
+    f.factionIcon:Hide()
+    IMAGO.Chronicle.SetDetailAction(nil)
+
+    f.detailTitle:Show()
+    f.detailLineLeft:Show()
+    f.detailLineRight:Show()
+    f.detailTitle:SetText(data.name or slug)
+    local classColor = RAID_CLASS_COLORS and RAID_CLASS_COLORS[data.classFile]
+    if classColor then
+        f.detailTitle:SetTextColor(classColor.r, classColor.g, classColor.b)
+    else
+        f.detailTitle:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+    end
+
+    local coords = CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[data.classFile]
+    if coords then
+        f.classIcon:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES")
+        f.classIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
+        f.classIcon:Show()
+    else
+        f.classIcon:Hide()
+    end
+
+    for _, t in ipairs(f.classTabs or {}) do t:Show() end
+    f.infoScroll:Show()
+    IMAGO.Chronicle.RenderClassTab(f.activeClassTab or "overview")
+end
+
+--- Renders one class sub-tab's placeholder text via loreBody.
+function IMAGO.Chronicle.RenderClassTab(tabKey)
+    local f = IMAGO.Chronicle.frame
+    local data = f and f.selectedClass
+    if not f or not data then return end
+
+    f.infoScroll:ClearAllPoints()
+    f.infoScroll:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 300, -115)
+    f.infoScroll:SetPoint("BOTTOMRIGHT", f.detailFrame, "BOTTOMRIGHT", 0, 100)
+    f.infoScroll:SetVerticalScroll(0)
+
+    for _, t in ipairs(f.classTabs or {}) do
+        local active = (t.classTabKey == tabKey)
+        t.text:SetTextColor(active and IMAGO_COLORS.GOLD_BRIGHT[1] or IMAGO_COLORS.TEXT_MUTED[1],
+            active and IMAGO_COLORS.GOLD_BRIGHT[2] or IMAGO_COLORS.TEXT_MUTED[2],
+            active and IMAGO_COLORS.GOLD_BRIGHT[3] or IMAGO_COLORS.TEXT_MUTED[3])
+        if active then t.activeLine:Show() else t.activeLine:Hide() end
+    end
+
+    if f.raceContainer then f.raceContainer:Hide() end
+    f.loreBody:Show()
+    f.loreBody:SetText(data[tabKey] or "Coming soon.")
+    f.infoContent:SetHeight(math.max(1, f.loreBody:GetStringHeight() + 20))
+    IMAGO.UpdateScrollBarVisibility(f.infoScroll)
+end
+
+--- Navigate to a race by slug: switches to the Races tab and clicks its button.
+function IMAGO.Chronicle.OpenToRace(slug)
+    if not slug or not (IMAGOdb.races and IMAGOdb.races[slug]) then return false end
 
     if not IMAGO.Chronicle.frame then
         IMAGO.Chronicle.CreateFrame()
@@ -3278,8 +3745,8 @@ function IMAGO.Chronicle.OpenToFaction(slug)
         f.scrollFrame:SetVerticalScroll(target)
     end
 
-    for _, btn in pairs(IMAGO.Chronicle.factionButtons or {}) do
-        if btn.factionSlug == slug and btn:IsShown() then
+    for _, btn in pairs(IMAGO.Chronicle.raceButtons or {}) do
+        if btn.raceSlug == slug and btn:IsShown() then
             local fn = btn:GetScript("OnClick")
             if fn then fn(btn) end
             C_Timer.After(0, function()
@@ -3314,8 +3781,8 @@ function IMAGO.Chronicle.OpenToNPCSlug(slug, opts)
             entry = { type = "npc", slug = f.selectedNPCSlug }
         elseif f.selectedZoneMapID then
             entry = { type = "zone", mapID = f.selectedZoneMapID }
-        elseif f.selectedFactionSlug then
-            entry = { type = "faction", slug = f.selectedFactionSlug }
+        elseif f.selectedRaceSlug then
+            entry = { type = "race", slug = f.selectedRaceSlug }
         end
         if entry then
             table.insert(navStack, entry)
@@ -3323,7 +3790,7 @@ function IMAGO.Chronicle.OpenToNPCSlug(slug, opts)
         end
     end
     f.selectedZoneMapID = nil
-    f.selectedFactionSlug = nil
+    f.selectedRaceSlug = nil
 
     local data = IMAGO.GetNPCData(slug)
     if not data then return false end

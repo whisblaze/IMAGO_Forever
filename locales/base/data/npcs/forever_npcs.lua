@@ -13,7 +13,7 @@ IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"].zones = {"Stormwind City"}
 IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"].source = "warcraft.wiki.gg/wiki/Bolvar_Fordragon"
 IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"].timeline = {
     {era = "WC2", text = "Fought as a paladin of the Silver Hand during the Second War and its aftermath."},
-    {era = "Pre-Classic", text = "Was appointed regent of Stormwind when King Varian Wrynn disappeared on his voyage to Theramore."},
+    {era = "Pre-Forever", text = "Was appointed regent of Stormwind when King Varian Wrynn disappeared on his voyage to Theramore."},
     {era = "Forever", text = "Rules Stormwind in Anduin's name while unknowingly being manipulated by Lady Katrana Prestor — the black dragon Onyxia in disguise."},
 }
 
@@ -26,7 +26,7 @@ Too young to rule alone, he relies on Regent Bolvar Fordragon and the counsel of
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].zones = {"Stormwind City"}
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].source = "warcraft.wiki.gg/wiki/Anduin_Wrynn"
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].timeline = {
-    {era = "Pre-Classic", text = "Was crowned King of Stormwind after his father Varian vanished at sea."},
+    {era = "Pre-Forever", text = "Was crowned King of Stormwind after his father Varian vanished at sea."},
     {era = "Forever", text = "Rules under the guidance of Bolvar Fordragon while Lady Prestor secretly steers the kingdom toward ruin."},
 }
 
@@ -55,7 +55,7 @@ Now exiled among the dwarves of Ironforge, Mekkatorque leads a people without a 
 IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].zones = {"Ironforge"}
 IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].source = "warcraft.wiki.gg/wiki/Gelbin_Mekkatorque"
 IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].timeline = {
-    {era = "Pre-Classic", text = "Ordered the irradiation of Gnomeregan to stop the trogg invasion — a catastrophe that cost countless gnomes their lives and minds."},
+    {era = "Pre-Forever", text = "Ordered the irradiation of Gnomeregan to stop the trogg invasion — a catastrophe that cost countless gnomes their lives and minds."},
     {era = "Forever", text = "Leads the gnomish exiles from Tinker Town in Ironforge and quietly funds the war to retake his irradiated city."},
 }
 
@@ -99,7 +99,7 @@ IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].zones = {"Dustwallow Marsh"}
 IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].source = "warcraft.wiki.gg/wiki/Jaina_Proudmoore"
 IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].timeline = {
     {era = "WC3", text = "Heeded Medivh's warning, led Lordaeron's survivors to Kalimdor, and fought at Hyjal. Later chose peace over her own father, allowing the Horde to kill Daelin Proudmoore."},
-    {era = "Pre-Classic", text = "Founded the island-city of Theramore as a beacon of cooperation between the Alliance and the Horde."},
+    {era = "Pre-Forever", text = "Founded the island-city of Theramore as a beacon of cooperation between the Alliance and the Horde."},
     {era = "Forever", text = "Rules Theramore and brokers fragile peace between the factions, including the summit where Varian Wrynn vanished."},
 }
 
@@ -128,7 +128,7 @@ IMAGOdb.npcs.CAT_ORCS["rexxar"].zones = {"Feralas", "Desolace", "Stonetalon Moun
 IMAGOdb.npcs.CAT_ORCS["rexxar"].source = "warcraft.wiki.gg/wiki/Rexxar"
 IMAGOdb.npcs.CAT_ORCS["rexxar"].timeline = {
     {era = "WC3", text = "Joined Thrall's cause in Kalimdor, rallied ogres to the Horde's banner, and fought to save Durotar from Daelin Proudmoore's invasion."},
-    {era = "Pre-Classic", text = "Was named Champion of the Horde, then returned to the wilderness he calls home."},
+    {era = "Pre-Forever", text = "Was named Champion of the Horde, then returned to the wilderness he calls home."},
     {era = "Forever", text = "Wanders the wilds of Kalimdor with Misha, answering to no banner but his own — until the Horde calls again."},
 }
 
@@ -157,7 +157,7 @@ IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"].zones = {"Undercity"}
 IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"].source = "warcraft.wiki.gg/wiki/Sylvanas_Windrunner"
 IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"].timeline = {
     {era = "WC3", text = "Fell to Arthas defending Quel'Thalas and was raised as a banshee. Later broke free, killed the dreadlord Balnazzar's rivals, and took Lordaeron's ruins for her Forsaken."},
-    {era = "Pre-Classic", text = "Secured the Undercity and forged an uneasy pact with the Horde."},
+    {era = "Pre-Forever", text = "Secured the Undercity and forged an uneasy pact with the Horde."},
     {era = "Forever", text = "Rules the Forsaken and arms them against the Scourge, the Scarlet Crusade — and, some whisper, against everyone else."},
 }
 
@@ -199,7 +199,7 @@ IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"].zones = {"Darnassus"}
 IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"].source = "warcraft.wiki.gg/wiki/Fandral_Staghelm"
 IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"].timeline = {
     {era = "Ancient", text = "Fought in the War of the Shifting Sands and lost his son Valstann to the qiraji — a grief he never set down."},
-    {era = "Pre-Classic", text = "Planted Teldrassil as the new World Tree and assumed leadership of the druids while Malfurion remained lost in the Emerald Dream."},
+    {era = "Pre-Forever", text = "Planted Teldrassil as the new World Tree and assumed leadership of the druids while Malfurion remained lost in the Emerald Dream."},
     {era = "Forever", text = "Leads the Cenarion Circle from the Cenarion Enclave in Darnassus, at quiet odds with Tyrande."},
 }
 
@@ -214,7 +214,7 @@ IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"].zones = {"Eastern Plaguelands", "West
 IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"].source = "warcraft.wiki.gg/wiki/Tirion_Fordring"
 IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"].timeline = {
     {era = "WC2", text = "Served as a paladin of the Silver Hand in the Second War and became Lord of Mardenholde."},
-    {era = "Pre-Classic", text = "Was exiled from the Alliance and stripped of the Light's titles for saving the orc Eitrigg's life."},
+    {era = "Pre-Forever", text = "Was exiled from the Alliance and stripped of the Light's titles for saving the orc Eitrigg's life."},
     {era = "Forever", text = "Lives in exile in the Eastern Plaguelands, still holding faith — and testing those who find him with the memory of what honor costs."},
 }
 

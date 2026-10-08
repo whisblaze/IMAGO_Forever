@@ -26,11 +26,11 @@ IMAGO.Chronicle.zoneRanks = {
     {perc = 100, title = "Weltenwanderer"},
 }
 
-IMAGO.Chronicle.factionRanks = {
+IMAGO.Chronicle.raceRanks = {
     {perc = 0,   title = "Außenseiter"},
-    {perc = 15,  title = "Bekannter"},
-    {perc = 35,  title = "Gesandter"},
-    {perc = 55,  title = "Diplomat"},
-    {perc = 75,  title = "Botschafter"},
+    {perc = 15,  title = "Wanderer"},
+    {perc = 35,  title = "Chronist"},
+    {perc = 55,  title = "Wissenshüter"},
+    {perc = 75,  title = "Weiser"},
     {perc = 100, title = "Stimme Azeroths"},
 }

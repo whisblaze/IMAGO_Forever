@@ -33,7 +33,7 @@ local COLORS = {
     instance  = {r=0.6,  g=0.8,  b=1},
     npc       = {r=1,    g=0.78, b=0.1},
     encounter = {r=1,    g=0.4,  b=0.2},
-    faction   = {r=0.65, g=0.55, b=1},
+    race      = {r=0.65, g=0.55, b=1},
 }
 
 local LABELS = {
@@ -41,7 +41,7 @@ local LABELS = {
     instance  = "⚔  ",
     npc       = "",
     encounter = "☠  ",
-    faction   = "❖  ",
+    race      = "❖  ",
 }
 
 local BACKDROP_DEFAULT = {
@@ -99,9 +99,9 @@ function IMAGO.GetProgress(type)
             if v and dbTable[key] then seen = seen + 1 end
         end
         return seen, countKeys(dbTable)
-    elseif type == "faction" then
-        savedTable = IMAGOSaved.seenFactions
-        dbTable = IMAGOdb.factions
+    elseif type == "race" then
+        savedTable = IMAGOSaved.seenRaces
+        dbTable = IMAGOdb.races
         if not savedTable or not dbTable then return 0, 0 end
         local seen = 0
         for key, v in pairs(savedTable) do
@@ -372,14 +372,14 @@ function IMAGO.Display.Show(title, bodyText, category, isNew, npcSlug)
 
     local progressBlock = 0
     local progressGap = 10
-    if category == "npc" or category == "zone" or category == "faction" then
+    if category == "npc" or category == "zone" or category == "race" then
         local seen, total = IMAGO.GetProgress(category)
         local perc = (total > 0) and math.floor((seen / total) * 100 + 0.5) or 0
         local localeKey = (category == "npc") and "DISPLAY_PROGRESS_NPC"
-            or (category == "faction") and "DISPLAY_PROGRESS_FACTION"
+            or (category == "race") and "DISPLAY_PROGRESS_RACE"
             or "DISPLAY_PROGRESS_ZONE"
         local defaultText = (category == "npc") and "Fortschritt: %d%% (%d/%d NPCs)"
-            or (category == "faction") and "Fortschritt: %d%% (%d/%d Fraktionen)"
+            or (category == "race") and "Fortschritt: %d%% (%d/%d Völker)"
             or "Fortschritt: %d%% (%d/%d Zonen)"
         
         f.progressText:SetText(string.format(

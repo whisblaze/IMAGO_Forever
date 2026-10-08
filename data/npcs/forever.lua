@@ -43,14 +43,14 @@ IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"] = {
     ids = {1748},
     zones = {},
     category = "CAT_STORMWIND",
-    faction = "kingdom_of_stormwind",
+    raceKey = "human",
 }
 
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"] = {
     ids = {1747},
     zones = {},
     category = "CAT_STORMWIND",
-    faction = "kingdom_of_stormwind",
+    raceKey = "human",
 }
 
 -- CAT_IRONFORGE — Dwarves of Ironforge
@@ -58,7 +58,7 @@ IMAGOdb.npcs.CAT_IRONFORGE["magni_bronzebeard"] = {
     ids = {2784},
     zones = {},
     category = "CAT_IRONFORGE",
-    faction = "ironforge_dwarves",
+    raceKey = "dwarf",
 }
 
 -- CAT_GNOMEREGAN — Gnomeregan Exiles
@@ -66,7 +66,7 @@ IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"] = {
     ids = {7937},
     zones = {},
     category = "CAT_GNOMEREGAN",
-    faction = "gnomeregan_exiles",
+    raceKey = "gnome",
 }
 
 -- CAT_DARNASSUS — Night Elves of Darnassus
@@ -74,14 +74,14 @@ IMAGOdb.npcs.CAT_DARNASSUS["tyrande_whisperwind"] = {
     ids = {7999},
     zones = {},
     category = "CAT_DARNASSUS",
-    faction = "darnassus_night_elves",
+    raceKey = "night_elf",
 }
 
 IMAGOdb.npcs.CAT_DARNASSUS["shandris_feathermoon"] = {
     ids = {3936},
     zones = {},
     category = "CAT_DARNASSUS",
-    faction = "darnassus_night_elves",
+    raceKey = "night_elf",
 }
 
 -- CAT_THERAMORE — Theramore
@@ -89,7 +89,7 @@ IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"] = {
     ids = {4968},
     zones = {},
     category = "CAT_THERAMORE",
-    faction = "theramore",
+    raceKey = "human",
 }
 
 -- ============================================================
@@ -101,14 +101,14 @@ IMAGOdb.npcs.CAT_ORCS["thrall"] = {
     ids = {4949},
     zones = {},
     category = "CAT_ORCS",
-    faction = "orcs_of_the_horde",
+    raceKey = "orc",
 }
 
 IMAGOdb.npcs.CAT_ORCS["rexxar"] = {
     ids = {10182},
     zones = {},
     category = "CAT_ORCS",
-    faction = "orcs_of_the_horde",
+    raceKey = "orc",
 }
 
 -- CAT_DARKSPEAR — Darkspear Trolls
@@ -116,7 +116,7 @@ IMAGOdb.npcs.CAT_DARKSPEAR["voljin"] = {
     ids = {10540},
     zones = {},
     category = "CAT_DARKSPEAR",
-    faction = "darkspear_trolls",
+    raceKey = "troll",
 }
 
 -- CAT_FORSAKEN — The Forsaken
@@ -124,14 +124,14 @@ IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"] = {
     ids = {10181},
     zones = {},
     category = "CAT_FORSAKEN",
-    faction = "the_forsaken",
+    raceKey = "undead",
 }
 
 IMAGOdb.npcs.CAT_FORSAKEN["varimathras"] = {
     ids = {2425},
     zones = {},
     category = "CAT_FORSAKEN",
-    faction = "the_forsaken",
+    raceKey = "undead",
 }
 
 -- CAT_THUNDERBLUFF — Tauren of Thunder Bluff
@@ -139,7 +139,7 @@ IMAGOdb.npcs.CAT_THUNDERBLUFF["cairne_bloodhoof"] = {
     ids = {3057},
     zones = {},
     category = "CAT_THUNDERBLUFF",
-    faction = "thunder_bluff_tauren",
+    raceKey = "tauren",
 }
 
 -- ============================================================
@@ -151,7 +151,7 @@ IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"] = {
     ids = {3516},
     zones = {},
     category = "CAT_CENARION",
-    faction = "cenarion_circle",
+    raceKey = "night_elf",
 }
 
 -- CAT_ARGENT — Argent Dawn & Silver Hand
@@ -159,7 +159,7 @@ IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"] = {
     ids = {1855, 12126},
     zones = {},
     category = "CAT_ARGENT",
-    faction = "argent_dawn",
+    raceKey = "human",
 }
 
 -- CAT_GOBLIN — Goblin Cartels
@@ -167,5 +167,5 @@ IMAGOdb.npcs.CAT_GOBLIN["gazlowe"] = {
     ids = {3391},
     zones = {},
     category = "CAT_GOBLIN",
-    faction = "goblin_cartels",
+    
 }
