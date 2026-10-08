@@ -91,10 +91,42 @@ L["ZONE_POI_HEADER"]                = "INTERESSANTE ORTE"
 L["ZONE_UNDISCOVERED"]              = "Unentdeckt"
 
 -- ============================================================
--- TAB 3: INSTANCES (COMING SOON)
+-- TAB 3: RACES
 -- ============================================================
-L["COMING_SOON_INSTANCES_TITLE"]    = "VERBORGENE INSTANZEN"
-L["COMING_SOON_INSTANCES_DESC"]     = "Dungeons, Raids und Tiefen.\nDie Echos der mächtigsten Feinde warten auf ihre Entdeckung.\n\n|cFF9370DB[ IN ENTWICKLUNG ]|r"
+L["RACES_OVERVIEW"]              = "VÖLKER"
+L["FOOTER_RACES_PROGRESS"]       = "%d / %d Völker dokumentiert (%d%%)"
+L["STARTPAGE_RACES_RANK"]        = "KENNTNIS DER VÖLKER"
+L["STARTPAGE_RACES_NEXT"]        = "KOMMENDE RÄNGE:"
+L["CHAT_RACE_DISCOVERY"]         = "|cFF9370DB[IMAGO]|r Neues Volk dokumentiert: |cFFFFD700%s|r"
+L["DISPLAY_PROGRESS_RACE"]       = "Fortschritt: %d%% (%d/%d Völker)"
+L["FILTER_ALL_RACES"]            = "Alle Völker"
+L["RACE_ALIGN_ALLIANCE"]             = "Allianz"
+L["RACE_ALIGN_HORDE"]                = "Horde"
+L["RACE_ALIGN_NEUTRAL"]              = "Neutral"
+L["HINT_RACE_LOCKED"]            = "VOLK UNBEKANNT"
+L["HINT_RACE_LOCKED_DESC"]       = "Begegne einem Angehörigen dieses Volkes in der Welt, um ihren Chronik-Eintrag zu enthüllen."
+L["RACE_TAB_HISTORY"]                = "Geschichte"
+L["RACE_TAB_GROUPS"]              = "Gruppen"
+L["RACE_TAB_FIGURES"]                = "Persönlichkeiten"
+L["RACE_TAB_SETTLEMENTS"]            = "Siedlungen"
+L["RACE_TAB_CULTURE"]                = "Kultur"
+L["RACE_SEC_BIOLOGY"]                = "Physiologie & Gesellschaft"
+L["RACE_SEC_BELIEFS"]                = "Glauben"
+L["RACE_SEC_RELATIONS"]              = "Beziehungen"
+L["RACE_EMPTY_GROUPS"]            = "Keine Gruppen verzeichnet."
+L["RACE_EMPTY_FIGURES"]              = "Keine nennenswerten Persönlichkeiten verzeichnet."
+L["RACE_EMPTY_SETTLEMENTS"]          = "Keine Siedlungen verzeichnet."
+L["RACE_CAP_MALE"]                   = "Männlich"
+L["RACE_CAP_FEMALE"]                 = "Weiblich"
+L["RACE_CAP_TABARD"]                 = "Wappenrock"
+L["RACE_CAP_LEADER"]                 = "Anführer"
+L["RACE_CAP_MOUNT"]                  = "Völker-Reittier"
+L["RACE_CAP_EPIC_MOUNT"]             = "Episches Reittier"
+
+-- ============================================================
+-- TAB 4: CLASSES (skeleton)
+-- ============================================================
+L["CLASSES_OVERVIEW"]                = "KLASSEN"
 
 -- Scanner & Tooltip
 L["TOOLTIP_KNOWN"]                  = "IMAGO: |cFFFFD700In Chronik verzeichnet|r"
@@ -127,7 +159,8 @@ L["LOGIN_ALL_UNCOVERED"]            = "Alle Geheimnisse gelüftet!"
 L["FOOTER_PROGRESS"]                = "%d / %d Schicksale entschlüsselt (%d%%)"
 L["TAB_FATES"]                      = "Schicksale"
 L["TAB_ZONES"]                      = "Zonen"
-L["TAB_INSTANCES"]                  = "Instanzen"
+L["TAB_RACES"]                   = "Völker"
+L["TAB_CLASSES"]                    = "Klassen"
 L["STARTPAGE_RANK"]                 = "Dein Stand in der Chronik:"
 L["STARTPAGE_COMPLETED"]            = "ERREICHTE MEILENSTEINE:"
 L["STARTPAGE_NEXT"]                 = "KOMMENDE ENTDECKUNGEN:"

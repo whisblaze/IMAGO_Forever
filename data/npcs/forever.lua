@@ -43,12 +43,14 @@ IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"] = {
     ids = {1748},
     zones = {},
     category = "CAT_STORMWIND",
+    raceKey = "human",
 }
 
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"] = {
     ids = {1747},
     zones = {},
     category = "CAT_STORMWIND",
+    raceKey = "human",
 }
 
 -- CAT_IRONFORGE — Dwarves of Ironforge
@@ -56,6 +58,7 @@ IMAGOdb.npcs.CAT_IRONFORGE["magni_bronzebeard"] = {
     ids = {2784},
     zones = {},
     category = "CAT_IRONFORGE",
+    raceKey = "dwarf",
 }
 
 -- CAT_GNOMEREGAN — Gnomeregan Exiles
@@ -63,6 +66,7 @@ IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"] = {
     ids = {7937},
     zones = {},
     category = "CAT_GNOMEREGAN",
+    raceKey = "gnome",
 }
 
 -- CAT_DARNASSUS — Night Elves of Darnassus
@@ -70,12 +74,14 @@ IMAGOdb.npcs.CAT_DARNASSUS["tyrande_whisperwind"] = {
     ids = {7999},
     zones = {},
     category = "CAT_DARNASSUS",
+    raceKey = "night_elf",
 }
 
 IMAGOdb.npcs.CAT_DARNASSUS["shandris_feathermoon"] = {
     ids = {3936},
     zones = {},
     category = "CAT_DARNASSUS",
+    raceKey = "night_elf",
 }
 
 -- CAT_THERAMORE — Theramore
@@ -83,6 +89,7 @@ IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"] = {
     ids = {4968},
     zones = {},
     category = "CAT_THERAMORE",
+    raceKey = "human",
 }
 
 -- ============================================================
@@ -94,12 +101,14 @@ IMAGOdb.npcs.CAT_ORCS["thrall"] = {
     ids = {4949},
     zones = {},
     category = "CAT_ORCS",
+    raceKey = "orc",
 }
 
 IMAGOdb.npcs.CAT_ORCS["rexxar"] = {
     ids = {10182},
     zones = {},
     category = "CAT_ORCS",
+    raceKey = "orc",
 }
 
 -- CAT_DARKSPEAR — Darkspear Trolls
@@ -107,6 +116,7 @@ IMAGOdb.npcs.CAT_DARKSPEAR["voljin"] = {
     ids = {10540},
     zones = {},
     category = "CAT_DARKSPEAR",
+    raceKey = "troll",
 }
 
 -- CAT_FORSAKEN — The Forsaken
@@ -114,12 +124,14 @@ IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"] = {
     ids = {10181},
     zones = {},
     category = "CAT_FORSAKEN",
+    raceKey = "undead",
 }
 
 IMAGOdb.npcs.CAT_FORSAKEN["varimathras"] = {
     ids = {2425},
     zones = {},
     category = "CAT_FORSAKEN",
+    raceKey = "undead",
 }
 
 -- CAT_THUNDERBLUFF — Tauren of Thunder Bluff
@@ -127,6 +139,7 @@ IMAGOdb.npcs.CAT_THUNDERBLUFF["cairne_bloodhoof"] = {
     ids = {3057},
     zones = {},
     category = "CAT_THUNDERBLUFF",
+    raceKey = "tauren",
 }
 
 -- ============================================================
@@ -138,6 +151,7 @@ IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"] = {
     ids = {3516},
     zones = {},
     category = "CAT_CENARION",
+    raceKey = "night_elf",
 }
 
 -- CAT_ARGENT — Argent Dawn & Silver Hand
@@ -145,6 +159,7 @@ IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"] = {
     ids = {1855, 12126},
     zones = {},
     category = "CAT_ARGENT",
+    raceKey = "human",
 }
 
 -- CAT_GOBLIN — Goblin Cartels
@@ -152,4 +167,5 @@ IMAGOdb.npcs.CAT_GOBLIN["gazlowe"] = {
     ids = {3391},
     zones = {},
     category = "CAT_GOBLIN",
+    
 }

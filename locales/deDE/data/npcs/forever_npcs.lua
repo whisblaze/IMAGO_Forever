@@ -19,7 +19,7 @@ IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"].zones = {"Sturmwind"}
 IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"].source = "warcraft.wiki.gg/wiki/Bolvar_Fordragon"
 IMAGOdb.npcs.CAT_STORMWIND["bolvar_fordragon"].timeline = {
     {era = "WC2", text = "Kämpfte als Paladin der Silbernen Hand im Zweiten Krieg und dessen Nachwehen."},
-    {era = "Pre-Classic", text = "Wurde zum Regenten von Sturmwind ernannt, als König Varian Wrynn auf seiner Reise nach Theramore verschwand."},
+    {era = "Pre-Forever", text = "Wurde zum Regenten von Sturmwind ernannt, als König Varian Wrynn auf seiner Reise nach Theramore verschwand."},
     {era = "Forever", text = "Regiert Sturmwind in Anduins Namen, während er unwissentlich von Lady Katrana Prestor manipuliert wird — dem schwarzen Drachen Onyxia in Verkleidung."},
 }
 
@@ -32,7 +32,7 @@ Zu jung, um allein zu regieren, verlässt er sich auf Regent Bolvar Fordragon un
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].zones = {"Sturmwind"}
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].source = "warcraft.wiki.gg/wiki/Anduin_Wrynn"
 IMAGOdb.npcs.CAT_STORMWIND["anduin_wrynn"].timeline = {
-    {era = "Pre-Classic", text = "Wurde zum König von Sturmwind gekrönt, nachdem sein Vater Varian auf See verschwunden war."},
+    {era = "Pre-Forever", text = "Wurde zum König von Sturmwind gekrönt, nachdem sein Vater Varian auf See verschwunden war."},
     {era = "Forever", text = "Regiert unter der Führung von Bolvar Fordragon, während Lady Prestor das Königreich insgeheim in den Ruin treibt."},
 }
 
@@ -61,7 +61,7 @@ Nun lebt er im Exil bei den Zwergen von Eisenschmiede und führt ein Volk ohne H
 IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].zones = {"Eisenschmiede"}
 IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].source = "warcraft.wiki.gg/wiki/Gelbin_Mekkatorque"
 IMAGOdb.npcs.CAT_GNOMEREGAN["mekkatorque"].timeline = {
-    {era = "Pre-Classic", text = "Ordnete die Verstrahlung Gnomeregans an, um die Trogg-Invasion zu stoppen — eine Katastrophe, die unzähligen Gnomen Leben und Verstand kostete."},
+    {era = "Pre-Forever", text = "Ordnete die Verstrahlung Gnomeregans an, um die Trogg-Invasion zu stoppen — eine Katastrophe, die unzähligen Gnomen Leben und Verstand kostete."},
     {era = "Forever", text = "Führt die gnomischen Exilanten von Tüftlerstadt in Eisenschmiede aus und finanziert still den Krieg zur Rückeroberung seiner verstrahlten Stadt."},
 }
 
@@ -105,7 +105,7 @@ IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].zones = {"Düstermarschen"}
 IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].source = "warcraft.wiki.gg/wiki/Jaina_Proudmoore"
 IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].timeline = {
     {era = "WC3", text = "Beherzigte Medivhs Warnung, führte Lordaerons Überlebende nach Kalimdor und kämpfte am Hyjal. Später wählte sie den Frieden über ihren eigenen Vater und ließ die Horde Daelin Prachtmeer töten."},
-    {era = "Pre-Classic", text = "Gründete die Inselstadt Theramore als Leuchtfeuer der Zusammenarbeit zwischen Allianz und Horde."},
+    {era = "Pre-Forever", text = "Gründete die Inselstadt Theramore als Leuchtfeuer der Zusammenarbeit zwischen Allianz und Horde."},
     {era = "Forever", text = "Regiert Theramore und vermittelt den brüchigen Frieden zwischen den Fraktionen — darunter den Gipfel, bei dem Varian Wrynn verschwand."},
 }
 
@@ -134,7 +134,7 @@ IMAGOdb.npcs.CAT_ORCS["rexxar"].zones = {"Feralas", "Desolace", "Steinkrallengeb
 IMAGOdb.npcs.CAT_ORCS["rexxar"].source = "warcraft.wiki.gg/wiki/Rexxar"
 IMAGOdb.npcs.CAT_ORCS["rexxar"].timeline = {
     {era = "WC3", text = "Schloss sich Thralls Sache in Kalimdor an, sammelte Oger unter dem Banner der Horde und kämpfte, um Durotar vor Daelin Prachtmeers Invasion zu retten."},
-    {era = "Pre-Classic", text = "Wurde zum Champion der Horde ernannt und kehrte dann in die Wildnis zurück, die er seine Heimat nennt."},
+    {era = "Pre-Forever", text = "Wurde zum Champion der Horde ernannt und kehrte dann in die Wildnis zurück, die er seine Heimat nennt."},
     {era = "Forever", text = "Streift mit Misha durch die Wildnis Kalimdors, keiner Fahne verpflichtet außer der eigenen — bis die Horde wieder ruft."},
 }
 
@@ -163,7 +163,7 @@ IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"].zones = {"Unterstadt"}
 IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"].source = "warcraft.wiki.gg/wiki/Sylvanas_Windrunner"
 IMAGOdb.npcs.CAT_FORSAKEN["sylvanas_windrunner"].timeline = {
     {era = "WC3", text = "Fiel bei der Verteidigung von Quel'Thalas an Arthas und wurde als Banshee wiedererweckt. Später befreite sie sich, tötete die Rivalen des Schreckenslords Balnazzar und nahm die Ruinen Lordaerons für ihre Verlassenen."},
-    {era = "Pre-Classic", text = "Sicherte Unterstadt und schmiedete einen unsicheren Pakt mit der Horde."},
+    {era = "Pre-Forever", text = "Sicherte Unterstadt und schmiedete einen unsicheren Pakt mit der Horde."},
     {era = "Forever", text = "Herrscht über die Verlassenen und rüstet sie gegen die Geißel, den Scharlachroten Kreuzzug — und, wie manche munkeln, gegen alle anderen."},
 }
 
@@ -205,7 +205,7 @@ IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"].zones = {"Darnassus"}
 IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"].source = "warcraft.wiki.gg/wiki/Fandral_Staghelm"
 IMAGOdb.npcs.CAT_CENARION["fandral_staghelm"].timeline = {
     {era = "Ancient", text = "Kämpfte im Krieg der Sandstürme und verlor seinen Sohn Valstann an die Qiraji — eine Trauer, die er nie ablegte."},
-    {era = "Pre-Classic", text = "Pflanzte Teldrassil als neuen Weltenbaum und übernahm die Führung der Druiden, während Malfurion im Smaragdgrünen Traum verloren blieb."},
+    {era = "Pre-Forever", text = "Pflanzte Teldrassil als neuen Weltenbaum und übernahm die Führung der Druiden, während Malfurion im Smaragdgrünen Traum verloren blieb."},
     {era = "Forever", text = "Leitet den Zirkel des Cenarius von der Enklave des Cenarius in Darnassus aus, im stillen Widerstreit mit Tyrande."},
 }
 
@@ -220,7 +220,7 @@ IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"].zones = {"Östliche Pestländer", "We
 IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"].source = "warcraft.wiki.gg/wiki/Tirion_Fordring"
 IMAGOdb.npcs.CAT_ARGENT["tirion_fordring"].timeline = {
     {era = "WC2", text = "Diente als Paladin der Silbernen Hand im Zweiten Krieg und wurde Lord von Mardenholde."},
-    {era = "Pre-Classic", text = "Wurde aus der Allianz verstoßen und der Titel des Lichts beraubt, weil er dem Orc Eitrigg das Leben gerettet hatte."},
+    {era = "Pre-Forever", text = "Wurde aus der Allianz verstoßen und der Titel des Lichts beraubt, weil er dem Orc Eitrigg das Leben gerettet hatte."},
     {era = "Forever", text = "Lebt im Exil in den Östlichen Pestländern, hält den Glauben aufrecht — und prüft jene, die ihn finden, mit der Erinnerung daran, was Ehre kostet."},
 }
 

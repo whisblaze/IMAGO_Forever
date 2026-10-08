@@ -25,3 +25,12 @@ IMAGO.Chronicle.zoneRanks = {
     {perc = 80,  title = "Исследователь"},
     {perc = 100, title = "Мироходец"},
 }
+
+IMAGO.Chronicle.raceRanks = {
+    {perc = 0,   title = "Чужак"},
+    {perc = 15,  title = "Странник"},
+    {perc = 35,  title = "Летописец"},
+    {perc = 55,  title = "Хранитель знаний"},
+    {perc = 75,  title = "Мудрец"},
+    {perc = 100, title = "Голос Азерота"},
+}

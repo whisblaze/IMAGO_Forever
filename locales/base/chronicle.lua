@@ -23,3 +23,12 @@ IMAGO.Chronicle.zoneRanks = {
     {perc = 80,  title = "Explorer"},
     {perc = 100, title = "Worldwalker"},
 }
+
+IMAGO.Chronicle.raceRanks = {
+    {perc = 0,   title = "Outsider"},
+    {perc = 15,  title = "Wanderer"},
+    {perc = 35,  title = "Chronicler"},
+    {perc = 55,  title = "Loremaster"},
+    {perc = 75,  title = "Sage"},
+    {perc = 100, title = "Voice of Azeroth"},
+}

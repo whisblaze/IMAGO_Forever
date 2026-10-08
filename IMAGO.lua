@@ -15,8 +15,10 @@ local defaults = {
     enabled       = true,
     seenZones     = {},
     seenNPCs      = {},
-    seenInstances = {},
+    seenRaces     = {},
     viewedNPCs    = {},
+    viewedRaces   = {},
+    manualRaceUnlocks = {},
     favorites     = {},
     history       = {},
     migratedSlugSuffix = false,
@@ -160,15 +162,20 @@ function IMAGO.Scanner.DiscoverNPC(npcID, questName)
                 IMAGO.Chronicle.UpdateList()
             end
 
+            if npcData and npcData.raceKey then
+                IMAGO.Scanner.DiscoverRace(npcData.raceKey)
+            end
+
             isNewDiscovery = true
         else
+            if npcData and npcData.raceKey then
+                IMAGO.Scanner.DiscoverRace(npcData.raceKey)
+            end
             if not IMAGO.Scanner.IsShowOnceOnlyEnabled("npc") then
                 if IMAGO.Display and IMAGO.Display.Show then
                     local msgKnown = IMAGO.L["CHAT_KNOWN"] and string.format(IMAGO.L["CHAT_KNOWN"], name) or ("|cFF888888[IMAGO]|r Archiv-Eintrag abgerufen: |cFFCCCCCC" .. name .. "|r")
                     print(msgKnown)
                     IMAGO.Display.Show(name, lore, "npc", false, slug)
-                    local msgKnown = IMAGO.L["CHAT_KNOWN"] and string.format(IMAGO.L["CHAT_KNOWN"], name) or ("|cFF888888[IMAGO]|r Archiv-Eintrag abgerufen: |cFFCCCCCC" .. name .. "|r")
-                    print(msgKnown)
                 end
             end
         end
@@ -176,6 +183,35 @@ function IMAGO.Scanner.DiscoverNPC(npcID, questName)
         return true, isNewDiscovery
     end
     return false, false
+end
+
+--- Unlocks a race record (Races tab). Triggered when an NPC of that race is discovered.
+function IMAGO.Scanner.DiscoverRace(raceSlug)
+    if not IMAGOSaved or not IMAGOSaved.enabled then return false end
+    if not IMAGOdb or not IMAGOdb.races then return false end
+    local data = IMAGOdb.races[raceSlug]
+    if not data then return false end
+
+    IMAGOSaved.seenRaces = IMAGOSaved.seenRaces or {}
+    if IMAGOSaved.seenRaces[raceSlug] then return true end
+
+    IMAGOSaved.seenRaces[raceSlug] = true
+
+    local name = data.name or raceSlug
+    local msg = IMAGO.L["CHAT_RACE_DISCOVERY"] and string.format(IMAGO.L["CHAT_RACE_DISCOVERY"], name)
+        or ("|cFF9370DB[IMAGO]|r New race documented: |cFFFFD700" .. name .. "|r")
+    print(msg)
+    PlaySound(3175, "Master")
+
+    if IMAGO.Display and IMAGO.Display.Show then
+        IMAGO.Display.Show(name, data.history, "race", true, raceSlug)
+    end
+
+    if IMAGO.Chronicle and IMAGO.Chronicle.frame and IMAGO.Chronicle.frame:IsShown() then
+        IMAGO.Chronicle.UpdateList()
+    end
+
+    return true
 end
 
 --- Scans all quest_ids with an NPC they unlock and reveal those whose quest is completed.
@@ -870,11 +906,11 @@ function IMAGO.Init()
                 if npcID and IMAGOdb and IMAGOdb.idToSlug then
                     local slug = IMAGOdb.idToSlug[npcID]
                     if slug then
-                        tooltip:AddLine(" ")
+                        local _ = tooltip:AddLine(" ")
                         if IMAGOSaved.seenNPCs[slug] then
-                            tooltip:AddLine(IMAGO.L["TOOLTIP_KNOWN"] or "IMAGO: In Chronik verzeichnet")
+                            _ = tooltip:AddLine(IMAGO.L["TOOLTIP_KNOWN"] or "IMAGO: In Chronik verzeichnet")
                         else
-                            tooltip:AddLine(IMAGO.L["TOOLTIP_UNKNOWN"] or "IMAGO: Schicksal verborgen")
+                            _ = tooltip:AddLine(IMAGO.L["TOOLTIP_UNKNOWN"] or "IMAGO: Schicksal verborgen")
                         end
                     end
                 end
@@ -924,8 +960,10 @@ function IMAGO.Init()
             IMAGOSaved.seenZones     = {}
             IMAGOSaved.discoveredZones = IMAGOSaved.seenZones
             IMAGOSaved.seenNPCs      = {}
-            IMAGOSaved.seenInstances = {}
+            IMAGOSaved.seenRaces     = {}
             IMAGOSaved.viewedNPCs    = {}
+            IMAGOSaved.viewedRaces   = {}
+            IMAGOSaved.manualRaceUnlocks = {}
             IMAGOSaved.favorites     = {}
             IMAGOSaved.history       = {}
             print("|cFFFFD700IMAGO:|r " .. (IMAGO.L["RESET_DONE"] or "Historie zurückgesetzt."))
@@ -989,7 +1027,15 @@ function IMAGO.Init()
                     count = count + 1
                 end
             end
-            
+
+            -- 3. Unlock races
+            for slug, _ in pairs(IMAGOdb.races or {}) do
+                if not IMAGOSaved.seenRaces[slug] then
+                    IMAGOSaved.seenRaces[slug] = true
+                    count = count + 1
+                end
+            end
+
             -- Output in chat
             local successMsg = IMAGO.L["CMD_UNLOCKALL_SUCCESS"] and string.format(IMAGO.L["CMD_UNLOCKALL_SUCCESS"], count) or string.format("|cFF9370DB[IMAGO]|r Alle Archive geöffnet. %d neue Einträge entschlüsselt.", count)
             print(successMsg)

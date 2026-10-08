@@ -88,10 +88,42 @@ L["ZONE_POI_HEADER"]                = "ОСНОВНЫЕ МЕСТА"
 L["ZONE_UNDISCOVERED"]              = "Не исследовано"
 
 -- ============================================================
--- Вкладка 3: Инстансы (скоро)
+-- Вкладка 3: Расы
 -- ============================================================
-L["COMING_SOON_INSTANCES_TITLE"]    = "СКРЫТЫЕ ПОДЗОНЫ"
-L["COMING_SOON_INSTANCES_DESC"]     = "Подземелья, рейды и вылазки. \nОтголоски могущственных противников ждут своего часа.\n\n|cFF9370DB[ В РАЗРАБОТКЕ ]"
+L["RACES_OVERVIEW"]              = "РАСЫ"
+L["FOOTER_RACES_PROGRESS"]       = "%d / %d Рас задокументировано (%d%%)"
+L["STARTPAGE_RACES_RANK"]        = "ЗНАНИЕ НАРОДОВ"
+L["STARTPAGE_RACES_NEXT"]        = "СЛЕДУЮЩИЕ РАНГИ:"
+L["CHAT_RACE_DISCOVERY"]         = "|cFF9370DB[IMAGO]|r Новая раса задокументирована: |cFFFFD700%s|r"
+L["DISPLAY_PROGRESS_RACE"]       = "Прогресс: %d%% (%d/%d Расы)"
+L["FILTER_ALL_RACES"]            = "Все Расы"
+L["RACE_ALIGN_ALLIANCE"]             = "Альянс"
+L["RACE_ALIGN_HORDE"]                = "Орда"
+L["RACE_ALIGN_NEUTRAL"]              = "Нейтральные"
+L["HINT_RACE_LOCKED"]            = "НАРОД НЕИЗВЕСТЕН"
+L["HINT_RACE_LOCKED_DESC"]       = "Встретьте представителя этой расы в мире, чтобы раскрыть её запись в Хрониках."
+L["RACE_TAB_HISTORY"]                = "История"
+L["RACE_TAB_GROUPS"]              = "Группы"
+L["RACE_TAB_FIGURES"]                = "Личности"
+L["RACE_TAB_SETTLEMENTS"]            = "Поселения"
+L["RACE_TAB_CULTURE"]                = "Культура"
+L["RACE_SEC_BIOLOGY"]                = "Физиология и Общество"
+L["RACE_SEC_BELIEFS"]                = "Верования"
+L["RACE_SEC_RELATIONS"]              = "Отношения"
+L["RACE_EMPTY_GROUPS"]            = "Группы не записаны."
+L["RACE_EMPTY_FIGURES"]              = "Известных личностей не записано."
+L["RACE_EMPTY_SETTLEMENTS"]          = "Поселения не записаны."
+L["RACE_CAP_MALE"]                   = "Мужской"
+L["RACE_CAP_FEMALE"]                 = "Женский"
+L["RACE_CAP_TABARD"]                 = "Гербовая накидка"
+L["RACE_CAP_LEADER"]                 = "Лидер"
+L["RACE_CAP_MOUNT"]                  = "Расовый маунт"
+L["RACE_CAP_EPIC_MOUNT"]             = "Эпический маунт"
+
+-- ============================================================
+-- Вкладка 4: Инстансы (скоро)
+-- ============================================================
+L["CLASSES_OVERVIEW"]                = "КЛАССЫ"
 
 -- Сканер и всплывающая подсказка
 L["TOOLTIP_KNOWN"]                  = "IMAGO: |cFFFFD700 Записан в Хрониках|r"
@@ -123,7 +155,8 @@ L["LOGIN_ALL_UNCOVERED"]            = "Все секреты раскрыты!"
 L["FOOTER_PROGRESS"]                = "%d / %d Судеб раскрыто (%d%%)"
 L["TAB_FATES"]                      = "Судьбы"
 L["TAB_ZONES"]                      = "Зоны"
-L["TAB_INSTANCES"]                  = "Подзоны"
+L["TAB_RACES"]                   = "Расы"
+L["TAB_CLASSES"]                    = "Классы"
 L["STARTPAGE_RANK"]                 = "Ваш ранг Хроник:"
 L["STARTPAGE_COMPLETED"]            = "ДОСТИГНУТО РАНГОВ:"
 L["STARTPAGE_NEXT"]                 = "СЛЕДУЮЩИЕ РАНГИ:"
