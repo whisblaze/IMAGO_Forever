@@ -134,6 +134,21 @@ L["CLASS_TAB_MECHANICS"]             = "Mechanics"
 L["CLASS_TAB_TALENTS"]               = "Talents"
 L["CLASS_TAB_TRAINERS"]              = "Trainers"
 
+-- ============================================================
+-- TAB 5: CODEX
+-- ============================================================
+L["TAB_CODEX"]                      = "Codex"
+L["CODEX_OVERVIEW"]                 = "CATEGORIES"
+L["CODEX_CAT_COSMOLOGY"]            = "Cosmology"
+L["CODEX_CAT_MAGIC"]                = "Magic & Powers"
+L["CODEX_CAT_PEOPLES"]              = "Peoples & Origins"
+L["CODEX_CAT_HISTORY"]              = "History & Concepts"
+L["CODEX_CAT_FACTIONS"]             = "Factions & Orders"
+L["CODEX_RELATED"]                  = "RELATED ENTRIES"
+L["CODEX_EMPTY"]                    = "No entries in this category."
+L["CODEX_SEARCH_EMPTY"]             = "No entries match this search."
+L["CODEX_SEARCH_RESULTS"]           = "Search Results"
+
 -- Scanner & Tooltip
 L["TOOLTIP_KNOWN"]                  = "IMAGO: |cFFFFD700Recorded in Chronicle|r"
 L["TOOLTIP_UNKNOWN"]                = "IMAGO: |cFF888888Fate hidden (Target to uncover)|r"
@@ -167,6 +182,11 @@ L["TAB_FATES"]                      = "Fates"
 L["TAB_ZONES"]                      = "Zones"
 L["TAB_RACES"]                   = "Races"
 L["TAB_CLASSES"]                    = "Classes"
+L["SEARCH_IN_FATES"]                = "Search Fates..."
+L["SEARCH_IN_ZONES"]                = "Search Zones..."
+L["SEARCH_IN_RACES"]                = "Search Races..."
+L["SEARCH_IN_CLASSES"]              = "Search Classes..."
+L["SEARCH_IN_CODEX"]                = "Search in Codex..."
 L["STARTPAGE_RANK"]                 = "Your Standing in the Chronicle:"
 L["STARTPAGE_COMPLETED"]            = "REACHED MILESTONES:"
 L["STARTPAGE_NEXT"]                 = "HIDDEN MILESTONES:"

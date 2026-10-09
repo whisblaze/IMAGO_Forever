@@ -5,8 +5,9 @@
 
 IMAGO.TextLinker = IMAGO.TextLinker or {}
 
-local npcList  = nil
-local zoneList = nil
+local npcList   = nil
+local zoneList  = nil
+local codexList = nil
 
 -- ============================================================
 -- BUILD NPC LOOKUP
@@ -75,6 +76,38 @@ function IMAGO.TextLinker.BuildZoneLookup()
 end
 
 -- ============================================================
+-- BUILD CODEX LOOKUP
+-- Only entries flagged `linkable` in the static data contribute
+-- their title + aliases — keeps generic words unlinked.
+-- ============================================================
+function IMAGO.TextLinker.BuildCodexLookup()
+    codexList = nil
+
+    if not IMAGOdb or not IMAGOdb.codex or not IMAGOdb.codex.entries then return end
+
+    local flat = {}   -- name → slug
+
+    for slug, data in pairs(IMAGOdb.codex.entries) do
+        if data.linkable and type(data.title) == "string" and data.title ~= "" then
+            flat[data.title] = slug
+            if type(data.aliases) == "table" then
+                for _, alias in ipairs(data.aliases) do
+                    if type(alias) == "string" and alias ~= "" then
+                        flat[alias] = slug
+                    end
+                end
+            end
+        end
+    end
+
+    codexList = {}
+    for name, slug in pairs(flat) do
+        codexList[#codexList + 1] = { name = name, slug = slug }
+    end
+    table.sort(codexList, function(a, b) return #a.name > #b.name end)
+end
+
+-- ============================================================
 -- SHARED PLAIN-TEXT LINK INJECTOR
 -- Inserts `link` around the FIRST unambiguous word-boundary
 -- occurrence of `searchName` in `text`.
@@ -95,7 +128,22 @@ local function InjectFirstLink(text, searchName, link)
         local charBefore = s > 1     and text:sub(s - 1, s - 1) or ""
         local charAfter  = e < #text and text:sub(e + 1, e + 1) or ""
 
-        if charBefore:match("%a") or charAfter:match("%a") then
+        -- Skip matches inside already-injected link markup (|H...|h)
+        local insideLink = false
+        local hStart = 1
+        while true do
+            local ls, le = text:find("|H", hStart, true)
+            if not ls or ls >= s then break end
+            local he = text:find("|h", le + 1, true)
+            if not he then break end
+            if s >= ls and s < he then
+                insideLink = true
+                break
+            end
+            hStart = he + 1
+        end
+
+        if insideLink or charBefore:match("%a") or charAfter:match("%a") then
             -- Part of a longer word — skip past this position
             result = result .. text:sub(pos, s)
             pos = s + 1
@@ -120,9 +168,13 @@ end
 -- @param text       string   Raw lore text
 -- @param selfSlug   string?  NPC slug of the page being shown (skipped)
 -- @param selfMapID  number?  Zone mapID of the page being shown (skipped)
+-- @param sharedNPCLinks   table?  Dedup set for NPC links
+-- @param sharedZoneLinks  table?  Dedup set for zone links
+-- @param sharedCodexLinks table?  Dedup set for codex links
+-- @param selfCodexSlug  string?  Codex slug of the page being shown (skipped)
 -- @return           string
 -- ============================================================
-function IMAGO.TextLinker.LinkNames(text, selfSlug, selfMapID, sharedNPCLinks, sharedZoneLinks)
+function IMAGO.TextLinker.LinkNames(text, selfSlug, selfMapID, sharedNPCLinks, sharedZoneLinks, sharedCodexLinks, selfCodexSlug)
     if not text or text == "" then return text end
 
     -- ---- 1. NPC links ----------------------------------------
@@ -155,6 +207,21 @@ function IMAGO.TextLinker.LinkNames(text, selfSlug, selfMapID, sharedNPCLinks, s
         end
     end
 
+    -- ---- 3. Codex links (lowest priority — runs last) --------
+    local linkedCodexSlugs = sharedCodexLinks or {}
+
+    for _, entry in ipairs(codexList or {}) do
+        local slug = entry.slug
+        if slug ~= selfCodexSlug and not linkedCodexSlugs[slug] then
+            local link = "|Himago-codex:" .. slug .. "|h|" .. "c" .. IMAGO_HEX.CODEX .. entry.name .. "|r|h"
+            local newText, ok = InjectFirstLink(text, entry.name, link)
+            if ok then
+                text = newText
+                linkedCodexSlugs[slug] = true
+            end
+        end
+    end
+
     return text
 end
 
@@ -176,6 +243,11 @@ function IMAGO.TextLinker.OnHyperlinkClick(self, link, text, button)
         local mapID = tonumber(payload)
         if mapID and IMAGO.Chronicle and IMAGO.Chronicle.OpenToZoneMapID then
             IMAGO.Chronicle.OpenToZoneMapID(mapID)
+        end
+
+    elseif linkType == "imago-codex" then
+        if IMAGO.Chronicle and IMAGO.Chronicle.OpenToCodex then
+            IMAGO.Chronicle.OpenToCodex(payload)
         end
     end
 end

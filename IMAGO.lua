@@ -881,6 +881,7 @@ function IMAGO.Init()
     if IMAGO.UnitContextMenu and IMAGO.UnitContextMenu.Init then IMAGO.UnitContextMenu.Init() end
     if IMAGO.TextLinker and IMAGO.TextLinker.BuildNameLookup then IMAGO.TextLinker.BuildNameLookup() end
     if IMAGO.TextLinker and IMAGO.TextLinker.BuildZoneLookup then IMAGO.TextLinker.BuildZoneLookup() end
+    if IMAGO.TextLinker and IMAGO.TextLinker.BuildCodexLookup then IMAGO.TextLinker.BuildCodexLookup() end
     IMAGO.CreateMinimapButton()
 
     if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall then
@@ -1066,7 +1067,7 @@ function IMAGO.Init()
         elseif msg:match("^unsee zone %d+") then
             --if not isDev then return end
             local mapID = tonumber(msg:match("^unsee zone (%d+)"))
-            if IMAGOSaved.seenZones[mapID] then
+            if IMAGOSaved.seenZones and IMAGOSaved.seenZones[mapID] then
                 IMAGOSaved.seenZones[mapID] = nil
                 print("|cFFFFD700[IMAGO DEV]|r Removed zone from seenZones: " .. mapID)
             else

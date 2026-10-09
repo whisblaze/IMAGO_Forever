@@ -20,6 +20,7 @@ data/LoreSnippets_static.lua
 data/zones_static.lua
 data/races_static.lua
 data/classes_static.lua
+data/codex_static.lua
 data/npcs/forever.lua
 
 locales/base/data/timelines.lua
@@ -27,6 +28,7 @@ locales/base/data/npcs/forever_npcs.lua
 locales/base/data/zones.lua
 locales/base/data/races.lua
 locales/base/data/classes.lua
+locales/base/data/codex.lua
 locales/base/data/snippets.lua
 locales/base/chronicle.lua
 

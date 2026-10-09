@@ -299,8 +299,31 @@ function IMAGO.Chronicle.CreateFrame()
     f:SetBackdropColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], (IMAGOSaved and IMAGOSaved.opaqueUI) and 1.0 or 0.95)
     f:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.9)
 
-    f.closeBtn = CreateFrame("Button", nil, f, "UIPanelCloseButton")
-    f.closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -4)
+    -- Custom slim close button matching the header controls
+    f.closeBtn = CreateFrame("Button", nil, f, "BackdropTemplate")
+    f.closeBtn:SetSize(18, 18)
+    f.closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -12)
+    f.closeBtn:SetBackdrop({ bgFile = "Interface\\ChatFrame\\ChatFrameBackground", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 8, insets = {left=2,right=2,top=2,bottom=2} })
+    f.closeBtn:SetBackdropColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], 0.5)
+    f.closeBtn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.35)
+
+    f.closeBtn.label = f.closeBtn:CreateFontString(nil, "OVERLAY")
+    f.closeBtn.label:SetFont(FONT_BODY, 12, "")
+    f.closeBtn.label:SetPoint("CENTER", f.closeBtn, "CENTER", 0, 0)
+    f.closeBtn.label:SetText("X")
+    f.closeBtn.label:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+
+    f.closeBtn:SetScript("OnEnter", function(self)
+        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3], 0.7)
+        self.label:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+    end)
+    f.closeBtn:SetScript("OnLeave", function(self)
+        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.35)
+        self.label:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+    end)
+    f.closeBtn:SetScript("OnClick", function(self)
+        self:GetParent():Hide()
+    end)
     f.closeBtn:HookScript("OnClick", function()
         wipe(navStack)
         if IMAGO.Chronicle.SetBackEnabled then IMAGO.Chronicle.SetBackEnabled(false) end
@@ -365,29 +388,98 @@ function IMAGO.Chronicle.CreateFrame()
     f.sidebar.rightBorder:SetPoint("BOTTOMRIGHT", f.sidebar, "BOTTOMRIGHT", 0, 0)
     f.sidebar.rightBorder:SetColorTexture(IMAGO_COLORS.DIVIDER[1], IMAGO_COLORS.DIVIDER[2], IMAGO_COLORS.DIVIDER[3], 0.8)
 
-    f.searchBox = CreateFrame("EditBox", "IMAGOChronicleSearch", f, "SearchBoxTemplate")
-    f.searchBox:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH - (LAYOUT.SIDEBAR_CONTROL_PADDING * 2) - LAYOUT.SIDEBAR_CONTROL_GAP - LAYOUT.FILTER_WIDTH, 20)
-    f.searchBox:SetPoint("TOPLEFT", f.sidebar, "TOPLEFT", LAYOUT.SIDEBAR_CONTROL_PADDING, -5)
+    -- Global search bar: slim custom EditBox in the main header,
+    -- right-aligned next to the close button, vertically on the same
+    -- line as the small header buttons. Filters the active tab.
+    f.searchBox = CreateFrame("EditBox", "IMAGOChronicleSearch", f, "BackdropTemplate")
+    f.searchBox:SetSize(160, 18)
+    -- Top edge -12 = same height as settings gear & back button;
+    -- right edge 46px from frame right = clear of the 32px close button
+    f.searchBox:SetPoint("TOPRIGHT", f, "TOPRIGHT", -46, -12)
     f.searchBox:SetAutoFocus(false)
-    f.searchBox:SetScript("OnTextChanged", function(self)
-        SearchBoxTemplate_OnTextChanged(self)
-        IMAGO.Chronicle.UpdateList()
-    end)
+    f.searchBox:SetFont(FONT_BODY, 12, "")
+    f.searchBox:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
+    f.searchBox:SetTextInsets(20, 4, 0, 0)
+    f.searchBox:SetMaxLetters(60)
+    f.searchBox:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        edgeSize = 8,
+        insets = { left = 2, right = 2, top = 2, bottom = 2 }
+    })
+    f.searchBox:SetBackdropColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], 0.5)
+    f.searchBox:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.35)
 
-    f.filterBtn = CreateFrame("Button", nil, f, "UIMenuButtonStretchTemplate")
-    f.filterBtn:SetSize(LAYOUT.FILTER_WIDTH, 22)
-    f.filterBtn:SetPoint("LEFT", f.searchBox, "RIGHT", LAYOUT.SIDEBAR_CONTROL_GAP, 0)
-    f.filterBtn.t = f.filterBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    f.filterBtn.t:SetPoint("CENTER")
+    f.searchBox.icon = f.searchBox:CreateTexture(nil, "OVERLAY")
+    f.searchBox.icon:SetSize(11, 11)
+    f.searchBox.icon:SetPoint("LEFT", f.searchBox, "LEFT", 5, 0)
+    f.searchBox.icon:SetTexture("Interface\\Common\\UI-Searchbox-Icon")
+    f.searchBox.icon:SetVertexColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+    f.searchBox.icon:SetAlpha(0.85)
+
+    f.searchBox.instructions = f.searchBox:CreateFontString(nil, "OVERLAY")
+    f.searchBox.instructions:SetFont(FONT_BODY, 12, "")
+    f.searchBox.instructions:SetPoint("LEFT", f.searchBox, "LEFT", 20, 0)
+    f.searchBox.instructions:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
+    f.searchBox.instructions:SetText("Search...")
+    f.searchBox.Instructions = f.searchBox.instructions -- compat with template-style access
+
+    f.searchBox:SetScript("OnTextChanged", function(self)
+        self.instructions:SetShown((self:GetText() or "") == "" and not self:HasFocus())
+        IMAGO.Chronicle.UpdateList()
+        -- Codex: search filters the middle entry list, not the sidebar
+        if f.activeTabIndex == 5 then
+            IMAGO.Chronicle.ShowCodexDefault()
+        end
+    end)
+    f.searchBox:SetScript("OnEditFocusGained", function(self)
+        self.instructions:Hide()
+        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.7)
+    end)
+    f.searchBox:SetScript("OnEditFocusLost", function(self)
+        self.instructions:SetShown((self:GetText() or "") == "")
+        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.35)
+    end)
+    f.searchBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+    f.searchBox:SetScript("OnEnterPressed",  function(self) self:ClearFocus() end)
+
+    -- Slim filter button matching the header search bar
+    f.filterBtn = CreateFrame("Button", nil, f, "BackdropTemplate")
+    f.filterBtn:SetSize(LAYOUT.FILTER_WIDTH, 18)
+    f.filterBtn:SetPoint("TOPRIGHT", f.searchBox, "TOPLEFT", -LAYOUT.SIDEBAR_CONTROL_GAP, 0)
+    f.filterBtn:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        edgeSize = 8,
+        insets = { left = 2, right = 2, top = 2, bottom = 2 }
+    })
+    f.filterBtn:SetBackdropColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], 0.5)
+    f.filterBtn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.35)
+
+    f.filterBtn.t = f.filterBtn:CreateFontString(nil, "OVERLAY")
+    f.filterBtn.t:SetFont(FONT_BODY, 11, "")
+    f.filterBtn.t:SetPoint("CENTER", f.filterBtn, "CENTER", -3, 0)
+    f.filterBtn.t:SetWidth(LAYOUT.FILTER_WIDTH - 20)
+    f.filterBtn.t:SetWordWrap(false)
+    f.filterBtn.t:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+    f.filterBtn:SetFontString(f.filterBtn.t)
     f.filterBtn:SetText(IMAGO.L["FILTER_ALL"])
 
-    local btnText = f.filterBtn:GetFontString()
-    if btnText then
-        -- Forces the text to be 15px narrower than the button itself
-        btnText:SetWidth(f.filterBtn:GetWidth() - 15) 
-        -- Prevents line wraps and automatically enables the trailing "..."
-        btnText:SetWordWrap(false) 
-    end
+    -- Small gold chevron hinting at the dropdown
+    f.filterBtn.chevron = f.filterBtn:CreateFontString(nil, "OVERLAY")
+    f.filterBtn.chevron:SetFont(FONT_BODY, 10, "")
+    f.filterBtn.chevron:SetPoint("RIGHT", f.filterBtn, "RIGHT", -5, -1)
+    f.filterBtn.chevron:SetText(">")
+    f.filterBtn.chevron:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+
+    f.filterBtn:SetScript("OnEnter", function(self)
+        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3], 0.7)
+        self.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+    end)
+    f.filterBtn:SetScript("OnLeave", function(self)
+        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.35)
+        self.t:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+    end)
     
     f.filterMenu = CreateFrame("Frame", nil, f, "BackdropTemplate")
     f.filterMenu:SetSize(200, 200)
@@ -576,6 +668,34 @@ function IMAGO.Chronicle.CreateFrame()
         if f.ShowDashboard then f.ShowDashboard() end
     end)
     f.sidebar.classesHeader:Hide()
+
+    -- Codex fixed sidebar header (outside the scroll area)
+    f.sidebar.codexHeader = CreateFrame("Button", nil, f.sidebar)
+    f.sidebar.codexHeader:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, LAYOUT.SIDEBAR_HEADER_HEIGHT)
+    f.sidebar.codexHeader:SetPoint("TOPLEFT", f.sidebar, "TOPLEFT", 0, 0)
+
+    f.sidebar.codexHeader.bg = f.sidebar.codexHeader:CreateTexture(nil, "BACKGROUND")
+    f.sidebar.codexHeader.bg:SetAllPoints()
+    f.sidebar.codexHeader.bg:SetColorTexture(IMAGO_COLORS.BG_PANEL[1], IMAGO_COLORS.BG_PANEL[2], IMAGO_COLORS.BG_PANEL[3], IMAGO_COLORS.BG_PANEL[4])
+
+    local cxhl = f.sidebar.codexHeader:CreateTexture(nil, "HIGHLIGHT")
+    cxhl:SetAllPoints()
+    cxhl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.3)
+
+    f.sidebar.codexHeader.t = f.sidebar.codexHeader:CreateFontString(nil, "OVERLAY")
+    IMAGO.ApplyTextStyle(f.sidebar.codexHeader.t, "SIDEBAR_HEADER")
+    f.sidebar.codexHeader.t:SetPoint("CENTER", 0, 0)
+    f.sidebar.codexHeader.t:SetText(IMAGO.L["CODEX_OVERVIEW"] or "CODEX")
+
+    f.sidebar.codexHeader:SetScript("OnClick", function()
+        if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+        IMAGO.Chronicle.SetDetailAction(nil)
+        f.selectedCodexCat = nil
+        f.selectedCodexSlug = nil
+        IMAGO.Chronicle.UpdateList()
+        IMAGO.Chronicle.ShowCodexDefault()
+    end)
+    f.sidebar.codexHeader:Hide()
 
     -- ============================================================
     -- RIGHT SIDE: THE DETAIL FRAME
@@ -773,6 +893,100 @@ function IMAGO.Chronicle.CreateFrame()
     f.classIcon:SetSize(64, 64)
     f.classIcon:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 35, -160)
     f.classIcon:Hide()
+
+    -- ============================================================
+    -- CODEX PANELS (tab 5): middle entry list + right content column
+    -- ============================================================
+    f.codexListPanel = CreateFrame("Frame", nil, f.detailFrame, "BackdropTemplate")
+    f.codexListPanel:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 10, 0)
+    f.codexListPanel:SetPoint("BOTTOMLEFT", f.detailFrame, "BOTTOMLEFT", 10, 0)
+    f.codexListPanel:SetWidth(250)
+    f.codexListPanel:SetBackdrop({
+        bgFile = "Interface\\Buttons\\WHITE8X8",
+        edgeFile = "",
+        tile = true, tileSize = 16, edgeSize = 16,
+        insets = { left = 0, right = 0, top = 0, bottom = 0 }
+    })
+    f.codexListPanel:SetBackdropColor(IMAGO_COLORS.BG_PANEL[1], IMAGO_COLORS.BG_PANEL[2], IMAGO_COLORS.BG_PANEL[3], 0.85)
+    f.codexListPanel:Hide()
+
+    f.codexListPanel.rightBorder = f.codexListPanel:CreateTexture(nil, "ARTWORK")
+    f.codexListPanel.rightBorder:SetWidth(LAYOUT.DIVIDER_WIDTH)
+    f.codexListPanel.rightBorder:SetPoint("TOPRIGHT", f.codexListPanel, "TOPRIGHT", 0, 0)
+    f.codexListPanel.rightBorder:SetPoint("BOTTOMRIGHT", f.codexListPanel, "BOTTOMRIGHT", 0, 0)
+    f.codexListPanel.rightBorder:SetColorTexture(IMAGO_COLORS.DIVIDER[1], IMAGO_COLORS.DIVIDER[2], IMAGO_COLORS.DIVIDER[3], 0.8)
+
+    -- Panel header row: shows the selected category / "Search Results"
+    f.codexCatHeading = f.codexListPanel:CreateFontString(nil, "OVERLAY")
+    f.codexCatHeading:SetFont(FONT_TITLE, 15, "OUTLINE")
+    f.codexCatHeading:SetPoint("TOPLEFT", f.codexListPanel, "TOPLEFT", 12, -9)
+    f.codexCatHeading:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+    f.codexCatHeading:SetJustifyH("LEFT")
+    f.codexCatHeading:Hide()
+
+    f.codexListPanel.headingLine = f.codexListPanel:CreateTexture(nil, "ARTWORK")
+    f.codexListPanel.headingLine:SetHeight(1)
+    f.codexListPanel.headingLine:SetPoint("TOPLEFT", f.codexListPanel, "TOPLEFT", 10, -34)
+    f.codexListPanel.headingLine:SetPoint("TOPRIGHT", f.codexListPanel, "TOPRIGHT", -10, -34)
+    f.codexListPanel.headingLine:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+    f.codexListPanel.headingLine:SetGradient("HORIZONTAL", CreateColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.5), CreateColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0))
+
+    f.codexListScroll = CreateFrame("ScrollFrame", "IMAGOChronicleCodexList", f.codexListPanel, "UIPanelScrollFrameTemplate")
+    f.codexListScroll:SetPoint("TOPLEFT", f.codexListPanel, "TOPLEFT", 0, -40)
+    f.codexListScroll:SetPoint("BOTTOMRIGHT", f.codexListPanel, "BOTTOMRIGHT", 0, 4)
+    IMAGO.StyleAndAnchorScrollBar("IMAGOChronicleCodexListScrollBar", f.codexListScroll)
+
+    f.codexListContent = CreateFrame("Frame", nil, f.codexListScroll)
+    f.codexListContent:SetSize(238, 1)
+    f.codexListScroll:SetScrollChild(f.codexListContent)
+
+    f.codexContent = CreateFrame("Frame", nil, f.detailFrame)
+    f.codexContent:SetPoint("TOPLEFT", f.codexListPanel, "TOPRIGHT", 15, -10)
+    f.codexContent:SetPoint("BOTTOMRIGHT", f.detailFrame, "BOTTOMRIGHT", -15, 20)
+    f.codexContent:Hide()
+
+    f.codexTitle = f.codexContent:CreateFontString(nil, "OVERLAY")
+    f.codexTitle:SetFont(FONT_TITLE, 24, "OUTLINE")
+    f.codexTitle:SetPoint("TOPLEFT", f.codexContent, "TOPLEFT", 10, -5)
+    f.codexTitle:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+    f.codexTitle:SetJustifyH("LEFT")
+
+    f.codexCatTag = f.codexContent:CreateFontString(nil, "OVERLAY")
+    f.codexCatTag:SetFont(FONT_BODY, 11, "OUTLINE")
+    f.codexCatTag:SetPoint("TOPLEFT", f.codexTitle, "BOTTOMLEFT", 0, -8)
+    f.codexCatTag:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+    f.codexCatTag:SetJustifyH("LEFT")
+
+    f.codexDivider = f.codexContent:CreateTexture(nil, "ARTWORK")
+    f.codexDivider:SetHeight(1)
+    f.codexDivider:SetPoint("TOPLEFT", f.codexCatTag, "BOTTOMLEFT", 0, -8)
+    f.codexDivider:SetPoint("TOPRIGHT", f.codexContent, "TOPRIGHT", -10, -70)
+    f.codexDivider:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+    f.codexDivider:SetGradient("HORIZONTAL", CreateColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.5), CreateColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0))
+
+    f.codexBodyScroll = CreateFrame("ScrollFrame", "IMAGOChronicleCodexBody", f.codexContent, "UIPanelScrollFrameTemplate")
+    f.codexBodyScroll:SetPoint("TOPLEFT", f.codexContent, "TOPLEFT", 10, -90)
+    f.codexBodyScroll:SetPoint("BOTTOMRIGHT", f.codexContent, "BOTTOMRIGHT", -10, 10)
+    IMAGO.StyleAndAnchorScrollBar("IMAGOChronicleCodexBodyScrollBar", f.codexBodyScroll, IMAGO_COLORS.GOLD)
+
+    f.codexBodyContent = CreateFrame("Frame", nil, f.codexBodyScroll)
+    f.codexBodyContent:SetSize(460, 1)
+    f.codexBodyScroll:SetScrollChild(f.codexBodyContent)
+    f.codexBodyContent:SetHyperlinksEnabled(true)
+    f.codexBodyContent:EnableMouse(true)
+    f.codexBodyContent:SetScript("OnHyperlinkClick", function(self, link, text, button)
+        if IMAGO.TextLinker and IMAGO.TextLinker.OnHyperlinkClick then
+            IMAGO.TextLinker.OnHyperlinkClick(self, link, text, button)
+        end
+    end)
+
+    f.codexBody = f.codexBodyContent:CreateFontString(nil, "OVERLAY")
+    f.codexBody:SetFont(FONT_BODY, 14)
+    f.codexBody:SetPoint("TOPLEFT", f.codexBodyContent, "TOPLEFT", 0, 0)
+    f.codexBody:SetWidth(460)
+    f.codexBody:SetJustifyH("LEFT")
+    f.codexBody:SetSpacing(8)
+    f.codexBody:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
 
     f.infoScroll = CreateFrame("ScrollFrame", "IMAGOChronicleInfoScroll", f.detailFrame, "UIPanelScrollFrameTemplate")
     f.infoScroll:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 310, -115)
@@ -1069,17 +1283,25 @@ function IMAGO.Chronicle.CreateFrame()
     -- ==========================================
     -- MODE TOGGLE BUTTON + DROPDOWN
     -- ==========================================
-    f.modeBtn = CreateFrame("Button", nil, f.detailFrame, "BackdropTemplate")
-    f.modeBtn:SetSize(85, 22)
-    f.modeBtn:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 14, -14)
-    f.modeBtn:SetBackdrop({ bgFile = "Interface\\ChatFrame\\ChatFrameBackground", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10, insets = {left=3,right=3,top=3,bottom=3} })
-    f.modeBtn:SetBackdropColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], 0.85)
-    f.modeBtn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.6)
+    f.modeBtn = CreateFrame("Button", nil, f, "BackdropTemplate")
+    f.modeBtn:SetSize(64, 18)
+    -- Header row: settings gear | back | mode — same top line at -12
+    f.modeBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 102, -12)
+    f.modeBtn:SetBackdrop({ bgFile = "Interface\\ChatFrame\\ChatFrameBackground", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 8, insets = {left=2,right=2,top=2,bottom=2} })
+    f.modeBtn:SetBackdropColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], 0.5)
+    f.modeBtn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.35)
 
     f.modeBtn.label = f.modeBtn:CreateFontString(nil, "OVERLAY")
-    f.modeBtn.label:SetFont(FONT_BODY, 11, "OUTLINE")
-    f.modeBtn.label:SetPoint("CENTER", f.modeBtn, "CENTER", 0, 0)
+    f.modeBtn.label:SetFont(FONT_BODY, 11, "")
+    f.modeBtn.label:SetPoint("CENTER", f.modeBtn, "CENTER", -3, 0)
     f.modeBtn.label:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+
+    -- Gold chevron = dropdown hint (same as filter button)
+    f.modeBtn.chevron = f.modeBtn:CreateFontString(nil, "OVERLAY")
+    f.modeBtn.chevron:SetFont(FONT_BODY, 10, "")
+    f.modeBtn.chevron:SetPoint("RIGHT", f.modeBtn, "RIGHT", -5, -1)
+    f.modeBtn.chevron:SetText(">")
+    f.modeBtn.chevron:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
 
     local function UpdateModeBtn()
         f.modeBtn.label:SetText(IMAGO.L["MODE_LABEL"])
@@ -1286,22 +1508,26 @@ function IMAGO.Chronicle.CreateFrame()
         end
     end)
     f.modeBtn:SetScript("OnEnter", function()
-        f.modeBtn:SetBackdropBorderColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3], 1)
+        f.modeBtn:SetBackdropBorderColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3], 0.7)
+        f.modeBtn.label:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
     end)
     f.modeBtn:SetScript("OnLeave", function()
-        f.modeBtn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.6)
+        f.modeBtn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.35)
+        f.modeBtn.label:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
     end)
 
-    -- Back button: sits to the right of modeBtn inside detailFrame
-    f.backBtn = CreateFrame("Button", nil, f.detailFrame, "BackdropTemplate")
-    f.backBtn:SetSize(70, 22)
-    f.backBtn:SetPoint("LEFT", f.modeBtn, "RIGHT", 8, 0)
-    f.backBtn:SetBackdrop({ bgFile = "Interface\\ChatFrame\\ChatFrameBackground", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10, insets = {left=3,right=3,top=3,bottom=3} })
-    f.backBtn:SetBackdropColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], 0.85)
-    f.backBtn:SetBackdropBorderColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3], 0.4)
+    -- Back button: top bar, right of the settings gear — same slim
+    -- style as the header search bar and filter button
+    f.backBtn = CreateFrame("Button", nil, f, "BackdropTemplate")
+    f.backBtn:SetSize(58, 18)
+    -- Top edge -12 = same line as settings gear, search & filter
+    f.backBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 36, -12)
+    f.backBtn:SetBackdrop({ bgFile = "Interface\\ChatFrame\\ChatFrameBackground", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 8, insets = {left=2,right=2,top=2,bottom=2} })
+    f.backBtn:SetBackdropColor(IMAGO_COLORS.BG_MAIN[1], IMAGO_COLORS.BG_MAIN[2], IMAGO_COLORS.BG_MAIN[3], 0.5)
+    f.backBtn:SetBackdropBorderColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3], 0.35)
 
     f.backBtn.label = f.backBtn:CreateFontString(nil, "OVERLAY")
-    f.backBtn.label:SetFont(FONT_BODY, 11, "OUTLINE")
+    f.backBtn.label:SetFont(FONT_BODY, 11, "")
     f.backBtn.label:SetPoint("CENTER", f.backBtn, "CENTER", 0, 0)
     f.backBtn.label:SetText("< " .. (IMAGO.L and IMAGO.L["BACK"] or "Back"))
     f.backBtn.label:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
@@ -1309,14 +1535,14 @@ function IMAGO.Chronicle.CreateFrame()
 
     f.backBtn:SetScript("OnEnter", function(self)
         if self.enabled then
-            self:SetBackdropBorderColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3], 1)
+            self:SetBackdropBorderColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3], 0.7)
         end
     end)
     f.backBtn:SetScript("OnLeave", function(self)
         if self.enabled then
-            self:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.6)
+            self:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.35)
         else
-            self:SetBackdropBorderColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3], 0.4)
+            self:SetBackdropBorderColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3], 0.35)
         end
     end)
     f.backBtn:SetScript("OnClick", function(self)
@@ -1331,6 +1557,10 @@ function IMAGO.Chronicle.CreateFrame()
             IMAGO.Chronicle.OpenToZoneMapID(prev.mapID)
         elseif prev.type == "race" then
             IMAGO.Chronicle.OpenToRace(prev.slug)
+        elseif prev.type == "class" then
+            IMAGO.Chronicle.OpenToClass(prev.slug)
+        elseif prev.type == "codex" then
+            IMAGO.Chronicle.OpenToCodex(prev.slug)
         end
         C_Timer.After(0, function()
             isNavigatingBack = false
@@ -1338,7 +1568,7 @@ function IMAGO.Chronicle.CreateFrame()
 
         if #navStack == 0 then
             self.enabled = false
-            self:SetBackdropBorderColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3], 0.4)
+            self:SetBackdropBorderColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3], 0.35)
             self.label:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
         end
     end)
@@ -1348,10 +1578,10 @@ function IMAGO.Chronicle.CreateFrame()
         if not btn then return end
         btn.enabled = val
         if val then
-            btn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.6)
+            btn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.35)
             btn.label:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
         else
-            btn:SetBackdropBorderColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3], 0.4)
+            btn:SetBackdropBorderColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3], 0.35)
             btn.label:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
         end
     end
@@ -1366,8 +1596,8 @@ function IMAGO.Chronicle.CreateFrame()
     -- ==-- ==========================================
     -- NEW: MAIN TABS (BOTTOM TABS) LOCALIZED
     -- ==========================================
-    f.numTabs = 5
-    local tabNames = {IMAGO.L["TAB_FATES"], IMAGO.L["TAB_ZONES"], IMAGO.L["TAB_RACES"], IMAGO.L["TAB_CLASSES"], IMAGO.L["TAB_CREDITS"]}
+    f.numTabs = 6
+    local tabNames = {IMAGO.L["TAB_FATES"], IMAGO.L["TAB_ZONES"], IMAGO.L["TAB_RACES"], IMAGO.L["TAB_CLASSES"], IMAGO.L["TAB_CODEX"], IMAGO.L["TAB_CREDITS"]}
     for i = 1, f.numTabs do
         -- Fallback so a missing/mistimed locale string can never break tab creation
         local name = tabNames[i] or ("Tab " .. i)
@@ -1392,6 +1622,10 @@ function IMAGO.Chronicle.CreateFrame()
         PanelTemplates_SetTab(f, index)
         f.activeTabIndex = index
         f.activeFilter = "ALL"
+        -- Clear a stale search term when switching tabs
+        if f.searchBox and (f.searchBox:GetText() or "") ~= "" then
+            f.searchBox:SetText("")
+        end
         if f.filterBtn then
             f.filterBtn:SetText(index == 3
                 and (IMAGO.L["FILTER_ALL_RACES"] or "All Races")
@@ -1426,20 +1660,56 @@ function IMAGO.Chronicle.CreateFrame()
         if f.raceZoneImage then f.raceZoneImage:Hide() end
         if f.raceZoneBorder then f.raceZoneBorder:Hide() end
         if f.classIcon then f.classIcon:Hide() end
+        if f.codexListPanel then f.codexListPanel:Hide() end
+        if f.codexContent then f.codexContent:Hide() end
+        if f.codexCatHeading then f.codexCatHeading:Hide() end
         IMAGO.Chronicle.SetDetailAction(nil)
         if f.filterMenu         then f.filterMenu:Hide()         end
+        if f.modeDropdown       then f.modeDropdown:Hide()       end
+
+        -- Codex/Credits have no footer/modeBtn/startPage — restore them for content tabs
+        if f.footer then f.footer:SetShown(index ~= 5 and index ~= 6) end
+        if f.modeBtn then f.modeBtn:SetShown(index <= 4) end
+
+        -- Global header search: visible on all content tabs, per-tab hint
+        local searchHintKeys = {
+            "SEARCH_IN_FATES", "SEARCH_IN_ZONES", "SEARCH_IN_RACES",
+            "SEARCH_IN_CLASSES", "SEARCH_IN_CODEX"
+        }
+        local hintKey = searchHintKeys[index]
+        if f.searchBox.Instructions then
+            f.searchBox.Instructions:SetText((hintKey and IMAGO.L[hintKey]) or "Search...")
+        end
+        f.searchBox:SetShown(hintKey ~= nil)
+        f.filterBtn:SetShown(index == 1 or index == 3)
+
+        -- Sidebar list starts below the header strip; Fates has no header
+        if f.scrollFrame then
+            f.scrollFrame:ClearAllPoints()
+            f.scrollFrame:SetPoint("TOPLEFT", f.sidebar, "TOPLEFT", 0,
+                (index == 1) and 0 or -LAYOUT.SIDEBAR_HEADER_HEIGHT)
+            f.scrollFrame:SetPoint("BOTTOMRIGHT", f.sidebar, "BOTTOMRIGHT", 0, 0)
+        end
 
         if index == 1 or index == 2 or index == 3 or index == 4 then
             -- Fates/Zones/Races/Classes: flat list (no expansion picker)
-            f.searchBox:SetShown(index == 1 or index == 3 or index == 4)
-            f.filterBtn:SetShown(index == 1 or index == 3)
             f.sidebar:Show(); f.detailFrame:Show()
             if f.sidebar.zonesHeader then f.sidebar.zonesHeader:SetShown(index == 2) end
             if f.sidebar.racesHeader then f.sidebar.racesHeader:SetShown(index == 3) end
             if f.sidebar.classesHeader then f.sidebar.classesHeader:SetShown(index == 4) end
+            if f.sidebar.codexHeader then f.sidebar.codexHeader:Hide() end
             IMAGO.Chronicle.UpdateList()
             if f.ShowDashboard then f.ShowDashboard() end
         elseif index == 5 then
+            -- Codex tab: categories sidebar + entry list + content
+            f.sidebar:Show(); f.detailFrame:Show()
+            if f.sidebar.zonesHeader then f.sidebar.zonesHeader:Hide() end
+            if f.sidebar.racesHeader then f.sidebar.racesHeader:Hide() end
+            if f.sidebar.classesHeader then f.sidebar.classesHeader:Hide() end
+            if f.sidebar.codexHeader then f.sidebar.codexHeader:Show() end
+            IMAGO.Chronicle.UpdateList()
+            IMAGO.Chronicle.ShowCodexDefault()
+        elseif index == 6 then
             -- Credits tab
             f.searchBox:Hide()
             f.filterBtn:Hide()
@@ -1626,6 +1896,9 @@ function IMAGO.Chronicle.CreateFrame()
         if f.raceEmblemBox then f.raceEmblemBox:Hide() end
         if f.raceZoneImage then f.raceZoneImage:Hide() end
         if f.raceZoneBorder then f.raceZoneBorder:Hide() end
+        if f.codexListPanel then f.codexListPanel:Hide() end
+        if f.codexContent then f.codexContent:Hide() end
+        if f.codexCatHeading then f.codexCatHeading:Hide() end
         if f.detailImage then f.detailImage:Hide() end
         if f.detailImageBorder then f.detailImageBorder:Hide() end
         if f.detailSeparator then f.detailSeparator:Hide() end
@@ -1856,6 +2129,7 @@ function IMAGO.Chronicle.UpdateList()
     for _, zb in pairs(IMAGO.Chronicle.zoneButtons or {}) do zb:Hide() end
     for _, fb in pairs(IMAGO.Chronicle.raceButtons or {}) do fb:Hide() end
     for _, cb in pairs(IMAGO.Chronicle.classButtons or {}) do cb:Hide() end
+    for _, cb in pairs(IMAGO.Chronicle.codexCatButtons or {}) do cb:Hide() end
     if IMAGO.Chronicle.homeBtn then IMAGO.Chronicle.homeBtn:Hide() end
 
     -- ============================================================
@@ -1869,6 +2143,9 @@ function IMAGO.Chronicle.UpdateList()
     end
     if f.sidebar.classesHeader then
         f.sidebar.classesHeader:Hide()
+    end
+    if f.sidebar.codexHeader then
+        f.sidebar.codexHeader:Hide()
     end
 
     -- ============================================================
@@ -2239,6 +2516,10 @@ function IMAGO.Chronicle.UpdateList()
                                 entry = { type = "zone", mapID = f.selectedZoneMapID }
                             elseif f.selectedRaceSlug then
                                 entry = { type = "race", slug = f.selectedRaceSlug }
+                            elseif f.selectedClassSlug then
+                                entry = { type = "class", slug = f.selectedClassSlug }
+                            elseif f.selectedCodexSlug then
+                                entry = { type = "codex", slug = f.selectedCodexSlug }
                             end
                             if entry then
                                 table.insert(navStack, entry)
@@ -2249,6 +2530,8 @@ function IMAGO.Chronicle.UpdateList()
                         end
                         f.selectedZoneMapID = nil
                         f.selectedRaceSlug = nil
+                        f.selectedClassSlug = nil
+                        f.selectedCodexSlug = nil
 
                         f.selectedNPC = npc.data
                         f.selectedNPCSlug = npc.slug
@@ -2287,6 +2570,7 @@ function IMAGO.Chronicle.UpdateList()
                                 end
 
                                 f.detailTitle:SetText(name)
+                                f.detailTitle:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
 
                                 local lore = npc.data.lore or ""
                                 local firstByte = string.byte(lore, 1)
@@ -2572,6 +2856,10 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "zone", mapID = f.selectedZoneMapID }
                     elseif f.selectedRaceSlug then
                         entry = { type = "race", slug = f.selectedRaceSlug }
+                    elseif f.selectedClassSlug then
+                        entry = { type = "class", slug = f.selectedClassSlug }
+                    elseif f.selectedCodexSlug then
+                        entry = { type = "codex", slug = f.selectedCodexSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -2580,6 +2868,8 @@ function IMAGO.Chronicle.UpdateList()
                 end
                 f.selectedNPCSlug = nil
                 f.selectedRaceSlug = nil
+                f.selectedClassSlug = nil
+                f.selectedCodexSlug = nil
                 f.selectedZoneMapID = mapID
 
                 f.startPage:Hide()
@@ -2603,6 +2893,7 @@ function IMAGO.Chronicle.UpdateList()
                 f.detailLineLeft:Show()
                 f.detailLineRight:Show()
                 f.detailTitle:SetText(name)
+                f.detailTitle:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
 
                 if f.detailImage then
                     if zoneData.texturePath and zoneData.texturePath ~= "" then
@@ -2702,6 +2993,10 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "zone", mapID = f.selectedZoneMapID }
                     elseif f.selectedRaceSlug then
                         entry = { type = "race", slug = f.selectedRaceSlug }
+                    elseif f.selectedClassSlug then
+                        entry = { type = "class", slug = f.selectedClassSlug }
+                    elseif f.selectedCodexSlug then
+                        entry = { type = "codex", slug = f.selectedCodexSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -2710,6 +3005,8 @@ function IMAGO.Chronicle.UpdateList()
                 end
                 f.selectedNPCSlug = nil
                 f.selectedRaceSlug = nil
+                f.selectedClassSlug = nil
+                f.selectedCodexSlug = nil
                 f.selectedZoneMapID = mapID
 
                 f.startPage:Hide()
@@ -3000,6 +3297,10 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "zone", mapID = f.selectedZoneMapID }
                     elseif f.selectedRaceSlug and f.selectedRaceSlug ~= self.raceSlug then
                         entry = { type = "race", slug = f.selectedRaceSlug }
+                    elseif f.selectedClassSlug then
+                        entry = { type = "class", slug = f.selectedClassSlug }
+                    elseif f.selectedCodexSlug then
+                        entry = { type = "codex", slug = f.selectedCodexSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -3008,6 +3309,8 @@ function IMAGO.Chronicle.UpdateList()
                 end
                 f.selectedNPCSlug = nil
                 f.selectedZoneMapID = nil
+                f.selectedClassSlug = nil
+                f.selectedCodexSlug = nil
                 f.selectedRace = self._raceData
                 f.selectedRaceSlug = self.raceSlug
                 f.activeRaceTab = f.activeRaceTab or "history"
@@ -3164,10 +3467,30 @@ function IMAGO.Chronicle.UpdateList()
                 end
                 self.activeBar:Show()
 
+                if not isNavigatingBack then
+                    local entry = nil
+                    if f.selectedNPCSlug and f.selectedNPCSlug ~= "" then
+                        entry = { type = "npc", slug = f.selectedNPCSlug }
+                    elseif f.selectedZoneMapID then
+                        entry = { type = "zone", mapID = f.selectedZoneMapID }
+                    elseif f.selectedRaceSlug then
+                        entry = { type = "race", slug = f.selectedRaceSlug }
+                    elseif f.selectedClassSlug and f.selectedClassSlug ~= self.classSlug then
+                        entry = { type = "class", slug = f.selectedClassSlug }
+                    elseif f.selectedCodexSlug then
+                        entry = { type = "codex", slug = f.selectedCodexSlug }
+                    end
+                    if entry then
+                        table.insert(navStack, entry)
+                        if IMAGO.Chronicle.SetBackEnabled then IMAGO.Chronicle.SetBackEnabled(true) end
+                    end
+                end
+
                 f.selectedNPCSlug = nil
                 f.selectedZoneMapID = nil
                 f.selectedRace = nil
                 f.selectedRaceSlug = nil
+                f.selectedCodexSlug = nil
                 f.selectedClass = self._classData
                 f.selectedClassSlug = self.classSlug
                 f.activeClassTab = f.activeClassTab or "overview"
@@ -3182,6 +3505,110 @@ function IMAGO.Chronicle.UpdateList()
 
         for i = cIdx, #IMAGO.Chronicle.classButtons do
             IMAGO.Chronicle.classButtons[i]:Hide()
+        end
+
+        f.content:SetHeight(math.max(1, yOffset))
+        IMAGO.UpdateScrollBarVisibility(f.scrollFrame)
+
+    -- ============================================================
+    -- TAB 5: CODEX — category list in the sidebar
+    -- ============================================================
+    elseif activeTab == 5 then
+        if f.sidebar.codexHeader then f.sidebar.codexHeader:Show() end
+
+        IMAGO.Chronicle.codexCatButtons = IMAGO.Chronicle.codexCatButtons or {}
+        local ccIdx = 1
+        for _, cat in ipairs(IMAGOdb.codex and IMAGOdb.codex.categories or {}) do
+            local btn = IMAGO.Chronicle.codexCatButtons[ccIdx]
+            if not btn then
+                btn = CreateFrame("Button", nil, f.content)
+                btn:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, 35)
+
+                btn.bg = btn:CreateTexture(nil, "BACKGROUND")
+                btn.bg:SetAllPoints()
+
+                btn.activeBar = btn:CreateTexture(nil, "OVERLAY")
+                btn.activeBar:SetWidth(2)
+                btn.activeBar:SetPoint("TOPLEFT",    btn, "TOPLEFT",    0, -3)
+                btn.activeBar:SetPoint("BOTTOMLEFT", btn, "BOTTOMLEFT", 0,  3)
+                btn.activeBar:SetColorTexture(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+                btn.activeBar:Hide()
+
+                local hl = btn:CreateTexture(nil, "HIGHLIGHT")
+                hl:SetAllPoints()
+                hl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.2)
+
+                btn.icon = btn:CreateTexture(nil, "ARTWORK")
+                btn.icon:SetSize(20, 20)
+                btn.icon:SetPoint("LEFT", btn, "LEFT", 8, 0)
+
+                btn.t = btn:CreateFontString(nil, "OVERLAY")
+                IMAGO.ApplyTextStyle(btn.t, "NAV_ITEM")
+                btn.t:SetPoint("LEFT", btn, "LEFT", 34, 0)
+                btn.t:SetPoint("RIGHT", btn, "RIGHT", -22, 0)
+                btn.t:SetJustifyH("LEFT")
+                btn.t:SetWordWrap(false)
+
+                btn.chevron = btn:CreateFontString(nil, "OVERLAY")
+                btn.chevron:SetFont(FONT_BODY, 14, "")
+                btn.chevron:SetPoint("RIGHT", btn, "RIGHT", -6, 0)
+                btn.chevron:SetText(">")
+                btn.chevron:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
+
+                btn:SetScript("OnEnter", function(self)
+                    IMAGO.ShowTooltipIfTruncated(self, self.t)
+                end)
+                btn:SetScript("OnLeave", function()
+                    GameTooltip:Hide()
+                end)
+
+                IMAGO.Chronicle.codexCatButtons[ccIdx] = btn
+            end
+
+            btn:SetPoint("TOPLEFT", f.content, "TOPLEFT", 0, -yOffset)
+            btn._catKey = cat.key
+            btn._zebra = (ccIdx % 2 == 0)
+            btn.bg:SetColorTexture(1, 1, 1, (btn._zebra and 0.03) or 0)
+
+            if cat.icon then
+                btn.icon:SetTexture(cat.icon)
+                btn.icon:Show()
+            else
+                btn.icon:Hide()
+            end
+
+            local catName = IMAGO.L["CODEX_CAT_" .. cat.key:upper()]
+                or (IMAGOdb.codexCatNames and IMAGOdb.codexCatNames[cat.key]) or cat.key
+            btn.t:SetText(catName)
+            btn.t:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
+
+            if f.selectedCodexCat == cat.key then
+                btn.activeBar:Show()
+                btn.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+            else
+                btn.activeBar:Hide()
+            end
+
+            btn:SetScript("OnClick", function(self)
+                if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+                f.selectedCodexCat = self._catKey
+                IMAGO.Chronicle.UpdateList()
+                -- Per spec: opening a category shows its first entry immediately
+                local first = IMAGO.Chronicle.GetCodexEntries(self._catKey)[1]
+                if first then
+                    IMAGO.Chronicle.RenderCodexEntry(first.slug)
+                else
+                    IMAGO.Chronicle.RenderCodexEntry(nil)
+                end
+            end)
+
+            btn:Show()
+            yOffset = yOffset + 35
+            ccIdx = ccIdx + 1
+        end
+
+        for i = ccIdx, #IMAGO.Chronicle.codexCatButtons do
+            IMAGO.Chronicle.codexCatButtons[i]:Hide()
         end
 
         f.content:SetHeight(math.max(1, yOffset))
@@ -3783,6 +4210,10 @@ function IMAGO.Chronicle.OpenToNPCSlug(slug, opts)
             entry = { type = "zone", mapID = f.selectedZoneMapID }
         elseif f.selectedRaceSlug then
             entry = { type = "race", slug = f.selectedRaceSlug }
+        elseif f.selectedClassSlug then
+            entry = { type = "class", slug = f.selectedClassSlug }
+        elseif f.selectedCodexSlug then
+            entry = { type = "codex", slug = f.selectedCodexSlug }
         end
         if entry then
             table.insert(navStack, entry)
@@ -3791,6 +4222,8 @@ function IMAGO.Chronicle.OpenToNPCSlug(slug, opts)
     end
     f.selectedZoneMapID = nil
     f.selectedRaceSlug = nil
+    f.selectedClassSlug = nil
+    f.selectedCodexSlug = nil
 
     local data = IMAGO.GetNPCData(slug)
     if not data then return false end
@@ -3873,6 +4306,427 @@ function IMAGO.Chronicle.OpenToZoneMapID(mapID)
             C_Timer.After(0, function()
                 if f:IsShown() then scrollToButton(btn) end
             end)
+            return true
+        end
+    end
+
+    return false
+end
+
+-- ============================================================
+-- CODEX RENDERER (TAB 5)
+-- ============================================================
+
+--- Sorted entry list for a category; honors the sidebar search box
+--- (search hits all categories, match on title or body).
+function IMAGO.Chronicle.GetCodexEntries(catKey)
+    local f = IMAGO.Chronicle.frame
+    local searchString = ""
+    if f and f.searchBox then
+        searchString = (f.searchBox:GetText() or ""):lower()
+    end
+
+    local list = {}
+    for slug, data in pairs(IMAGOdb.codex and IMAGOdb.codex.entries or {}) do
+        local matchCat = (catKey == nil) or (data.category == catKey)
+        if matchCat then
+            local matchSearch = true
+            if searchString ~= "" then
+                local title = (data.title or slug):lower()
+                local body = (data.body or ""):lower()
+                matchSearch = title:find(searchString, 1, true) ~= nil
+                    or body:find(searchString, 1, true) ~= nil
+            end
+            if matchSearch then
+                table.insert(list, { slug = slug, data = data })
+            end
+        end
+    end
+    table.sort(list, function(a, b)
+        local oa, ob = a.data.order or 999, b.data.order or 999
+        if oa ~= ob then return oa < ob end
+        return (a.data.title or a.slug) < (b.data.title or b.slug)
+    end)
+    return list
+end
+
+--- Resolves a `related` reference to a display name + click handler.
+--- Returns nil for unresolvable refs so dead chips are hidden.
+local function ResolveCodexRef(ref)
+    if type(ref) ~= "table" then return nil end
+    if ref.type == "codex" then
+        local e = IMAGOdb.codex and IMAGOdb.codex.entries and IMAGOdb.codex.entries[ref.slug]
+        if e then
+            return e.title or ref.slug, function() IMAGO.Chronicle.OpenToCodex(ref.slug) end
+        end
+    elseif ref.type == "race" then
+        local r = IMAGOdb.races and IMAGOdb.races[ref.slug]
+        if r then
+            return r.name or ref.slug, function() IMAGO.Chronicle.OpenToRace(ref.slug) end
+        end
+    elseif ref.type == "class" then
+        local c = IMAGOdb.classes and IMAGOdb.classes[ref.slug]
+        if c then
+            return c.name or ref.slug, function() IMAGO.Chronicle.OpenToClass(ref.slug) end
+        end
+    elseif ref.type == "npc" then
+        local n = IMAGO.GetNPCData(ref.slug)
+        if n then
+            return n.name or ref.slug, function() IMAGO.Chronicle.OpenToNPCSlug(ref.slug, { skipDiscoveryCinematic = true }) end
+        end
+    elseif ref.type == "zone" then
+        local z = IMAGOdb.zones and IMAGOdb.zones[ref.mapID]
+        if z then
+            return z.name or tostring(ref.mapID), function() IMAGO.Chronicle.OpenToZoneMapID(ref.mapID) end
+        end
+    end
+    return nil
+end
+
+--- Builds the middle column entry list for the selected category.
+function IMAGO.Chronicle.RenderCodexCategory(catKey)
+    local f = IMAGO.Chronicle.frame
+    if not f then return end
+
+    -- Heading where the back button used to be: current category (or search state)
+    if f.codexCatHeading then
+        if catKey then
+            f.codexCatHeading:SetText(IMAGO.L["CODEX_CAT_" .. catKey:upper()]
+                or (IMAGOdb.codexCatNames and IMAGOdb.codexCatNames[catKey]) or catKey)
+        else
+            f.codexCatHeading:SetText(IMAGO.L["CODEX_SEARCH_RESULTS"] or "Search Results")
+        end
+        f.codexCatHeading:Show()
+    end
+
+    f.codexEntryButtons = f.codexEntryButtons or {}
+    local list = IMAGO.Chronicle.GetCodexEntries(catKey)
+    local yOffset = 4
+    local contentW = 236
+
+    local eIdx = 1
+    for _, entry in ipairs(list) do
+        local btn = f.codexEntryButtons[eIdx]
+        if not btn then
+            btn = CreateFrame("Button", nil, f.codexListContent)
+            btn:SetSize(contentW, 30)
+
+            btn.bg = btn:CreateTexture(nil, "BACKGROUND")
+            btn.bg:SetAllPoints()
+
+            btn.activeBar = btn:CreateTexture(nil, "OVERLAY")
+            btn.activeBar:SetWidth(2)
+            btn.activeBar:SetPoint("TOPLEFT",    btn, "TOPLEFT",    0, -3)
+            btn.activeBar:SetPoint("BOTTOMLEFT", btn, "BOTTOMLEFT", 0,  3)
+            btn.activeBar:SetColorTexture(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+            btn.activeBar:Hide()
+
+            local hl = btn:CreateTexture(nil, "HIGHLIGHT")
+            hl:SetAllPoints()
+            hl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.2)
+
+            btn.t = btn:CreateFontString(nil, "OVERLAY")
+            IMAGO.ApplyTextStyle(btn.t, "NAV_ITEM")
+            btn.t:SetPoint("LEFT", btn, "LEFT", 10, 0)
+            btn.t:SetPoint("RIGHT", btn, "RIGHT", -18, 0)
+            btn.t:SetJustifyH("LEFT")
+            btn.t:SetWordWrap(false)
+
+            btn.chevron = btn:CreateFontString(nil, "OVERLAY")
+            btn.chevron:SetFont(FONT_BODY, 12, "")
+            btn.chevron:SetPoint("RIGHT", btn, "RIGHT", -5, 0)
+            btn.chevron:SetText(">")
+            btn.chevron:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
+
+            btn:SetScript("OnEnter", function(self)
+                IMAGO.ShowTooltipIfTruncated(self, self.t)
+            end)
+            btn:SetScript("OnLeave", function()
+                GameTooltip:Hide()
+            end)
+
+            f.codexEntryButtons[eIdx] = btn
+        end
+
+        btn:SetPoint("TOPLEFT", f.codexListContent, "TOPLEFT", 0, -yOffset)
+        btn.codexSlug = entry.slug
+        btn._listScrollY = yOffset
+        btn._zebra = (eIdx % 2 == 0)
+        btn.bg:SetColorTexture(1, 1, 1, (btn._zebra and 0.03) or 0)
+        btn.t:SetText(entry.data.title or entry.slug)
+
+        if f.selectedCodexSlug == entry.slug then
+            btn.activeBar:Show()
+            btn.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+        else
+            btn.activeBar:Hide()
+            btn.t:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
+        end
+
+        btn:SetScript("OnClick", function(self)
+            if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+            IMAGO.Chronicle.RenderCodexEntry(self.codexSlug)
+        end)
+
+        btn:Show()
+        yOffset = yOffset + 30
+        eIdx = eIdx + 1
+    end
+
+    for i = eIdx, #f.codexEntryButtons do
+        f.codexEntryButtons[i]:Hide()
+    end
+
+    f.codexListContent:SetHeight(math.max(1, yOffset))
+    IMAGO.UpdateScrollBarVisibility(f.codexListScroll)
+    f.codexListPanel:Show()
+end
+
+--- Renders one codex entry into the right content column.
+function IMAGO.Chronicle.RenderCodexEntry(slug)
+    local f = IMAGO.Chronicle.frame
+    if not f then return end
+
+    local data = slug and IMAGOdb.codex and IMAGOdb.codex.entries and IMAGOdb.codex.entries[slug]
+    if not data then
+        -- Empty state (e.g. category has no entries)
+        f.selectedCodexSlug = nil
+        f.codexTitle:SetText("")
+        f.codexCatTag:SetText("")
+        f.codexBody:SetText("|c" .. IMAGO_HEX.TEXT_MUTED .. (IMAGO.L["CODEX_EMPTY"] or "No entries in this category.") .. "|r")
+        for _, chip in ipairs(f.codexChips or {}) do chip:Hide() end
+        if f.codexRelatedHead then f.codexRelatedHead:Hide() end
+        f.codexBodyContent:SetHeight(60)
+        f.codexContent:Show()
+        return
+    end
+
+    -- navStack: push the previous codex page
+    if not isNavigatingBack and f.selectedCodexSlug and f.selectedCodexSlug ~= slug then
+        table.insert(navStack, { type = "codex", slug = f.selectedCodexSlug })
+        if IMAGO.Chronicle.SetBackEnabled then IMAGO.Chronicle.SetBackEnabled(true) end
+    end
+    f.selectedCodexSlug = slug
+
+    -- Highlight in the middle list (rebuild if category mismatch)
+    if data.category and data.category ~= f.selectedCodexCat then
+        f.selectedCodexCat = data.category
+        IMAGO.Chronicle.UpdateList()
+    end
+    IMAGO.Chronicle.RenderCodexCategory(f.selectedCodexCat)
+
+    f.codexTitle:SetText(data.title or slug)
+
+    local catName = IMAGO.L["CODEX_CAT_" .. (data.category or ""):upper()]
+        or (IMAGOdb.codexCatNames and IMAGOdb.codexCatNames[data.category]) or ""
+    f.codexCatTag:SetText(catName ~= "" and catName:upper() or "")
+
+    local body = data.body or ""
+    body = IMAGO.TextLinker.LinkNames(body, nil, nil, nil, nil, nil, slug)
+    f.codexBody:SetText(body)
+
+    -- Related-entry chips below the body text
+    f.codexChips = f.codexChips or {}
+    local bodyH = f.codexBody:GetStringHeight()
+    local chipY = bodyH + 20
+
+    if not f.codexRelatedHead then
+        f.codexRelatedHead = f.codexBodyContent:CreateFontString(nil, "OVERLAY")
+        f.codexRelatedHead:SetFont(FONT_BODY, 11, "OUTLINE")
+        f.codexRelatedHead:SetJustifyH("LEFT")
+        f.codexRelatedHead:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+    end
+
+    local chipIdx = 1
+    local chipX = 0
+    local rowH = 26
+    local maxW = 455
+    if data.related and #data.related > 0 then
+        f.codexRelatedHead:SetPoint("TOPLEFT", f.codexBodyContent, "TOPLEFT", 0, -chipY)
+        f.codexRelatedHead:SetText("|TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:12:12|t  " .. (IMAGO.L["CODEX_RELATED"] or "RELATED ENTRIES"))
+        f.codexRelatedHead:Show()
+        chipY = chipY + 20
+
+        for _, ref in ipairs(data.related) do
+            local name, onClick = ResolveCodexRef(ref)
+            if name then
+                local chip = f.codexChips[chipIdx]
+                if not chip then
+                    chip = CreateFrame("Button", nil, f.codexBodyContent, "BackdropTemplate")
+                    chip:SetBackdrop({
+                        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+                        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+                        edgeSize = 10,
+                        insets = { left = 3, right = 3, top = 3, bottom = 3 }
+                    })
+                    chip.t = chip:CreateFontString(nil, "OVERLAY")
+                    chip.t:SetFont(FONT_BODY, 12, "")
+                    chip.t:SetPoint("CENTER")
+                    chip:SetScript("OnEnter", function(self)
+                        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3], 1)
+                        self.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+                    end)
+                    chip:SetScript("OnLeave", function(self)
+                        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.7)
+                        self.t:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+                    end)
+                    f.codexChips[chipIdx] = chip
+                end
+
+                chip.t:SetText(name)
+                chip.t:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+                chip:SetSize(chip.t:GetStringWidth() + 22, 24)
+                chip:SetBackdropColor(IMAGO_COLORS.BG_RAISED[1], IMAGO_COLORS.BG_RAISED[2], IMAGO_COLORS.BG_RAISED[3], 0.8)
+                chip:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.7)
+                chip:SetScript("OnClick", onClick)
+
+                if chipX + chip:GetWidth() > maxW then
+                    chipX = 0
+                    chipY = chipY + rowH
+                end
+                chip:SetPoint("TOPLEFT", f.codexBodyContent, "TOPLEFT", chipX, -chipY)
+                chip:Show()
+                chipX = chipX + chip:GetWidth() + 8
+                chipIdx = chipIdx + 1
+            end
+        end
+        chipY = chipY + rowH
+    else
+        f.codexRelatedHead:Hide()
+    end
+
+    for i = chipIdx, #f.codexChips do
+        f.codexChips[i]:Hide()
+    end
+
+    f.codexBodyContent:SetHeight(math.max(1, chipY + 10))
+    f.codexBodyScroll:SetVerticalScroll(0)
+    IMAGO.UpdateScrollBarVisibility(f.codexBodyScroll)
+    f.codexContent:Show()
+end
+
+--- Default state for the Codex tab: first category, first entry.
+function IMAGO.Chronicle.ShowCodexDefault()
+    local f = IMAGO.Chronicle.frame
+    if not f then return end
+
+    if f.codexListPanel then f.codexListPanel:Show() end
+    if f.codexContent then f.codexContent:Show() end
+
+    local searchActive = f.searchBox and (f.searchBox:GetText() or "") ~= ""
+
+    if searchActive then
+        -- Search hits are listed category-less in the middle column
+        local hits = IMAGO.Chronicle.GetCodexEntries(nil)
+        f.selectedCodexCat = nil
+        IMAGO.Chronicle.RenderCodexCategory(nil)
+        if hits[1] then
+            IMAGO.Chronicle.RenderCodexEntry(hits[1].slug)
+        else
+            f.codexTitle:SetText("")
+            f.codexCatTag:SetText("")
+            f.codexBody:SetText("|c" .. IMAGO_HEX.TEXT_MUTED .. (IMAGO.L["CODEX_SEARCH_EMPTY"] or "No entries match this search.") .. "|r")
+            if f.codexRelatedHead then f.codexRelatedHead:Hide() end
+            for _, chip in ipairs(f.codexChips or {}) do chip:Hide() end
+            f.codexBodyContent:SetHeight(60)
+            f.codexContent:Show()
+        end
+        return
+    end
+
+    local cats = IMAGOdb.codex and IMAGOdb.codex.categories or {}
+    local catKey = f.selectedCodexCat or (cats[1] and cats[1].key)
+    f.selectedCodexCat = catKey
+
+    IMAGO.Chronicle.RenderCodexCategory(catKey)
+
+    -- Keep current entry if it belongs to the category; else first entry
+    local slug = f.selectedCodexSlug
+    local data = slug and IMAGOdb.codex.entries[slug]
+    if not data or data.category ~= catKey then
+        local first = IMAGO.Chronicle.GetCodexEntries(catKey)[1]
+        slug = first and first.slug or nil
+    end
+    IMAGO.Chronicle.RenderCodexEntry(slug)
+end
+
+--- Public navigation API: open the Codex tab at a given entry.
+function IMAGO.Chronicle.OpenToCodex(slug)
+    if not slug or not (IMAGOdb.codex and IMAGOdb.codex.entries and IMAGOdb.codex.entries[slug]) then
+        return false
+    end
+
+    if not IMAGO.Chronicle.frame then
+        IMAGO.Chronicle.CreateFrame()
+    end
+
+    local f = IMAGO.Chronicle.frame
+    local data = IMAGOdb.codex.entries[slug]
+
+    -- Push current page onto nav stack before navigating away.
+    if not isNavigatingBack then
+        local entry = nil
+        if f.selectedNPCSlug and f.selectedNPCSlug ~= "" then
+            entry = { type = "npc", slug = f.selectedNPCSlug }
+        elseif f.selectedZoneMapID then
+            entry = { type = "zone", mapID = f.selectedZoneMapID }
+        elseif f.selectedRaceSlug then
+            entry = { type = "race", slug = f.selectedRaceSlug }
+        elseif f.selectedClassSlug then
+            entry = { type = "class", slug = f.selectedClassSlug }
+        elseif f.selectedCodexSlug and f.selectedCodexSlug ~= slug then
+            entry = { type = "codex", slug = f.selectedCodexSlug }
+        end
+        if entry then
+            table.insert(navStack, entry)
+            if IMAGO.Chronicle.SetBackEnabled then IMAGO.Chronicle.SetBackEnabled(true) end
+        end
+    end
+    f.selectedNPCSlug = nil
+    f.selectedZoneMapID = nil
+    f.selectedRaceSlug = nil
+    f.selectedClassSlug = nil
+
+    f.selectedCodexCat = data.category
+    f.selectedCodexSlug = nil  -- RenderCodexEntry sets it (and may push navStack)
+
+    IMAGO.Chronicle.SelectMainTab(5)
+    f:Show()
+
+    IMAGO.Chronicle.RenderCodexEntry(slug)
+
+    -- Scroll the middle list to the entry's button
+    C_Timer.After(0, function()
+        if not f:IsShown() then return end
+        for _, btn in pairs(f.codexEntryButtons or {}) do
+            if btn.codexSlug == slug and btn:IsShown() then
+                local range = math.max(0, (f.codexListContent:GetHeight() or 0) - (f.codexListScroll:GetHeight() or 0))
+                local target = math.max(0, math.min(range, (btn._listScrollY or 0) - 40))
+                f.codexListScroll:SetVerticalScroll(target)
+                break
+            end
+        end
+    end)
+
+    return true
+end
+
+--- Navigate to a class by slug: switches to the Classes tab and clicks its button.
+function IMAGO.Chronicle.OpenToClass(slug)
+    if not slug or not (IMAGOdb.classes and IMAGOdb.classes[slug]) then return false end
+
+    if not IMAGO.Chronicle.frame then
+        IMAGO.Chronicle.CreateFrame()
+    end
+
+    local f = IMAGO.Chronicle.frame
+    IMAGO.Chronicle.SelectMainTab(4)
+    f:Show()
+
+    for _, btn in pairs(IMAGO.Chronicle.classButtons or {}) do
+        if btn.classSlug == slug and btn:IsShown() then
+            local fn = btn:GetScript("OnClick")
+            if fn then fn(btn) end
             return true
         end
     end

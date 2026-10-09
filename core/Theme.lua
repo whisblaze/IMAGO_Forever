@@ -45,6 +45,7 @@ IMAGO_HEX = {
     WARNING = "FFD69A4A",
     DANGER  = "FFC86A5A",
     VOID    = "FFA88BD8", -- Used for Zone Links
+    CODEX   = "FF66C5E0", -- Used for Codex Links
 }
 
 -- Shared geometry for Fates and Zones.
