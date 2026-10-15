@@ -29,3 +29,6 @@ dist/
 .cache/
 node_modules/
 
+# Local timeline working docs (draft material, not for publication)
+TIMELINE_BEATS.md
+TIMELINE_SOURCES.md
