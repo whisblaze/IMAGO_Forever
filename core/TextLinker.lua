@@ -5,9 +5,10 @@
 
 IMAGO.TextLinker = IMAGO.TextLinker or {}
 
-local npcList   = nil
-local zoneList  = nil
-local codexList = nil
+local npcList      = nil
+local zoneList     = nil
+local codexList    = nil
+local timelineList = nil
 
 -- ============================================================
 -- BUILD NPC LOOKUP
@@ -108,6 +109,38 @@ function IMAGO.TextLinker.BuildCodexLookup()
 end
 
 -- ============================================================
+-- BUILD TIMELINE LOOKUP
+-- Same rule as the Codex: only events flagged `linkable` in
+-- data/timeline_static.lua contribute title + aliases.
+-- ============================================================
+function IMAGO.TextLinker.BuildTimelineLookup()
+    timelineList = nil
+
+    if not IMAGOdb or not IMAGOdb.timeline or not IMAGOdb.timeline.events then return end
+
+    local flat = {}   -- name → slug
+
+    for slug, data in pairs(IMAGOdb.timeline.events) do
+        if data.linkable and type(data.title) == "string" and data.title ~= "" then
+            flat[data.title] = slug
+            if type(data.aliases) == "table" then
+                for _, alias in ipairs(data.aliases) do
+                    if type(alias) == "string" and alias ~= "" then
+                        flat[alias] = slug
+                    end
+                end
+            end
+        end
+    end
+
+    timelineList = {}
+    for name, slug in pairs(flat) do
+        timelineList[#timelineList + 1] = { name = name, slug = slug }
+    end
+    table.sort(timelineList, function(a, b) return #a.name > #b.name end)
+end
+
+-- ============================================================
 -- SHARED PLAIN-TEXT LINK INJECTOR
 -- Inserts `link` around the FIRST unambiguous word-boundary
 -- occurrence of `searchName` in `text`.
@@ -172,9 +205,11 @@ end
 -- @param sharedZoneLinks  table?  Dedup set for zone links
 -- @param sharedCodexLinks table?  Dedup set for codex links
 -- @param selfCodexSlug  string?  Codex slug of the page being shown (skipped)
+-- @param sharedTimelineLinks table?  Dedup set for timeline links
+-- @param selfTimelineSlug  string?  Timeline slug of the page being shown (skipped)
 -- @return           string
 -- ============================================================
-function IMAGO.TextLinker.LinkNames(text, selfSlug, selfMapID, sharedNPCLinks, sharedZoneLinks, sharedCodexLinks, selfCodexSlug)
+function IMAGO.TextLinker.LinkNames(text, selfSlug, selfMapID, sharedNPCLinks, sharedZoneLinks, sharedCodexLinks, selfCodexSlug, sharedTimelineLinks, selfTimelineSlug)
     if not text or text == "" then return text end
 
     -- ---- 1. NPC links ----------------------------------------
@@ -222,6 +257,21 @@ function IMAGO.TextLinker.LinkNames(text, selfSlug, selfMapID, sharedNPCLinks, s
         end
     end
 
+    -- ---- 4. Timeline links (same tier as codex — runs last) --
+    local linkedTimelineSlugs = sharedTimelineLinks or {}
+
+    for _, entry in ipairs(timelineList or {}) do
+        local slug = entry.slug
+        if slug ~= selfTimelineSlug and not linkedTimelineSlugs[slug] then
+            local link = "|Himago-timeline:" .. slug .. "|h|" .. "c" .. IMAGO_HEX.TIMELINE .. entry.name .. "|r|h"
+            local newText, ok = InjectFirstLink(text, entry.name, link)
+            if ok then
+                text = newText
+                linkedTimelineSlugs[slug] = true
+            end
+        end
+    end
+
     return text
 end
 
@@ -248,6 +298,11 @@ function IMAGO.TextLinker.OnHyperlinkClick(self, link, text, button)
     elseif linkType == "imago-codex" then
         if IMAGO.Chronicle and IMAGO.Chronicle.OpenToCodex then
             IMAGO.Chronicle.OpenToCodex(payload)
+        end
+
+    elseif linkType == "imago-timeline" then
+        if IMAGO.Chronicle and IMAGO.Chronicle.OpenToTimeline then
+            IMAGO.Chronicle.OpenToTimeline(payload)
         end
     end
 end

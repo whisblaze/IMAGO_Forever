@@ -25,15 +25,6 @@ local e = IMAGOdb.codex.entries
 
 -- ============ COSMOLOGY ============
 
-if e["great_sundering"] then
-    e["great_sundering"].title = "The Great Sundering"
-    e["great_sundering"].aliases = { "the Sundering" }
-    e["great_sundering"].body = [[
-The Great Sundering was the cataclysmic event that shattered ancient Kalimdor and reshaped the world. When the Well of Eternity imploded at the end of the War of the Ancients, the landmass broke apart; the continents drifted, and Azeroth was forever changed.
-
-It marked the end of the night elves' golden age, the drowning of Queen Azshara's capital, and the beginning of the world as mortals know it — the conflicts it set in motion still define the present age.]]
-end
-
 if e["well_of_eternity"] then
     e["well_of_eternity"].title = "The Well of Eternity"
     e["well_of_eternity"].body = [[
@@ -129,22 +120,6 @@ Allied to the Horde by necessity and feared by everyone including their allies, 
 end
 
 -- ============ HISTORY & CONCEPTS ============
-
-if e["war_of_ancients"] then
-    e["war_of_ancients"].title = "The War of the Ancients"
-    e["war_of_ancients"].body = [[
-Ten thousand years ago, the Highborne's pact with Sargeras let the Burning Legion into Azeroth for the first time. The War of the Ancients was the night elves' desperate answer — the last stand of a civilization fighting for the world itself.
-
-It ended with the Well of Eternity's implosion, the Great Sundering, and the Legion's first defeat. It also ended the night elves' age of dominance — a price they still pay.]]
-end
-
-if e["dark_portal"] then
-    e["dark_portal"].title = "The Dark Portal"
-    e["dark_portal"].body = [[
-The Dark Portal is the gateway between Azeroth and the orcish homeworld of Draenor — opened by the corrupted Guardian Medivh to let the Horde through, and never truly closed since.
-
-Every war of the last generation traces back to that gateway. The orcs came through it as conquerors, stayed as refugees, and built Durotar within sight of the world their ancestors burned.]]
-end
 
 if e["lich_king"] then
     e["lich_king"].title = "The Lich King"

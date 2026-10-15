@@ -882,6 +882,7 @@ function IMAGO.Init()
     if IMAGO.TextLinker and IMAGO.TextLinker.BuildNameLookup then IMAGO.TextLinker.BuildNameLookup() end
     if IMAGO.TextLinker and IMAGO.TextLinker.BuildZoneLookup then IMAGO.TextLinker.BuildZoneLookup() end
     if IMAGO.TextLinker and IMAGO.TextLinker.BuildCodexLookup then IMAGO.TextLinker.BuildCodexLookup() end
+    if IMAGO.TextLinker and IMAGO.TextLinker.BuildTimelineLookup then IMAGO.TextLinker.BuildTimelineLookup() end
     IMAGO.CreateMinimapButton()
 
     if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall then

@@ -31,6 +31,20 @@ end
 
 local LAYOUT = IMAGO.LAYOUT
 
+local NBSP = "\194\160"
+
+-- WoW FontStrings only wrap on plain spaces. Gluing fragile word groups
+-- with NBSP keeps auto-wrap from orphaning them ("a boundless",
+-- " - a boundless", "10,000 DP").
+local function WrapGlue(text)
+    if not text or text == "" then return text end
+    text = text:gsub("(%s%a) ", "%1" .. NBSP)
+    text = text:gsub(" %- ", NBSP .. "-" .. NBSP)
+    text = text:gsub(" %– ", NBSP .. "–" .. NBSP)
+    text = text:gsub("(%d) (A?DP)", "%1" .. NBSP .. "%2")
+    return text
+end
+
 local eraColors = {
     ["Ancient"]   = {0.85, 0.65, 0.13},     -- Titanic bronze (Creation/Old Gods)
     ["Pre-WC1"]   = {0.60, 0.10, 0.10},     -- Blood red (orc invasion/First War)
@@ -427,8 +441,10 @@ function IMAGO.Chronicle.CreateFrame()
     f.searchBox:SetScript("OnTextChanged", function(self)
         self.instructions:SetShown((self:GetText() or "") == "" and not self:HasFocus())
         IMAGO.Chronicle.UpdateList()
-        -- Codex: search filters the middle entry list, not the sidebar
+        -- Timeline/Codex: search filters the middle list, not the sidebar
         if f.activeTabIndex == 5 then
+            IMAGO.Chronicle.ShowTimelineDefault()
+        elseif f.activeTabIndex == 6 then
             IMAGO.Chronicle.ShowCodexDefault()
         end
     end)
@@ -692,10 +708,40 @@ function IMAGO.Chronicle.CreateFrame()
         IMAGO.Chronicle.SetDetailAction(nil)
         f.selectedCodexCat = nil
         f.selectedCodexSlug = nil
+        f.selectedTimelineSlug = nil
+        f.selectedTimelineEra = nil
         IMAGO.Chronicle.UpdateList()
         IMAGO.Chronicle.ShowCodexDefault()
     end)
     f.sidebar.codexHeader:Hide()
+
+    -- Timeline fixed sidebar header (outside the scroll area)
+    f.sidebar.timelineHeader = CreateFrame("Button", nil, f.sidebar)
+    f.sidebar.timelineHeader:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, LAYOUT.SIDEBAR_HEADER_HEIGHT)
+    f.sidebar.timelineHeader:SetPoint("TOPLEFT", f.sidebar, "TOPLEFT", 0, 0)
+
+    f.sidebar.timelineHeader.bg = f.sidebar.timelineHeader:CreateTexture(nil, "BACKGROUND")
+    f.sidebar.timelineHeader.bg:SetAllPoints()
+    f.sidebar.timelineHeader.bg:SetColorTexture(IMAGO_COLORS.BG_PANEL[1], IMAGO_COLORS.BG_PANEL[2], IMAGO_COLORS.BG_PANEL[3], IMAGO_COLORS.BG_PANEL[4])
+
+    local tlhl = f.sidebar.timelineHeader:CreateTexture(nil, "HIGHLIGHT")
+    tlhl:SetAllPoints()
+    tlhl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.3)
+
+    f.sidebar.timelineHeader.t = f.sidebar.timelineHeader:CreateFontString(nil, "OVERLAY")
+    IMAGO.ApplyTextStyle(f.sidebar.timelineHeader.t, "SIDEBAR_HEADER")
+    f.sidebar.timelineHeader.t:SetPoint("CENTER", 0, 0)
+    f.sidebar.timelineHeader.t:SetText(IMAGO.L["TIMELINE_ERAS"] or "HISTORICAL ERAS")
+
+    f.sidebar.timelineHeader:SetScript("OnClick", function()
+        if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+        IMAGO.Chronicle.SetDetailAction(nil)
+        f.selectedTimelineEra = nil
+        f.selectedTimelineSlug = nil
+        IMAGO.Chronicle.UpdateList()
+        IMAGO.Chronicle.ShowTimelineDefault()
+    end)
+    f.sidebar.timelineHeader:Hide()
 
     -- ============================================================
     -- RIGHT SIDE: THE DETAIL FRAME
@@ -987,6 +1033,105 @@ function IMAGO.Chronicle.CreateFrame()
     f.codexBody:SetJustifyH("LEFT")
     f.codexBody:SetSpacing(8)
     f.codexBody:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
+
+    -- ============================================================
+    -- TIMELINE PANELS (Tab 5: chronology list + event detail)
+    -- ============================================================
+    f.timelineListPanel = CreateFrame("Frame", nil, f.detailFrame, "BackdropTemplate")
+    f.timelineListPanel:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 10, 0)
+    f.timelineListPanel:SetPoint("BOTTOMLEFT", f.detailFrame, "BOTTOMLEFT", 10, 0)
+    f.timelineListPanel:SetWidth(250)
+    f.timelineListPanel:SetBackdrop({
+        bgFile = "Interface\\Buttons\\WHITE8X8",
+        edgeFile = "",
+        tile = true, tileSize = 16, edgeSize = 16,
+        insets = { left = 0, right = 0, top = 0, bottom = 0 }
+    })
+    f.timelineListPanel:SetBackdropColor(IMAGO_COLORS.BG_PANEL[1], IMAGO_COLORS.BG_PANEL[2], IMAGO_COLORS.BG_PANEL[3], 0.85)
+    f.timelineListPanel:Hide()
+
+    f.timelineListPanel.rightBorder = f.timelineListPanel:CreateTexture(nil, "ARTWORK")
+    f.timelineListPanel.rightBorder:SetWidth(LAYOUT.DIVIDER_WIDTH)
+    f.timelineListPanel.rightBorder:SetPoint("TOPRIGHT", f.timelineListPanel, "TOPRIGHT", 0, 0)
+    f.timelineListPanel.rightBorder:SetPoint("BOTTOMRIGHT", f.timelineListPanel, "BOTTOMRIGHT", 0, 0)
+    f.timelineListPanel.rightBorder:SetColorTexture(IMAGO_COLORS.DIVIDER[1], IMAGO_COLORS.DIVIDER[2], IMAGO_COLORS.DIVIDER[3], 0.8)
+
+    f.timelineChronoHeading = f.timelineListPanel:CreateFontString(nil, "OVERLAY")
+    f.timelineChronoHeading:SetFont(FONT_TITLE, 15, "OUTLINE")
+    f.timelineChronoHeading:SetPoint("TOPLEFT", f.timelineListPanel, "TOPLEFT", 12, -9)
+    f.timelineChronoHeading:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+    f.timelineChronoHeading:SetJustifyH("LEFT")
+    f.timelineChronoHeading:Hide()
+
+    f.timelineListPanel.headingLine = f.timelineListPanel:CreateTexture(nil, "ARTWORK")
+    f.timelineListPanel.headingLine:SetHeight(1)
+    f.timelineListPanel.headingLine:SetPoint("TOPLEFT", f.timelineListPanel, "TOPLEFT", 10, -34)
+    f.timelineListPanel.headingLine:SetPoint("TOPRIGHT", f.timelineListPanel, "TOPRIGHT", -10, -34)
+    f.timelineListPanel.headingLine:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+    f.timelineListPanel.headingLine:SetGradient("HORIZONTAL", CreateColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.5), CreateColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0))
+
+    f.timelineListScroll = CreateFrame("ScrollFrame", "IMAGOChronicleTimelineList", f.timelineListPanel, "UIPanelScrollFrameTemplate")
+    f.timelineListScroll:SetPoint("TOPLEFT", f.timelineListPanel, "TOPLEFT", 0, -40)
+    f.timelineListScroll:SetPoint("BOTTOMRIGHT", f.timelineListPanel, "BOTTOMRIGHT", 0, 4)
+    IMAGO.StyleAndAnchorScrollBar("IMAGOChronicleTimelineListScrollBar", f.timelineListScroll, IMAGO_COLORS.GOLD)
+
+    f.timelineListContent = CreateFrame("Frame", nil, f.timelineListScroll)
+    f.timelineListContent:SetSize(236, 1)
+    f.timelineListScroll:SetScrollChild(f.timelineListContent)
+
+    -- The vertical chronology line running behind the node dots
+    f.timelineListContent.line = f.timelineListContent:CreateTexture(nil, "BORDER")
+    f.timelineListContent.line:SetWidth(2)
+    f.timelineListContent.line:SetColorTexture(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3], 0.35)
+
+    f.timelineContent = CreateFrame("Frame", nil, f.detailFrame)
+    f.timelineContent:SetPoint("TOPLEFT", f.timelineListPanel, "TOPRIGHT", 15, -10)
+    f.timelineContent:SetPoint("BOTTOMRIGHT", f.detailFrame, "BOTTOMRIGHT", -15, 20)
+    f.timelineContent:Hide()
+
+    f.timelineTitle = f.timelineContent:CreateFontString(nil, "OVERLAY")
+    f.timelineTitle:SetFont(FONT_TITLE, 24, "OUTLINE")
+    f.timelineTitle:SetPoint("TOPLEFT", f.timelineContent, "TOPLEFT", 10, -5)
+    f.timelineTitle:SetWidth(455)
+    f.timelineTitle:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+    f.timelineTitle:SetJustifyH("LEFT")
+
+    f.timelineEraTag = f.timelineContent:CreateFontString(nil, "OVERLAY")
+    f.timelineEraTag:SetFont(FONT_BODY, 11, "OUTLINE")
+    f.timelineEraTag:SetPoint("TOPLEFT", f.timelineTitle, "BOTTOMLEFT", 0, -4)
+    f.timelineEraTag:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+    f.timelineEraTag:SetJustifyH("LEFT")
+
+    f.timelineDivider = f.timelineContent:CreateTexture(nil, "ARTWORK")
+    f.timelineDivider:SetHeight(1)
+    f.timelineDivider:SetPoint("TOPLEFT", f.timelineContent, "TOPLEFT", 10, -70)
+    f.timelineDivider:SetPoint("TOPRIGHT", f.timelineContent, "TOPRIGHT", -10, -70)
+    f.timelineDivider:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+    f.timelineDivider:SetGradient("HORIZONTAL", CreateColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.6), CreateColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0))
+
+    f.timelineBodyScroll = CreateFrame("ScrollFrame", "IMAGOChronicleTimelineBody", f.timelineContent, "UIPanelScrollFrameTemplate")
+    f.timelineBodyScroll:SetPoint("TOPLEFT", f.timelineContent, "TOPLEFT", 10, -90)
+    f.timelineBodyScroll:SetPoint("BOTTOMRIGHT", f.timelineContent, "BOTTOMRIGHT", -10, 10)
+    IMAGO.StyleAndAnchorScrollBar("IMAGOChronicleTimelineBodyScrollBar", f.timelineBodyScroll, IMAGO_COLORS.GOLD)
+
+    f.timelineBodyContent = CreateFrame("Frame", nil, f.timelineBodyScroll)
+    f.timelineBodyContent:SetSize(460, 1)
+    f.timelineBodyScroll:SetScrollChild(f.timelineBodyContent)
+    f.timelineBodyContent:SetHyperlinksEnabled(true)
+    f.timelineBodyContent:EnableMouse(true)
+    f.timelineBodyContent:SetScript("OnHyperlinkClick", function(self, link, text, button)
+        if IMAGO.TextLinker and IMAGO.TextLinker.OnHyperlinkClick then
+            IMAGO.TextLinker.OnHyperlinkClick(self, link, text, button)
+        end
+    end)
+
+    f.timelineBody = f.timelineBodyContent:CreateFontString(nil, "OVERLAY")
+    f.timelineBody:SetFont(FONT_BODY, 14)
+    f.timelineBody:SetPoint("TOPLEFT", f.timelineBodyContent, "TOPLEFT", 0, 0)
+    f.timelineBody:SetWidth(460)
+    f.timelineBody:SetJustifyH("LEFT")
+    f.timelineBody:SetSpacing(8)
+    f.timelineBody:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
 
     f.infoScroll = CreateFrame("ScrollFrame", "IMAGOChronicleInfoScroll", f.detailFrame, "UIPanelScrollFrameTemplate")
     f.infoScroll:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 310, -115)
@@ -1561,6 +1706,8 @@ function IMAGO.Chronicle.CreateFrame()
             IMAGO.Chronicle.OpenToClass(prev.slug)
         elseif prev.type == "codex" then
             IMAGO.Chronicle.OpenToCodex(prev.slug)
+        elseif prev.type == "timeline" then
+            IMAGO.Chronicle.OpenToTimeline(prev.slug)
         end
         C_Timer.After(0, function()
             isNavigatingBack = false
@@ -1596,8 +1743,8 @@ function IMAGO.Chronicle.CreateFrame()
     -- ==-- ==========================================
     -- NEW: MAIN TABS (BOTTOM TABS) LOCALIZED
     -- ==========================================
-    f.numTabs = 6
-    local tabNames = {IMAGO.L["TAB_FATES"], IMAGO.L["TAB_ZONES"], IMAGO.L["TAB_RACES"], IMAGO.L["TAB_CLASSES"], IMAGO.L["TAB_CODEX"], IMAGO.L["TAB_CREDITS"]}
+    f.numTabs = 7
+    local tabNames = {IMAGO.L["TAB_FATES"], IMAGO.L["TAB_ZONES"], IMAGO.L["TAB_RACES"], IMAGO.L["TAB_CLASSES"], IMAGO.L["TAB_TIMELINE"], IMAGO.L["TAB_CODEX"], IMAGO.L["TAB_CREDITS"]}
     for i = 1, f.numTabs do
         -- Fallback so a missing/mistimed locale string can never break tab creation
         local name = tabNames[i] or ("Tab " .. i)
@@ -1663,18 +1810,21 @@ function IMAGO.Chronicle.CreateFrame()
         if f.codexListPanel then f.codexListPanel:Hide() end
         if f.codexContent then f.codexContent:Hide() end
         if f.codexCatHeading then f.codexCatHeading:Hide() end
+        if f.timelineListPanel then f.timelineListPanel:Hide() end
+        if f.timelineContent then f.timelineContent:Hide() end
+        if f.timelineChronoHeading then f.timelineChronoHeading:Hide() end
         IMAGO.Chronicle.SetDetailAction(nil)
         if f.filterMenu         then f.filterMenu:Hide()         end
         if f.modeDropdown       then f.modeDropdown:Hide()       end
 
-        -- Codex/Credits have no footer/modeBtn/startPage — restore them for content tabs
-        if f.footer then f.footer:SetShown(index ~= 5 and index ~= 6) end
+        -- Timeline/Codex/Credits have no footer/modeBtn — restore for content tabs
+        if f.footer then f.footer:SetShown(index <= 4) end
         if f.modeBtn then f.modeBtn:SetShown(index <= 4) end
 
         -- Global header search: visible on all content tabs, per-tab hint
         local searchHintKeys = {
             "SEARCH_IN_FATES", "SEARCH_IN_ZONES", "SEARCH_IN_RACES",
-            "SEARCH_IN_CLASSES", "SEARCH_IN_CODEX"
+            "SEARCH_IN_CLASSES", "SEARCH_IN_TIMELINE", "SEARCH_IN_CODEX"
         }
         local hintKey = searchHintKeys[index]
         if f.searchBox.Instructions then
@@ -1698,18 +1848,30 @@ function IMAGO.Chronicle.CreateFrame()
             if f.sidebar.racesHeader then f.sidebar.racesHeader:SetShown(index == 3) end
             if f.sidebar.classesHeader then f.sidebar.classesHeader:SetShown(index == 4) end
             if f.sidebar.codexHeader then f.sidebar.codexHeader:Hide() end
+            if f.sidebar.timelineHeader then f.sidebar.timelineHeader:Hide() end
             IMAGO.Chronicle.UpdateList()
             if f.ShowDashboard then f.ShowDashboard() end
         elseif index == 5 then
+            -- Timeline tab: era sidebar + chronology list + event detail
+            f.sidebar:Show(); f.detailFrame:Show()
+            if f.sidebar.zonesHeader then f.sidebar.zonesHeader:Hide() end
+            if f.sidebar.racesHeader then f.sidebar.racesHeader:Hide() end
+            if f.sidebar.classesHeader then f.sidebar.classesHeader:Hide() end
+            if f.sidebar.codexHeader then f.sidebar.codexHeader:Hide() end
+            if f.sidebar.timelineHeader then f.sidebar.timelineHeader:Show() end
+            IMAGO.Chronicle.UpdateList()
+            IMAGO.Chronicle.ShowTimelineDefault()
+        elseif index == 6 then
             -- Codex tab: categories sidebar + entry list + content
             f.sidebar:Show(); f.detailFrame:Show()
             if f.sidebar.zonesHeader then f.sidebar.zonesHeader:Hide() end
             if f.sidebar.racesHeader then f.sidebar.racesHeader:Hide() end
             if f.sidebar.classesHeader then f.sidebar.classesHeader:Hide() end
             if f.sidebar.codexHeader then f.sidebar.codexHeader:Show() end
+            if f.sidebar.timelineHeader then f.sidebar.timelineHeader:Hide() end
             IMAGO.Chronicle.UpdateList()
             IMAGO.Chronicle.ShowCodexDefault()
-        elseif index == 6 then
+        elseif index == 7 then
             -- Credits tab
             f.searchBox:Hide()
             f.filterBtn:Hide()
@@ -1899,6 +2061,9 @@ function IMAGO.Chronicle.CreateFrame()
         if f.codexListPanel then f.codexListPanel:Hide() end
         if f.codexContent then f.codexContent:Hide() end
         if f.codexCatHeading then f.codexCatHeading:Hide() end
+        if f.timelineListPanel then f.timelineListPanel:Hide() end
+        if f.timelineContent then f.timelineContent:Hide() end
+        if f.timelineChronoHeading then f.timelineChronoHeading:Hide() end
         if f.detailImage then f.detailImage:Hide() end
         if f.detailImageBorder then f.detailImageBorder:Hide() end
         if f.detailSeparator then f.detailSeparator:Hide() end
@@ -2130,6 +2295,7 @@ function IMAGO.Chronicle.UpdateList()
     for _, fb in pairs(IMAGO.Chronicle.raceButtons or {}) do fb:Hide() end
     for _, cb in pairs(IMAGO.Chronicle.classButtons or {}) do cb:Hide() end
     for _, cb in pairs(IMAGO.Chronicle.codexCatButtons or {}) do cb:Hide() end
+    for _, tb in pairs(IMAGO.Chronicle.timelineEraButtons or {}) do tb:Hide() end
     if IMAGO.Chronicle.homeBtn then IMAGO.Chronicle.homeBtn:Hide() end
 
     -- ============================================================
@@ -2146,6 +2312,9 @@ function IMAGO.Chronicle.UpdateList()
     end
     if f.sidebar.codexHeader then
         f.sidebar.codexHeader:Hide()
+    end
+    if f.sidebar.timelineHeader then
+        f.sidebar.timelineHeader:Hide()
     end
 
     -- ============================================================
@@ -2520,6 +2689,8 @@ function IMAGO.Chronicle.UpdateList()
                                 entry = { type = "class", slug = f.selectedClassSlug }
                             elseif f.selectedCodexSlug then
                                 entry = { type = "codex", slug = f.selectedCodexSlug }
+                            elseif f.selectedTimelineSlug then
+                                entry = { type = "timeline", slug = f.selectedTimelineSlug }
                             end
                             if entry then
                                 table.insert(navStack, entry)
@@ -2532,6 +2703,8 @@ function IMAGO.Chronicle.UpdateList()
                         f.selectedRaceSlug = nil
                         f.selectedClassSlug = nil
                         f.selectedCodexSlug = nil
+                        f.selectedTimelineSlug = nil
+                        f.selectedTimelineEra = nil
 
                         f.selectedNPC = npc.data
                         f.selectedNPCSlug = npc.slug
@@ -2583,7 +2756,7 @@ function IMAGO.Chronicle.UpdateList()
                                     nil, nil, nil
                                 )
                                 
-                                f.loreBody:SetText(linked)
+                                f.loreBody:SetText(WrapGlue(linked))
 
                                 local source = npc.data.source
                                 if source and source ~= "" then
@@ -2860,6 +3033,8 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "class", slug = f.selectedClassSlug }
                     elseif f.selectedCodexSlug then
                         entry = { type = "codex", slug = f.selectedCodexSlug }
+                    elseif f.selectedTimelineSlug then
+                        entry = { type = "timeline", slug = f.selectedTimelineSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -2870,6 +3045,8 @@ function IMAGO.Chronicle.UpdateList()
                 f.selectedRaceSlug = nil
                 f.selectedClassSlug = nil
                 f.selectedCodexSlug = nil
+                f.selectedTimelineSlug = nil
+                f.selectedTimelineEra = nil
                 f.selectedZoneMapID = mapID
 
                 f.startPage:Hide()
@@ -2930,7 +3107,7 @@ function IMAGO.Chronicle.UpdateList()
 
                 -- Pass mapID as selfMapID
                 -- so this zone doesn’t link back to itself.
-                f.loreBody:SetText(IMAGO.TextLinker.LinkNames(formattedLore, nil, mapID, nil, nil))
+                f.loreBody:SetText(WrapGlue(IMAGO.TextLinker.LinkNames(formattedLore, nil, mapID, nil, nil)))
                 f.loreBody:SetJustifyH("LEFT")
                 f.loreBody:Show()
                 if f.loreSource then f.loreSource:Hide() end
@@ -2997,6 +3174,8 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "class", slug = f.selectedClassSlug }
                     elseif f.selectedCodexSlug then
                         entry = { type = "codex", slug = f.selectedCodexSlug }
+                    elseif f.selectedTimelineSlug then
+                        entry = { type = "timeline", slug = f.selectedTimelineSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -3007,6 +3186,8 @@ function IMAGO.Chronicle.UpdateList()
                 f.selectedRaceSlug = nil
                 f.selectedClassSlug = nil
                 f.selectedCodexSlug = nil
+                f.selectedTimelineSlug = nil
+                f.selectedTimelineEra = nil
                 f.selectedZoneMapID = mapID
 
                 f.startPage:Hide()
@@ -3048,7 +3229,7 @@ function IMAGO.Chronicle.UpdateList()
                 local warningHeader = "\n\n|c" .. IMAGO_HEX.TEXT_SECONDARY .. (IMAGO.L["ZONE_UNEXPLORED_HEADER"] or "GEBIET UNERKUNDET") .. "|r"
                 local descText = "\n\n|c" .. IMAGO_HEX.TEXT_MUTED .. (IMAGO.L["ZONE_UNEXPLORED_DESC"] or "Die Kartographie dieser Region ist noch unvollständig.\nReise dorthin, um ihre Geheimnisse zu offenbaren.") .. "|r"
                 -- Pass mapID as selfMapID so undiscovered zone page doesn’t self-link
-                f.loreBody:SetText(IMAGO.TextLinker.LinkNames(warningHeader .. descText, nil, mapID, nil, nil))
+                f.loreBody:SetText(WrapGlue(IMAGO.TextLinker.LinkNames(warningHeader .. descText, nil, mapID, nil, nil)))
                 f.loreBody:SetJustifyH("CENTER")
                 f.loreBody:Show()
                 if f.loreSource then f.loreSource:Hide() end
@@ -3301,6 +3482,8 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "class", slug = f.selectedClassSlug }
                     elseif f.selectedCodexSlug then
                         entry = { type = "codex", slug = f.selectedCodexSlug }
+                    elseif f.selectedTimelineSlug then
+                        entry = { type = "timeline", slug = f.selectedTimelineSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -3311,6 +3494,8 @@ function IMAGO.Chronicle.UpdateList()
                 f.selectedZoneMapID = nil
                 f.selectedClassSlug = nil
                 f.selectedCodexSlug = nil
+                f.selectedTimelineSlug = nil
+                f.selectedTimelineEra = nil
                 f.selectedRace = self._raceData
                 f.selectedRaceSlug = self.raceSlug
                 f.activeRaceTab = f.activeRaceTab or "history"
@@ -3479,6 +3664,8 @@ function IMAGO.Chronicle.UpdateList()
                         entry = { type = "class", slug = f.selectedClassSlug }
                     elseif f.selectedCodexSlug then
                         entry = { type = "codex", slug = f.selectedCodexSlug }
+                    elseif f.selectedTimelineSlug then
+                        entry = { type = "timeline", slug = f.selectedTimelineSlug }
                     end
                     if entry then
                         table.insert(navStack, entry)
@@ -3491,6 +3678,8 @@ function IMAGO.Chronicle.UpdateList()
                 f.selectedRace = nil
                 f.selectedRaceSlug = nil
                 f.selectedCodexSlug = nil
+                f.selectedTimelineSlug = nil
+                f.selectedTimelineEra = nil
                 f.selectedClass = self._classData
                 f.selectedClassSlug = self.classSlug
                 f.activeClassTab = f.activeClassTab or "overview"
@@ -3511,9 +3700,115 @@ function IMAGO.Chronicle.UpdateList()
         IMAGO.UpdateScrollBarVisibility(f.scrollFrame)
 
     -- ============================================================
-    -- TAB 5: CODEX — category list in the sidebar
+    -- TAB 5: TIMELINE — era list in the sidebar
     -- ============================================================
     elseif activeTab == 5 then
+        if f.sidebar.timelineHeader then f.sidebar.timelineHeader:Show() end
+
+        IMAGO.Chronicle.timelineEraButtons = IMAGO.Chronicle.timelineEraButtons or {}
+        local teIdx = 1
+        for _, era in ipairs(IMAGOdb.timeline and IMAGOdb.timeline.eras or {}) do
+            local btn = IMAGO.Chronicle.timelineEraButtons[teIdx]
+            if not btn then
+                btn = CreateFrame("Button", nil, f.content, "BackdropTemplate")
+                btn:SetSize(LAYOUT.SIDEBAR_USABLE_WIDTH, 50)
+
+                btn.bg = btn:CreateTexture(nil, "BACKGROUND")
+                btn.bg:SetAllPoints()
+
+                btn:SetBackdrop({
+                    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+                    edgeSize = 10,
+                    insets = { left = 3, right = 3, top = 3, bottom = 3 }
+                })
+                btn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0)
+
+                local hl = btn:CreateTexture(nil, "HIGHLIGHT")
+                hl:SetAllPoints()
+                hl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.2)
+
+                btn.icon = btn:CreateTexture(nil, "ARTWORK")
+                btn.icon:SetSize(28, 28)
+                btn.icon:SetPoint("LEFT", btn, "LEFT", 10, 0)
+
+                btn.t = btn:CreateFontString(nil, "OVERLAY")
+                IMAGO.ApplyTextStyle(btn.t, "NAV_ITEM")
+                btn.t:SetPoint("TOPLEFT", btn, "TOPLEFT", 48, -8)
+                btn.t:SetPoint("RIGHT", btn, "RIGHT", -10, 0)
+                btn.t:SetJustifyH("LEFT")
+                btn.t:SetWordWrap(false)
+
+                btn.range = btn:CreateFontString(nil, "OVERLAY")
+                btn.range:SetFont(FONT_BODY, 10, "")
+                btn.range:SetPoint("TOPLEFT", btn.t, "BOTTOMLEFT", 0, -2)
+                btn.range:SetPoint("RIGHT", btn, "RIGHT", -10, 0)
+                btn.range:SetJustifyH("LEFT")
+                btn.range:SetWordWrap(false)
+                btn.range:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
+
+                btn:SetScript("OnEnter", function(self)
+                    IMAGO.ShowTooltipIfTruncated(self, self.t)
+                end)
+                btn:SetScript("OnLeave", function()
+                    GameTooltip:Hide()
+                end)
+
+                IMAGO.Chronicle.timelineEraButtons[teIdx] = btn
+            end
+
+            btn:SetPoint("TOPLEFT", f.content, "TOPLEFT", 0, -yOffset)
+            btn._eraKey = era.key
+            btn._zebra = (teIdx % 2 == 0)
+            btn.bg:SetColorTexture(1, 1, 1, (btn._zebra and 0.03) or 0)
+
+            if era.icon then
+                btn.icon:SetTexture(era.icon)
+                btn.icon:Show()
+            else
+                btn.icon:Hide()
+            end
+
+            local eraName = (IMAGOdb.timelineEraNames and IMAGOdb.timelineEraNames[era.key]) or era.key
+            btn.t:SetText(eraName)
+            btn.range:SetText((IMAGOdb.timelineEraRanges and IMAGOdb.timelineEraRanges[era.key]) or "")
+
+            if f.selectedTimelineEra == era.key then
+                btn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.9)
+                btn.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+            else
+                btn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.15)
+                btn.t:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
+            end
+
+            btn:SetScript("OnClick", function(self)
+                if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+                f.selectedTimelineEra = self._eraKey
+                IMAGO.Chronicle.UpdateList()
+                -- Per spec: opening an era shows its first event immediately
+                local first = IMAGO.Chronicle.GetTimelineEvents(self._eraKey)[1]
+                if first then
+                    IMAGO.Chronicle.RenderTimelineEvent(first.slug)
+                else
+                    IMAGO.Chronicle.RenderTimelineEvent(nil)
+                end
+            end)
+
+            btn:Show()
+            yOffset = yOffset + 54
+            teIdx = teIdx + 1
+        end
+
+        for i = teIdx, #IMAGO.Chronicle.timelineEraButtons do
+            IMAGO.Chronicle.timelineEraButtons[i]:Hide()
+        end
+
+        f.content:SetHeight(math.max(1, yOffset))
+        IMAGO.UpdateScrollBarVisibility(f.scrollFrame)
+
+    -- ============================================================
+    -- TAB 6: CODEX — category list in the sidebar
+    -- ============================================================
+    elseif activeTab == 6 then
         if f.sidebar.codexHeader then f.sidebar.codexHeader:Show() end
 
         IMAGO.Chronicle.codexCatButtons = IMAGO.Chronicle.codexCatButtons or {}
@@ -4148,7 +4443,7 @@ function IMAGO.Chronicle.RenderClassTab(tabKey)
 
     if f.raceContainer then f.raceContainer:Hide() end
     f.loreBody:Show()
-    f.loreBody:SetText(data[tabKey] or "Coming soon.")
+    f.loreBody:SetText(WrapGlue(data[tabKey] or "Coming soon."))
     f.infoContent:SetHeight(math.max(1, f.loreBody:GetStringHeight() + 20))
     IMAGO.UpdateScrollBarVisibility(f.infoScroll)
 end
@@ -4214,6 +4509,8 @@ function IMAGO.Chronicle.OpenToNPCSlug(slug, opts)
             entry = { type = "class", slug = f.selectedClassSlug }
         elseif f.selectedCodexSlug then
             entry = { type = "codex", slug = f.selectedCodexSlug }
+        elseif f.selectedTimelineSlug then
+            entry = { type = "timeline", slug = f.selectedTimelineSlug }
         end
         if entry then
             table.insert(navStack, entry)
@@ -4224,6 +4521,8 @@ function IMAGO.Chronicle.OpenToNPCSlug(slug, opts)
     f.selectedRaceSlug = nil
     f.selectedClassSlug = nil
     f.selectedCodexSlug = nil
+    f.selectedTimelineSlug = nil
+    f.selectedTimelineEra = nil
 
     local data = IMAGO.GetNPCData(slug)
     if not data then return false end
@@ -4354,7 +4653,12 @@ end
 --- Returns nil for unresolvable refs so dead chips are hidden.
 local function ResolveCodexRef(ref)
     if type(ref) ~= "table" then return nil end
-    if ref.type == "codex" then
+    if ref.type == "timeline" then
+        local ev = IMAGOdb.timeline and IMAGOdb.timeline.events and IMAGOdb.timeline.events[ref.slug]
+        if ev then
+            return ev.title or ref.slug, function() IMAGO.Chronicle.OpenToTimeline(ref.slug) end
+        end
+    elseif ref.type == "codex" then
         local e = IMAGOdb.codex and IMAGOdb.codex.entries and IMAGOdb.codex.entries[ref.slug]
         if e then
             return e.title or ref.slug, function() IMAGO.Chronicle.OpenToCodex(ref.slug) end
@@ -4383,6 +4687,48 @@ local function ResolveCodexRef(ref)
     return nil
 end
 
+--- Locale-safe uppercase (string.upper ignores umlauts & cyrillic;
+--- German umlauts map here, other scripts pass through unchanged)
+local function ToDisplayCaps(s)
+    if not s then return "" end
+    s = s:gsub("ä", "Ä"):gsub("ö", "Ö"):gsub("ü", "Ü")
+    return s:upper()
+end
+
+--- Shared related-entry chip (Codex + Timeline detail views).
+local function MakeRelatedChip(parent)
+    local chip = CreateFrame("Button", nil, parent, "BackdropTemplate")
+    chip:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\Buttons\\WHITE8X8",
+        edgeSize = 1,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 }
+    })
+    chip.t = chip:CreateFontString(nil, "OVERLAY")
+    chip.t:SetFont(FONT_BODY, 12, "")
+    chip.t:SetPoint("CENTER")
+    chip:SetScript("OnEnter", function(self)
+        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3], 1)
+        self.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+    end)
+    chip:SetScript("OnLeave", function(self)
+        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.7)
+        self.t:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+    end)
+    return chip
+end
+
+--- Applies text, size, colors and click handler — identical for
+--- Codex and Timeline chips.
+local function ConfigureRelatedChip(chip, name, onClick)
+    chip.t:SetText(name)
+    chip.t:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+    chip:SetSize(math.floor(chip.t:GetStringWidth() + 22 + 0.5), 24)
+    chip:SetBackdropColor(IMAGO_COLORS.BG_RAISED[1], IMAGO_COLORS.BG_RAISED[2], IMAGO_COLORS.BG_RAISED[3], 0.8)
+    chip:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.7)
+    chip:SetScript("OnClick", onClick)
+end
+
 --- Builds the middle column entry list for the selected category.
 function IMAGO.Chronicle.RenderCodexCategory(catKey)
     local f = IMAGO.Chronicle.frame
@@ -4391,10 +4737,10 @@ function IMAGO.Chronicle.RenderCodexCategory(catKey)
     -- Heading where the back button used to be: current category (or search state)
     if f.codexCatHeading then
         if catKey then
-            f.codexCatHeading:SetText(IMAGO.L["CODEX_CAT_" .. catKey:upper()]
-                or (IMAGOdb.codexCatNames and IMAGOdb.codexCatNames[catKey]) or catKey)
+            f.codexCatHeading:SetText(ToDisplayCaps(IMAGO.L["CODEX_CAT_" .. catKey:upper()]
+                or (IMAGOdb.codexCatNames and IMAGOdb.codexCatNames[catKey]) or catKey))
         else
-            f.codexCatHeading:SetText(IMAGO.L["CODEX_SEARCH_RESULTS"] or "Search Results")
+            f.codexCatHeading:SetText(ToDisplayCaps(IMAGO.L["CODEX_SEARCH_RESULTS"] or "Search Results"))
         end
         f.codexCatHeading:Show()
     end
@@ -4491,6 +4837,8 @@ function IMAGO.Chronicle.RenderCodexEntry(slug)
     if not data then
         -- Empty state (e.g. category has no entries)
         f.selectedCodexSlug = nil
+        f.selectedTimelineSlug = nil
+        f.selectedTimelineEra = nil
         f.codexTitle:SetText("")
         f.codexCatTag:SetText("")
         f.codexBody:SetText("|c" .. IMAGO_HEX.TEXT_MUTED .. (IMAGO.L["CODEX_EMPTY"] or "No entries in this category.") .. "|r")
@@ -4519,11 +4867,11 @@ function IMAGO.Chronicle.RenderCodexEntry(slug)
 
     local catName = IMAGO.L["CODEX_CAT_" .. (data.category or ""):upper()]
         or (IMAGOdb.codexCatNames and IMAGOdb.codexCatNames[data.category]) or ""
-    f.codexCatTag:SetText(catName ~= "" and catName:upper() or "")
+    f.codexCatTag:SetText(catName ~= "" and ToDisplayCaps(catName) or "")
 
     local body = data.body or ""
     body = IMAGO.TextLinker.LinkNames(body, nil, nil, nil, nil, nil, slug)
-    f.codexBody:SetText(body)
+    f.codexBody:SetText(WrapGlue(body))
 
     -- Related-entry chips below the body text
     f.codexChips = f.codexChips or {}
@@ -4552,39 +4900,18 @@ function IMAGO.Chronicle.RenderCodexEntry(slug)
             if name then
                 local chip = f.codexChips[chipIdx]
                 if not chip then
-                    chip = CreateFrame("Button", nil, f.codexBodyContent, "BackdropTemplate")
-                    chip:SetBackdrop({
-                        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-                        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-                        edgeSize = 10,
-                        insets = { left = 3, right = 3, top = 3, bottom = 3 }
-                    })
-                    chip.t = chip:CreateFontString(nil, "OVERLAY")
-                    chip.t:SetFont(FONT_BODY, 12, "")
-                    chip.t:SetPoint("CENTER")
-                    chip:SetScript("OnEnter", function(self)
-                        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3], 1)
-                        self.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
-                    end)
-                    chip:SetScript("OnLeave", function(self)
-                        self:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.7)
-                        self.t:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
-                    end)
+                    chip = MakeRelatedChip(f.codexBodyContent)
                     f.codexChips[chipIdx] = chip
                 end
 
-                chip.t:SetText(name)
-                chip.t:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
-                chip:SetSize(chip.t:GetStringWidth() + 22, 24)
-                chip:SetBackdropColor(IMAGO_COLORS.BG_RAISED[1], IMAGO_COLORS.BG_RAISED[2], IMAGO_COLORS.BG_RAISED[3], 0.8)
-                chip:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.7)
-                chip:SetScript("OnClick", onClick)
+                ConfigureRelatedChip(chip, name, onClick)
 
                 if chipX + chip:GetWidth() > maxW then
                     chipX = 0
                     chipY = chipY + rowH
                 end
-                chip:SetPoint("TOPLEFT", f.codexBodyContent, "TOPLEFT", chipX, -chipY)
+                chip:SetPoint("TOPLEFT", f.codexBodyContent, "TOPLEFT",
+                    math.floor(chipX + 0.5), -math.floor(chipY + 0.5))
                 chip:Show()
                 chipX = chipX + chip:GetWidth() + 8
                 chipIdx = chipIdx + 1
@@ -4676,6 +5003,8 @@ function IMAGO.Chronicle.OpenToCodex(slug)
             entry = { type = "class", slug = f.selectedClassSlug }
         elseif f.selectedCodexSlug and f.selectedCodexSlug ~= slug then
             entry = { type = "codex", slug = f.selectedCodexSlug }
+        elseif f.selectedTimelineSlug then
+            entry = { type = "timeline", slug = f.selectedTimelineSlug }
         end
         if entry then
             table.insert(navStack, entry)
@@ -4689,8 +5018,10 @@ function IMAGO.Chronicle.OpenToCodex(slug)
 
     f.selectedCodexCat = data.category
     f.selectedCodexSlug = nil  -- RenderCodexEntry sets it (and may push navStack)
+    f.selectedTimelineSlug = nil
+    f.selectedTimelineEra = nil
 
-    IMAGO.Chronicle.SelectMainTab(5)
+    IMAGO.Chronicle.SelectMainTab(6)
     f:Show()
 
     IMAGO.Chronicle.RenderCodexEntry(slug)
@@ -4732,6 +5063,393 @@ function IMAGO.Chronicle.OpenToClass(slug)
     end
 
     return false
+end
+
+-- ============================================================
+-- TIMELINE TAB (index 5): eras > chronology > event detail
+-- ============================================================
+
+--- Events for one era (or all eras when eraKey == nil during search),
+--- sorted by `year` then `order`. Optionally filters by search text.
+function IMAGO.Chronicle.GetTimelineEvents(eraKey)
+    local f = IMAGO.Chronicle.frame
+    local search = ""
+    if f and f.searchBox then
+        search = (f.searchBox:GetText() or ""):lower()
+    end
+
+    local list = {}
+    for slug, data in pairs(IMAGOdb.timeline and IMAGOdb.timeline.events or {}) do
+        if not eraKey or data.era == eraKey then
+            local matchSearch = true
+            if search ~= "" then
+                local title = (data.title or ""):lower()
+                local body = (data.body or ""):lower()
+                matchSearch = title:find(search, 1, true) ~= nil or body:find(search, 1, true) ~= nil
+            end
+            if matchSearch then
+                table.insert(list, { slug = slug, data = data })
+            end
+        end
+    end
+    table.sort(list, function(a, b)
+        local ya, yb = a.data.year or 0, b.data.year or 0
+        if ya ~= yb then return ya < yb end
+        local oa, ob = a.data.order or 999, b.data.order or 999
+        if oa ~= ob then return oa < ob end
+        return (a.data.title or a.slug) < (b.data.title or b.slug)
+    end)
+    return list
+end
+
+--- Builds the middle column chronology for the selected era
+--- (eraKey == nil renders cross-era search hits).
+function IMAGO.Chronicle.RenderTimelineEra(eraKey)
+    local f = IMAGO.Chronicle.frame
+    if not f then return end
+
+    -- Heading where the back button used to be: static "CHRONOLOGY"
+    -- (or the search state, matching the Codex behavior)
+    if f.timelineChronoHeading then
+        if eraKey then
+            f.timelineChronoHeading:SetText(IMAGO.L["TIMELINE_CHRONOLOGY"] or "CHRONOLOGY")
+        else
+            f.timelineChronoHeading:SetText(IMAGO.L["TIMELINE_SEARCH_RESULTS"] or "Search Results")
+        end
+        f.timelineChronoHeading:Show()
+    end
+
+    f.timelineEventButtons = f.timelineEventButtons or {}
+    local list = IMAGO.Chronicle.GetTimelineEvents(eraKey)
+    local yOffset = 6
+    local contentW = 236
+    local rowH = 40
+    local lineX = 9        -- center of the vertical line
+    local nodeSize = 10
+
+    local eIdx = 1
+    local firstCenterY, lastCenterY
+    for _, entry in ipairs(list) do
+        local btn = f.timelineEventButtons[eIdx]
+        if not btn then
+            btn = CreateFrame("Button", nil, f.timelineListContent, "BackdropTemplate")
+            btn:SetSize(contentW - 22, rowH - 4)
+
+            btn:SetBackdrop({
+                edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+                edgeSize = 8,
+                insets = { left = 2, right = 2, top = 2, bottom = 2 }
+            })
+
+            local hl = btn:CreateTexture(nil, "HIGHLIGHT")
+            hl:SetAllPoints()
+            hl:SetColorTexture(IMAGO_COLORS.BG_HOVER[1], IMAGO_COLORS.BG_HOVER[2], IMAGO_COLORS.BG_HOVER[3], 0.2)
+
+            btn.node = f.timelineListContent:CreateTexture(nil, "ARTWORK")
+            btn.node:SetSize(nodeSize, nodeSize)
+            btn.node:SetTexture("Interface\\COMMON\\Indicator-Yellow")
+
+            btn.year = btn:CreateFontString(nil, "OVERLAY")
+            btn.year:SetFont(FONT_BODY, 12, "OUTLINE")
+            btn.year:SetPoint("TOPLEFT", btn, "TOPLEFT", 8, -5)
+            btn.year:SetPoint("RIGHT", btn, "RIGHT", -8, 0)
+            btn.year:SetJustifyH("LEFT")
+            btn.year:SetWordWrap(false)
+            btn.year:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+
+            btn.t = btn:CreateFontString(nil, "OVERLAY")
+            btn.t:SetFont(FONT_BODY, 12, "")
+            btn.t:SetPoint("TOPLEFT", btn.year, "BOTTOMLEFT", 0, -1)
+            btn.t:SetPoint("RIGHT", btn, "RIGHT", -8, 0)
+            btn.t:SetJustifyH("LEFT")
+            btn.t:SetWordWrap(false)
+            btn.t:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
+
+            btn:SetScript("OnEnter", function(self)
+                IMAGO.ShowTooltipIfTruncated(self, self.t)
+            end)
+            btn:SetScript("OnLeave", function()
+                GameTooltip:Hide()
+            end)
+
+            f.timelineEventButtons[eIdx] = btn
+        end
+
+        local centerY = yOffset + rowH / 2
+        if not firstCenterY then firstCenterY = centerY end
+        lastCenterY = centerY
+
+        btn:SetPoint("TOPLEFT", f.timelineListContent, "TOPLEFT", 22, -yOffset)
+        btn.node:ClearAllPoints()
+        btn.node:SetPoint("CENTER", f.timelineListContent, "TOPLEFT", lineX, -centerY)
+        btn.node:Show()
+
+        btn.timelineSlug = entry.slug
+        btn._listScrollY = yOffset
+        btn.t:SetText(entry.data.title or entry.slug)
+        btn.year:SetText(entry.data.yearLabel or tostring(entry.data.year or ""))
+
+        if f.selectedTimelineSlug == entry.slug then
+            btn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.9)
+            btn.node:SetDesaturated(false)
+            btn.node:SetAlpha(1)
+            btn.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
+        else
+            btn:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.15)
+            btn.node:SetDesaturated(true)
+            btn.node:SetAlpha(0.45)
+            btn.t:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
+        end
+
+        btn:SetScript("OnClick", function(self)
+            if SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+            IMAGO.Chronicle.RenderTimelineEvent(self.timelineSlug)
+        end)
+
+        btn:Show()
+        yOffset = yOffset + rowH
+        eIdx = eIdx + 1
+    end
+
+    -- Stretch the vertical line from the first to the last node
+    if f.timelineListContent.line then
+        if firstCenterY then
+            f.timelineListContent.line:ClearAllPoints()
+            f.timelineListContent.line:SetPoint("TOP", f.timelineListContent, "TOPLEFT", lineX, -firstCenterY)
+            f.timelineListContent.line:SetPoint("BOTTOM", f.timelineListContent, "TOPLEFT", lineX, -lastCenterY)
+            f.timelineListContent.line:Show()
+        else
+            f.timelineListContent.line:Hide()
+        end
+    end
+
+    for i = eIdx, #f.timelineEventButtons do
+        local stale = f.timelineEventButtons[i]
+        stale:Hide()
+        if stale.node then stale.node:Hide() end
+    end
+
+    f.timelineListContent:SetHeight(math.max(1, yOffset))
+    IMAGO.UpdateScrollBarVisibility(f.timelineListScroll)
+    f.timelineListPanel:Show()
+end
+
+--- Renders one timeline event into the right content column.
+function IMAGO.Chronicle.RenderTimelineEvent(slug)
+    local f = IMAGO.Chronicle.frame
+    if not f then return end
+
+    local data = slug and IMAGOdb.timeline and IMAGOdb.timeline.events and IMAGOdb.timeline.events[slug]
+    if not data then
+        f.selectedTimelineSlug = nil
+        f.timelineTitle:SetText("")
+        f.timelineEraTag:SetText("")
+        f.timelineBody:SetText("|c" .. IMAGO_HEX.TEXT_MUTED .. (IMAGO.L["TIMELINE_EMPTY"] or "No events in this era.") .. "|r")
+        for _, chip in ipairs(f.tlChips or {}) do chip:Hide() end
+        if f.tlRelatedHead then f.tlRelatedHead:Hide() end
+        f.timelineBodyContent:SetHeight(60)
+        f.timelineContent:Show()
+        return
+    end
+
+    -- navStack: push the previous timeline page
+    if not isNavigatingBack and f.selectedTimelineSlug and f.selectedTimelineSlug ~= slug then
+        table.insert(navStack, { type = "timeline", slug = f.selectedTimelineSlug })
+        if IMAGO.Chronicle.SetBackEnabled then IMAGO.Chronicle.SetBackEnabled(true) end
+    end
+    f.selectedTimelineSlug = slug
+
+    -- Highlight in the middle list (rebuild if era mismatch)
+    if data.era and data.era ~= f.selectedTimelineEra then
+        f.selectedTimelineEra = data.era
+        IMAGO.Chronicle.UpdateList()
+    end
+    IMAGO.Chronicle.RenderTimelineEra(f.selectedTimelineEra)
+
+    local yearLabel = data.yearLabel or ""
+    f.timelineTitle:SetText((data.title or slug) .. (yearLabel ~= "" and ("  (" .. yearLabel .. ")") or ""))
+
+    local eraName = (IMAGOdb.timelineEraNames and IMAGOdb.timelineEraNames[data.era]) or data.era or ""
+    local tag = IMAGO.L["TIMELINE_TAG"] or "HISTORICAL TIMELINE"
+    f.timelineEraTag:SetText(ToDisplayCaps(eraName .. " / " .. tag))
+
+    -- Divider and body scroll follow the actual header height
+    -- (long titles wrap onto a second line)
+    local headH = f.timelineTitle:GetStringHeight() + f.timelineEraTag:GetStringHeight() + 16
+    f.timelineDivider:ClearAllPoints()
+    f.timelineDivider:SetPoint("TOPLEFT", f.timelineEraTag, "BOTTOMLEFT", 0, -8)
+    f.timelineDivider:SetPoint("TOPRIGHT", f.timelineContent, "TOPRIGHT", -10, -headH)
+    f.timelineBodyScroll:ClearAllPoints()
+    f.timelineBodyScroll:SetPoint("TOPLEFT", f.timelineContent, "TOPLEFT", 10, -(headH + 12))
+    f.timelineBodyScroll:SetPoint("BOTTOMRIGHT", f.timelineContent, "BOTTOMRIGHT", -10, 10)
+
+    local body = data.body or ""
+    body = IMAGO.TextLinker.LinkNames(body, nil, nil, nil, nil, nil, nil, nil, slug)
+    f.timelineBody:SetText(WrapGlue(body))
+
+    -- Related-entry chips below the body text (same widget style as Codex)
+    f.tlChips = f.tlChips or {}
+    local bodyH = f.timelineBody:GetStringHeight()
+    local chipY = bodyH + 20
+
+    if not f.tlRelatedHead then
+        f.tlRelatedHead = f.timelineBodyContent:CreateFontString(nil, "OVERLAY")
+        f.tlRelatedHead:SetFont(FONT_BODY, 11, "OUTLINE")
+        f.tlRelatedHead:SetJustifyH("LEFT")
+        f.tlRelatedHead:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+    end
+
+    local chipIdx = 1
+    local chipX = 0
+    local rowH = 26
+    local maxW = 455
+    if data.related and #data.related > 0 then
+        f.tlRelatedHead:SetPoint("TOPLEFT", f.timelineBodyContent, "TOPLEFT", 0, -chipY)
+        f.tlRelatedHead:SetText("|TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:12:12|t  " .. (IMAGO.L["TIMELINE_RELATED"] or "RELATED ENTRIES"))
+        f.tlRelatedHead:Show()
+        chipY = chipY + 20
+
+        for _, ref in ipairs(data.related) do
+            local name, onClick = ResolveCodexRef(ref)
+            if name then
+                local chip = f.tlChips[chipIdx]
+                if not chip then
+                    chip = MakeRelatedChip(f.timelineBodyContent)
+                    f.tlChips[chipIdx] = chip
+                end
+
+                ConfigureRelatedChip(chip, name, onClick)
+
+                if chipX + chip:GetWidth() > maxW then
+                    chipX = 0
+                    chipY = chipY + rowH
+                end
+                chip:SetPoint("TOPLEFT", f.timelineBodyContent, "TOPLEFT",
+                    math.floor(chipX + 0.5), -math.floor(chipY + 0.5))
+                chip:Show()
+                chipX = chipX + chip:GetWidth() + 8
+                chipIdx = chipIdx + 1
+            end
+        end
+        chipY = chipY + rowH
+    else
+        f.tlRelatedHead:Hide()
+    end
+
+    for i = chipIdx, #f.tlChips do
+        f.tlChips[i]:Hide()
+    end
+
+    f.timelineBodyContent:SetHeight(math.max(1, chipY + 10))
+    f.timelineBodyScroll:SetVerticalScroll(0)
+    IMAGO.UpdateScrollBarVisibility(f.timelineBodyScroll)
+    f.timelineContent:Show()
+end
+
+--- Default state for the Timeline tab: first era, first event.
+function IMAGO.Chronicle.ShowTimelineDefault()
+    local f = IMAGO.Chronicle.frame
+    if not f then return end
+
+    if f.timelineListPanel then f.timelineListPanel:Show() end
+    if f.timelineContent then f.timelineContent:Show() end
+
+    local searchActive = f.searchBox and (f.searchBox:GetText() or "") ~= ""
+
+    if searchActive then
+        -- Search hits are listed era-less in the middle column
+        local hits = IMAGO.Chronicle.GetTimelineEvents(nil)
+        f.selectedTimelineEra = nil
+        IMAGO.Chronicle.RenderTimelineEra(nil)
+        if hits[1] then
+            IMAGO.Chronicle.RenderTimelineEvent(hits[1].slug)
+        else
+            f.timelineTitle:SetText("")
+            f.timelineEraTag:SetText("")
+            f.timelineBody:SetText("|c" .. IMAGO_HEX.TEXT_MUTED .. (IMAGO.L["TIMELINE_SEARCH_EMPTY"] or "No events match this search.") .. "|r")
+            if f.tlRelatedHead then f.tlRelatedHead:Hide() end
+            for _, chip in ipairs(f.tlChips or {}) do chip:Hide() end
+            f.timelineBodyContent:SetHeight(60)
+            f.timelineContent:Show()
+        end
+        return
+    end
+
+    local eras = IMAGOdb.timeline and IMAGOdb.timeline.eras or {}
+    local eraKey = f.selectedTimelineEra or (eras[1] and eras[1].key)
+    f.selectedTimelineEra = eraKey
+
+    IMAGO.Chronicle.RenderTimelineEra(eraKey)
+
+    -- Keep current event if it belongs to the era; else first event
+    local slug = f.selectedTimelineSlug
+    local data = slug and IMAGOdb.timeline.events[slug]
+    if not data or data.era ~= eraKey then
+        local first = IMAGO.Chronicle.GetTimelineEvents(eraKey)[1]
+        slug = first and first.slug or nil
+    end
+    IMAGO.Chronicle.RenderTimelineEvent(slug)
+end
+
+--- Public navigation API: open the Timeline tab at a given event.
+function IMAGO.Chronicle.OpenToTimeline(slug)
+    if not slug or not (IMAGOdb.timeline and IMAGOdb.timeline.events and IMAGOdb.timeline.events[slug]) then
+        return false
+    end
+
+    if not IMAGO.Chronicle.frame then
+        IMAGO.Chronicle.CreateFrame()
+    end
+
+    local f = IMAGO.Chronicle.frame
+    local data = IMAGOdb.timeline.events[slug]
+
+    -- Push current page onto nav stack before navigating away.
+    if not isNavigatingBack then
+        local entry = nil
+        if f.selectedNPCSlug and f.selectedNPCSlug ~= "" then
+            entry = { type = "npc", slug = f.selectedNPCSlug }
+        elseif f.selectedZoneMapID then
+            entry = { type = "zone", mapID = f.selectedZoneMapID }
+        elseif f.selectedRaceSlug then
+            entry = { type = "race", slug = f.selectedRaceSlug }
+        elseif f.selectedClassSlug then
+            entry = { type = "class", slug = f.selectedClassSlug }
+        elseif f.selectedCodexSlug then
+            entry = { type = "codex", slug = f.selectedCodexSlug }
+        elseif f.selectedTimelineSlug and f.selectedTimelineSlug ~= slug then
+            entry = { type = "timeline", slug = f.selectedTimelineSlug }
+        end
+        if entry then
+            table.insert(navStack, entry)
+            if IMAGO.Chronicle.SetBackEnabled then IMAGO.Chronicle.SetBackEnabled(true) end
+        end
+    end
+    f.selectedNPCSlug = nil
+    f.selectedZoneMapID = nil
+    f.selectedRaceSlug = nil
+    f.selectedClassSlug = nil
+    f.selectedCodexSlug = nil
+    f.selectedTimelineSlug = nil
+    f.selectedTimelineEra = data.era
+
+    IMAGO.Chronicle.SelectMainTab(5)
+    f:Show()
+
+    IMAGO.Chronicle.RenderTimelineEvent(slug)
+
+    -- Scroll the middle list to the event's button
+    C_Timer.After(0, function()
+        if f.timelineEventButtons then
+            for _, btn in pairs(f.timelineEventButtons) do
+                if btn.timelineSlug == slug and btn:IsShown() then
+                    f.timelineListScroll:SetVerticalScroll(math.max(0, (btn._listScrollY or 0) - 60))
+                    break
+                end
+            end
+        end
+    end)
+    return true
 end
 
 function IMAGO.Chronicle.Toggle()

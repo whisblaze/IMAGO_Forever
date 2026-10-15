@@ -43,23 +43,13 @@ IMAGOdb.codex.entries = {
 
     -- ============ COSMOLOGY ============
 
-    ["great_sundering"] = {
-        category = "cosmology", order = 10, linkable = true,
-        related = {
-            { type = "codex", slug = "well_of_eternity" },
-            { type = "codex", slug = "war_of_ancients" },
-            { type = "race",  slug = "night_elf" },
-            { type = "codex", slug = "burning_legion" },
-        },
-    },
-
     ["well_of_eternity"] = {
         category = "cosmology", order = 20, linkable = true,
         related = {
-            { type = "codex", slug = "great_sundering" },
-            { type = "codex", slug = "highborne" },
-            { type = "codex", slug = "arcane" },
-            { type = "codex", slug = "war_of_ancients" },
+            { type = "timeline", slug = "the_sundering" },
+            { type = "codex",    slug = "highborne" },
+            { type = "codex",    slug = "arcane" },
+            { type = "timeline", slug = "war_ancients" },
         },
     },
 
@@ -157,25 +147,6 @@ IMAGOdb.codex.entries = {
 
     -- ============ HISTORY & CONCEPTS ============
 
-    ["war_of_ancients"] = {
-        category = "history", order = 10, linkable = true,
-        related = {
-            { type = "codex", slug = "great_sundering" },
-            { type = "codex", slug = "burning_legion" },
-            { type = "codex", slug = "well_of_eternity" },
-            { type = "race",  slug = "night_elf" },
-        },
-    },
-
-    ["dark_portal"] = {
-        category = "history", order = 20, linkable = true,
-        related = {
-            { type = "codex", slug = "guardians_tirisfal" },
-            { type = "race",  slug = "orc" },
-            { type = "npc",   slug = "thrall" },
-        },
-    },
-
     ["lich_king"] = {
         category = "history", order = 30, linkable = true,
         related = {
@@ -199,19 +170,19 @@ IMAGOdb.codex.entries = {
     ["guardians_tirisfal"] = {
         category = "factions", order = 20, linkable = true,
         related = {
-            { type = "codex", slug = "kirin_tor" },
-            { type = "codex", slug = "dark_portal" },
-            { type = "codex", slug = "burning_legion" },
+            { type = "codex",    slug = "kirin_tor" },
+            { type = "timeline", slug = "dark_portal_opens" },
+            { type = "codex",    slug = "burning_legion" },
         },
     },
 
     ["burning_legion"] = {
         category = "factions", order = 30, linkable = true,
         related = {
-            { type = "codex", slug = "twisting_nether" },
-            { type = "codex", slug = "fel" },
-            { type = "codex", slug = "war_of_ancients" },
-            { type = "race",  slug = "orc" },
+            { type = "codex",    slug = "twisting_nether" },
+            { type = "codex",    slug = "fel" },
+            { type = "timeline", slug = "war_ancients" },
+            { type = "race",     slug = "orc" },
         },
     },
 

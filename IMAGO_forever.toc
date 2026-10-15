@@ -21,6 +21,7 @@ data/zones_static.lua
 data/races_static.lua
 data/classes_static.lua
 data/codex_static.lua
+data/timeline_static.lua
 data/npcs/forever.lua
 
 locales/base/data/timelines.lua
@@ -29,6 +30,7 @@ locales/base/data/zones.lua
 locales/base/data/races.lua
 locales/base/data/classes.lua
 locales/base/data/codex.lua
+locales/base/data/timeline.lua
 locales/base/data/snippets.lua
 locales/base/chronicle.lua
 
@@ -36,6 +38,7 @@ locales/[TextLocale]/data/timelines.lua
 locales/[TextLocale]/data/npcs/forever_npcs.lua
 locales/[TextLocale]/data/zones.lua
 locales/[TextLocale]/data/races.lua
+locales/[TextLocale]/data/timeline.lua
 locales/[TextLocale]/data/snippets.lua
 locales/[TextLocale]/chronicle.lua
 

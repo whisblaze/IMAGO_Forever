@@ -149,6 +149,18 @@ L["CODEX_EMPTY"]                    = "No entries in this category."
 L["CODEX_SEARCH_EMPTY"]             = "No entries match this search."
 L["CODEX_SEARCH_RESULTS"]           = "Search Results"
 
+-- ============================================================
+-- TAB 5: TIMELINE
+-- ============================================================
+L["TAB_TIMELINE"]                   = "Timeline"
+L["TIMELINE_ERAS"]                  = "HISTORICAL ERAS"
+L["TIMELINE_CHRONOLOGY"]            = "CHRONOLOGY"
+L["TIMELINE_TAG"]                   = "HISTORICAL TIMELINE"
+L["TIMELINE_RELATED"]               = "RELATED ENTRIES"
+L["TIMELINE_EMPTY"]                 = "No events in this era."
+L["TIMELINE_SEARCH_EMPTY"]          = "No events match this search."
+L["TIMELINE_SEARCH_RESULTS"]        = "Search Results"
+
 -- Scanner & Tooltip
 L["TOOLTIP_KNOWN"]                  = "IMAGO: |cFFFFD700Recorded in Chronicle|r"
 L["TOOLTIP_UNKNOWN"]                = "IMAGO: |cFF888888Fate hidden (Target to uncover)|r"
@@ -187,6 +199,7 @@ L["SEARCH_IN_ZONES"]                = "Search Zones..."
 L["SEARCH_IN_RACES"]                = "Search Races..."
 L["SEARCH_IN_CLASSES"]              = "Search Classes..."
 L["SEARCH_IN_CODEX"]                = "Search in Codex..."
+L["SEARCH_IN_TIMELINE"]             = "Search Timeline..."
 L["STARTPAGE_RANK"]                 = "Your Standing in the Chronicle:"
 L["STARTPAGE_COMPLETED"]            = "REACHED MILESTONES:"
 L["STARTPAGE_NEXT"]                 = "HIDDEN MILESTONES:"
