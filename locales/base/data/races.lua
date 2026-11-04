@@ -29,7 +29,7 @@ if f then
         mount = "Horse",
         language = "Common",
     }
-    f.classes = { { classFile = "WARRIOR" }, { classFile = "PALADIN" }, { classFile = "PRIEST" }, { classFile = "MAGE" }, { classFile = "WARLOCK" }, { classFile = "ROGUE" }, { classFile = "HUNTER", isNew = true } }
+    f.classes = { { classFile = "WARRIOR" }, { classFile = "PALADIN" }, { classFile = "PRIEST" }, { classFile = "MAGE" }, { classFile = "WARLOCK" }, { classFile = "ROGUE" }, { classFile = "HUNTER" } }
     f.history = [[Humans descend from the vrykul, barbaric half-giants of Northrend who were themselves titan-forged. Around 15,000 years before the Dark Portal, the curse of flesh caused women of the Dragonflayer clan to bear small, malformed children. King Ymiron declared them aberrations and ordered them destroyed, but some parents hid them among a vrykul population in Tirisfal Glades. Over the ages, those children degenerated into mortal beings called humans. For millennia, scattered tribes flourished in the Eastern Kingdoms, warring constantly with each other and with the Amani forest trolls, their origins forgotten.
 
 Humankind stepped into history during the Troll Wars of 2,800 BDP. The Arathi tribe under Warlord Thoradin united the tribes into the Empire of Arathor, the first great human civilization. The beleaguered high elves of Quel'Thalas taught one hundred humans the arcane in exchange for military aid, and together they crushed the trolls. Arathor's city-states grew autonomous until the empire split around 1,200 BDP into the Seven Kingdoms: Gilneas, Alterac, Dalaran and Lordaeron in the north, Kul Tiras in the southwest, and Stormwind in the far south. The old capital Strom became Stromgarde.
@@ -59,7 +59,7 @@ The dominant religion is faith in the Holy Light, first revealed to early human 
     f.groups["theramore"] = { name = "Theramore", lore = "Jaina's young isle-kingdom on Kalimdor." }
     f.groupsFootnote = "Orders: Church of the Holy Light · Knights of the Silver Hand · Kirin Tor · Scarlet Crusade · Argent Dawn · the Syndicate · the Defias Brotherhood · the Cult of the Damned · the Twilight's Hammer."
     f.figureText["varian_wrynn"] = { name = "Varian Wrynn", role = "Missing king of Stormwind.", aff = "Stormwind, Alliance", title = "Missing king of Stormwind. — Stormwind, Alliance" }
-    f.figureText["anduin_wrynn"] = { name = "Anduin Wrynn", role = "Child king under Regent Bolvar Fordragon.", aff = "Stormwind, Alliance", title = "Child king under Regent Bolvar Fordragon. — Stormwind, Alliance" }
+    f.figureText["anduin_wrynn_forever"] = { name = "Anduin Wrynn", role = "Child king under Regent Bolvar Fordragon.", aff = "Stormwind, Alliance", title = "Child king under Regent Bolvar Fordragon. — Stormwind, Alliance" }
     f.figureText["llane_wrynn"] = { name = "Llane Wrynn", role = "Former king, assassinated by Garona.", aff = "Stormwind", title = "Former king, assassinated by Garona. — Stormwind" }
     f.figureText["anduin_lothar"] = { name = "Anduin Lothar", role = "Lord-Regent, Supreme Commander of the Alliance of Lordaeron.", aff = "Alliance of Lordaeron", title = "Lord-Regent, Supreme Commander of the Alliance of Lordaeron. — Alliance of Lordaeron" }
     f.figureText["turalyon"] = { name = "Turalyon", role = "Paladin of the Silver Hand, leader of the Alliance Expedition.", aff = "Silver Hand", title = "Paladin of the Silver Hand, leader of the Alliance Expedition. — Silver Hand" }
@@ -71,9 +71,9 @@ The dominant religion is faith in the Holy Light, first revealed to early human 
     f.figureText["darius_crowley"] = { name = "Darius Crowley", role = "Gilnean lord behind the Wall.", aff = "Gilneas", title = "Gilnean lord behind the Wall. — Gilneas" }
     f.figureText["daelin_proudmoore"] = { name = "Daelin Proudmoore", role = "Former Lord Admiral of Kul Tiras.", aff = "Kul Tiras", title = "Former Lord Admiral of Kul Tiras. — Kul Tiras" }
     f.figureText["jaina_proudmoore"] = { name = "Jaina Proudmoore", role = "Ruler of Theramore.", aff = "Theramore", title = "Ruler of Theramore. — Theramore" }
-    f.figureText["bolvar_fordragon"] = { name = "Bolvar Fordragon", role = "Regent of Stormwind.", aff = "Stormwind", title = "Regent of Stormwind. — Stormwind" }
+    f.figureText["bolvar_fordragon_forever"] = { name = "Bolvar Fordragon", role = "Regent of Stormwind.", aff = "Stormwind", title = "Regent of Stormwind. — Stormwind" }
     f.figureText["alexandros_mograine"] = { name = "Alexandros Mograine", role = "First wielder of the Ashbringer.", aff = "Silver Hand", title = "First wielder of the Ashbringer. — Silver Hand" }
-    f.figureText["tirion_fordring"] = { name = "Tirion Fordring", role = "Paladin in exile in the Plaguelands.", aff = "Argent Dawn", title = "Paladin in exile in the Plaguelands. — Argent Dawn" }
+    f.figureText["tirion_fordring_forever"] = { name = "Tirion Fordring", role = "Paladin in exile in the Plaguelands.", aff = "Argent Dawn", title = "Paladin in exile in the Plaguelands. — Argent Dawn" }
     f.figureText["aegwynn"] = { name = "Aegwynn", role = "Former Guardian of Tirisfal, in Theramore.", aff = "Theramore", title = "Former Guardian of Tirisfal, in Theramore. — Theramore" }
     f.figureText["medivh"] = { name = "Medivh", role = "Last Guardian of Tirisfal, master of Karazhan.", aff = "Karazhan", title = "Last Guardian of Tirisfal, master of Karazhan. — Karazhan" }
     f.figureText["khadgar"] = { name = "Khadgar", role = "Mage of the Alliance Expedition.", aff = "Sons of Lothar", title = "Mage of the Alliance Expedition. — Sons of Lothar" }
@@ -101,7 +101,7 @@ if f then
     f.name = "Dwarves"
     f.groupTabLabel = "Clans"
     f.quote = { text = "If there's one thing dwarves love, it's drinking. And fighting. Two things.", author = "Pewter Drinking Cup" }
-    f.overview = "Dwarves are an ancient, bold and courageous race descended from the earthen, split into great clans. The Bronzebeards of Ironforge hold the mountains of Khaz Modan; the Wildhammers nest on Aerie Peak in the Hinterlands; the Dark Irons brood in Shadowforge City beneath Blackrock Mountain. Short and stout, they are masters of the forge, and when the call to battle sounds, they rise with unmatched valor. Under King Magni Bronzebeard, Ironforge remains the staunchest friend the Alliance has."
+    f.overview = "Dwarves are an ancient, bold and courageous race descended from the earthen, split into great clans. The Bronzebeards of Ironforge hold the mountains of Khaz Modan; the Wildhammers nest on Aerie Peak in the Hinterlands; the Dark Irons brood in Shadowforge City beneath Blackrock Mountain. Short and stout, they are masters of the forge, and when the call to battle sounds, they rise with unmatched valor. Under King Magni Bronzebeard, the dwarves remain the staunchest friends the Alliance has."
     f.facts = {
         faction = "Alliance (Ironforge); Wildhammers friendly but outside the reformed Alliance; Dark Irons hostile",
         capital = "Ironforge · Aerie Peak · Shadowforge City",
@@ -109,7 +109,7 @@ if f then
         mount = "Ram (Gryphon for the Wildhammers)",
         language = "Dwarven, Common",
     }
-    f.classes = { { classFile = "WARRIOR" }, { classFile = "PALADIN" }, { classFile = "PRIEST" }, { classFile = "HUNTER" }, { classFile = "ROGUE" }, { classFile = "SHAMAN", isNew = true } }
+    f.classes = { { classFile = "WARRIOR" }, { classFile = "PALADIN" }, { classFile = "PRIEST" }, { classFile = "HUNTER" }, { classFile = "ROGUE" }, { classFile = "SHAMAN" } }
     f.history = [[The dwarves derive from the earthen, titan-forged creatures of living stone shaped by the Forge of Wills. After Keeper Loken's betrayal tainted the Forge with the curse of flesh, Keeper Tyr led the afflicted south to Uldaman. When the curse overtook them, most earthen asked to be put to slumber until a cure could be found. Ages later they awoke as flesh and called themselves dwarves. Remembering their maker, they named their land Khaz Modan, "Mountain of Khaz", won it from the ice trolls, and raised mighty Ironforge beneath the mountains. Around 2,500 BDP they befriended the gnomes of the nearby caverns, and around 1,200 BDP the expeditions of Gilneas and Alterac first encountered them. Humans and dwarves quickly bonded over battle, storytelling and strong ale, and the humans introduced them to the Holy Light.
 
 By that age, three great clans shared Ironforge under High King Modimus Anvilmar: the Bronzebeards, masters of the military and trade; the Wildhammers, resilient mountaineers of the foothills; and the scheming Dark Irons of the Thaurissan family. When Modimus died, civil war erupted. The victorious Bronzebeards kept Dun Morogh, the Wildhammers withdrew to Grim Batol, the Dark Irons founded Thaurissan in the Redridge Mountains. Years later the Dark Irons struck both kingdoms at once. Sorcerer-Thane Thaurissan was repelled at Ironforge while his wife Modgud broke Grim Batol's gates before falling to Thane Khardros, and her magic left the citadel cursed forever. As the victors marched on his capital, Thaurissan's hatred summoned the Firelord Ragnaros into the world; the devastation annihilated his kingdom and scarred the north into the Burning Steppes and Searing Gorge. The Dark Irons were dragged into Shadowforge as Ragnaros's slaves. The homeless Wildhammers settled Aerie Peak in the Hinterlands, and the Thandol Span was raised as a pledge that the clans would never raise arms against each other again.
@@ -132,7 +132,7 @@ Dwarves love gold and drink, so gambling comes naturally: few travel without dic
     f.groupsFootnote = "- Lesser clans: Rom's dwindled clan, the Wildhammer families of Northeron and the Highlands, the Skardyn cursed within Grim Batol; far north, the Frostborn dwarves of the Storm Peaks."
     f.figureText["modimus_anvilmar"] = { name = "Modimus Anvilmar", role = "Last High King of all dwarves before the War of the Three Hammers.", aff = "Ironforge", title = "Last High King of all dwarves before the War of the Three Hammers. — Ironforge" }
     f.figureText["madoran_bronzebeard"] = { name = "Madoran Bronzebeard", role = "Thane of the Bronzebeards in the War of the Three Hammers.", aff = "Bronzebeard clan", title = "Thane of the Bronzebeards in the War of the Three Hammers. — Bronzebeard clan" }
-    f.figureText["magni_bronzebeard"] = { name = "Magni Bronzebeard", role = "King of Ironforge.", aff = "Alliance, Bronzebeard clan", title = "King of Ironforge. — Alliance, Bronzebeard clan" }
+    f.figureText["king_magni_bronzebeard_forever"] = { name = "Magni Bronzebeard", role = "King of Ironforge.", aff = "Alliance, Bronzebeard clan", title = "King of Ironforge. — Alliance, Bronzebeard clan" }
     f.figureText["muradin_bronzebeard"] = { name = "Muradin Bronzebeard", role = "Middle Bronzebeard brother, lost on expedition in Northrend.", aff = "Bronzebeard clan", title = "Middle Bronzebeard brother, lost on expedition in Northrend. — Bronzebeard clan" }
     f.figureText["brann_bronzebeard"] = { name = "Brann Bronzebeard", role = "Leader of the Explorers' League.", aff = "Explorer's League", title = "Leader of the Explorers' League. — Explorer's League" }
     f.figureText["moira_thaurissan"] = { name = "Moira Thaurissan", role = "Magni's daughter, consort of Emperor Dagran in Shadowforge.", aff = "Dark Iron clan", title = "Magni's daughter, consort of Emperor Dagran in Shadowforge. — Dark Iron clan" }
@@ -167,7 +167,7 @@ if f then
         mount = "Mechanostrider",
         language = "Gnomish, Common",
     }
-    f.classes = { { classFile = "WARRIOR" }, { classFile = "ROGUE" }, { classFile = "MAGE" }, { classFile = "WARLOCK" }, { classFile = "PRIEST", isNew = true } }
+    f.classes = { { classFile = "WARRIOR" }, { classFile = "ROGUE" }, { classFile = "MAGE" }, { classFile = "WARLOCK" }, { classFile = "PRIEST" } }
     f.history = [[The gnomes descend from mechagnomes, small clockwork creatures wrought by the Watcher Mimiron. Left to maintain Uldaman after Loken's betrayal, they too succumbed to the curse of flesh, degenerated into flesh beings and abandoned the vaults some 3,000 years before the Dark Portal. The first gnomes carved out an existence in the snowy mountains west of Uldaman, surviving ice trolls and the elements through technological dedication, and within a few generations had lost all memory of their titan-forged heritage. Around 2,500 BDP the arriving dwarves found them and helped lay the foundations of Gnomeregan. The gnomish kingdom industrialized in peace. Their arcanists were remarkable: Indus sat on the founding Council of Tirisfal, and Erbag served it in Aegwynn's day. Their last king, Mechagon, led followers away four hundred years ago in search of a mythical land of technology; since then the gnomes have elected their High Tinkers by merit.
 
 When the Horde invaded Khaz Modan in the Second War, dwarves and gnomes held the passes together. Gnomeregan's iron gate and devilish traps stalled the siege until Lothar freed them both, and the gnomes repaid the Alliance with submarines, flying machines and motivated troops, igniting a lasting technological rivalry with the goblins. Afterward, High Tinker Mekkatorque designed the Deeprun Tram to link Ironforge and Stormwind, and when the Alliance frayed around Year 18 he reaffirmed the gnomes' loyalty to King Terenas.
@@ -189,7 +189,7 @@ They speak Gnomish and Common and are renowned mechanics, engineers and technici
     f.groups["gnomeregan_covert_ops"] = { name = "Gnomeregan Covert Ops", lore = "The gnomes' intelligence arm, agents active across Alliance affairs." }
     f.groups["kirin_tor"] = { name = "The Kirin Tor", lore = "Gnomish arcanists have always held seats in Dalaran's order." }
     f.groups["leper_gnomes"] = { name = "Leper gnomes", lore = "The irradiated survivors twisted in mind and body, bound to Thermaplugg's madness." }
-    f.figureText["mekkatorque"] = { name = "Gelbin Mekkatorque", role = "High Tinker of Gnomeregan, exiled in Tinker Town.", aff = "Kingdom of Gnomeregan, Alliance", title = "High Tinker of Gnomeregan, exiled in Tinker Town. — Kingdom of Gnomeregan, Alliance" }
+    f.figureText["high_tinker_mekkatorque_forever"] = { name = "Gelbin Mekkatorque", role = "High Tinker of Gnomeregan, exiled in Tinker Town.", aff = "Kingdom of Gnomeregan, Alliance", title = "High Tinker of Gnomeregan, exiled in Tinker Town. — Kingdom of Gnomeregan, Alliance" }
     f.figureText["sicco_thermaplugg"] = { name = "Sicco Thermaplugg", role = "Betrayer of Gnomeregan, self-proclaimed \"king\" in its depths.", aff = "Gnomeregan (renegade)", title = "Betrayer of Gnomeregan, self-proclaimed \"king\" in its depths. — Gnomeregan (renegade)" }
     f.figureText["indus"] = { name = "Indus", role = "Mage of Dalaran, founding member of the Council of Tirisfal.", aff = "Council of Tirisfal", title = "Mage of Dalaran, founding member of the Council of Tirisfal. — Council of Tirisfal" }
     f.figureText["erbag"] = { name = "Erbag", role = "Member of the Council of Tirisfal in Aegwynn's day.", aff = "Council of Tirisfal", title = "Member of the Council of Tirisfal in Aegwynn's day. — Council of Tirisfal" }
@@ -247,9 +247,9 @@ By custom, the dead return to nature: priestesses cleanse them in a moonwell, si
     f.groups["cenarion_circle"] = { name = "Cenarion Circle", lore = "Malfurion's neutral order of druids seated in Nighthaven, open to tauren and Horde students; Archdruid Fandral Staghelm leads it in Malfurion's unexplained sleep." }
     f.groups["highborne_shendralar"] = { name = "The Highborne Shen'dralar", lore = "The hidden magi of Eldre'Thalas in Feralas, still feeding their arcane thirst from the demon Immol'thar, unseen by kaldorei society." }
     f.groups["allies_of_nature"] = { name = "Allies of nature", lore = "Ancients, wisps, hippogryphs, chimaeras, mountain giants, dryads and keepers of the grove, furbolgs, wildkin and the green dragonflight." }
-    f.figureText["tyrande_whisperwind"] = { name = "Tyrande Whisperwind", role = "High Priestess of Elune, sole ruler of the kaldorei.", aff = "Darnassus, the Sisterhood", title = "High Priestess of Elune, sole ruler of the kaldorei. — Darnassus, the Sisterhood" }
+    f.figureText["tyrande_whisperwind_forever"] = { name = "Tyrande Whisperwind", role = "High Priestess of Elune, sole ruler of the kaldorei.", aff = "Darnassus, the Sisterhood", title = "High Priestess of Elune, sole ruler of the kaldorei. — Darnassus, the Sisterhood" }
     f.figureText["malfurion_stormrage"] = { name = "Malfurion Stormrage", role = "Archdruid, founder of the Cenarion Circle.", aff = "Cenarion Circle", title = "Archdruid, founder of the Cenarion Circle. — Cenarion Circle" }
-    f.figureText["fandral_staghelm"] = { name = "Fandral Staghelm", role = "Leading archdruid, planter of Teldrassil.", aff = "Cenarion Circle, Darnassus", title = "Leading archdruid, planter of Teldrassil. — Cenarion Circle, Darnassus" }
+    f.figureText["fandral_staghelm_forever"] = { name = "Fandral Staghelm", role = "Leading archdruid, planter of Teldrassil.", aff = "Cenarion Circle, Darnassus", title = "Leading archdruid, planter of Teldrassil. — Cenarion Circle, Darnassus" }
     f.figureText["shandris_feathermoon"] = { name = "Shandris Feathermoon", role = "General of the Sentinels.", aff = "the Sentinels", title = "General of the Sentinels. — the Sentinels" }
     f.figureText["maiev_shadowsong"] = { name = "Maiev Shadowsong", role = "Leader of the Watchers, Illidan's former jailer.", aff = "Behüter", title = "Leader of the Watchers, Illidan's former jailer. — Behüter" }
     f.figureText["jarod_shadowsong"] = { name = "Jarod Shadowsong", role = "Last leader of the Kaldorei Resistance.", aff = "Kaldorei", title = "Last leader of the Kaldorei Resistance. — Kaldorei" }
@@ -290,7 +290,7 @@ if f then
         mount = "Wolf",
         language = "Orcish",
     }
-    f.classes = { { classFile = "WARRIOR" }, { classFile = "HUNTER" }, { classFile = "ROGUE" }, { classFile = "SHAMAN" }, { classFile = "WARLOCK" }, { classFile = "MAGE", isNew = true } }
+    f.classes = { { classFile = "WARRIOR" }, { classFile = "HUNTER" }, { classFile = "ROGUE" }, { classFile = "SHAMAN" }, { classFile = "WARLOCK" }, { classFile = "MAGE" } }
     f.history = [[The orcs descend from Grond, the stone giant shaped by the titan Aggramar. Through colossals, magnaron, gronn, ogron and ogres, the smallest of Grond's line survived Draenor's wilds by wit and community. After the ogres threw off ogron mastery, the orcs spread from Gorgrond's caves and formed the clans, and only the Kosh'harg festivals kept peace between them.
 
 Shadowmoon mystics discovered the Throne of the Elements in northwestern Nagrand and taught the clans shamanism; the bond between shamans crossed clan lines and became orcdom's conscience. When the Gorian Empire of the ogres seized the Throne, Nelgarm's united clans reclaimed it and the spirits shattered Goria to ash, a wrath the shamans swore never to invoke again. The draenei's arrival gave the clans a cordial, distant trading partner.
@@ -324,7 +324,7 @@ Shamanism is their soul's root. Since the Shadowmoon first taught the elements' 
     f.groups["bonechewer"] = { name = "Bonechewer", lore = "Cannibals ornamented in bone, mostly fallen to corruption." }
     f.groups["black_tooth_grin"] = { name = "Black Tooth Grin", lore = "Rend and Maim's splinter clan within the Dark Horde." }
     f.groupsFootnote = "Beyond them stand the Mok'nathal of Rexxar's people and the Stonemaul ogres, smaller peoples bound to the Horde."
-    f.figureText["thrall"] = { name = "Thrall", role = "Warchief of the New Horde, founder of Durotar.", aff = "Horde, Frostwolf clan", title = "Warchief of the New Horde, founder of Durotar. — Horde, Frostwolf clan" }
+    f.figureText["thrall_forever"] = { name = "Thrall", role = "Warchief of the New Horde, founder of Durotar.", aff = "Horde, Frostwolf clan", title = "Warchief of the New Horde, founder of Durotar. — Horde, Frostwolf clan" }
     f.figureText["blackhand"] = { name = "Blackhand", role = "First Warchief of the Old Horde.", aff = "Old Horde, Blackrock clan", title = "First Warchief of the Old Horde. — Old Horde, Blackrock clan" }
     f.figureText["guldan"] = { name = "Gul'dan", role = "Master of the Shadow Council.", aff = "Shadow Council", title = "Master of the Shadow Council. — Shadow Council" }
     f.figureText["orgrim_doomhammer"] = { name = "Orgrim Doomhammer", role = "Warchief of the Second War.", aff = "Old Horde", title = "Warchief of the Second War. — Old Horde" }
@@ -359,7 +359,7 @@ if f then
     f.name = "Trolls"
     f.groupTabLabel = "Tribes"
     f.quote = { text = "When you became a shadow hunter, you transcended being my son. You became a father for all trolls. You bear responsibility for all of us, for what we gonna become.", author = "Sen'jin" }
-    f.overview = "Trollkind is one of Azeroth's oldest native races, divided into many tribes adapted to every land: jungle, forest, ice, sand, dark and the ancient Zandalari. Most tribes hold no loyalty beyond their own, but the Darkspear tribe, driven from Stranglethorn and rescued by Thrall, swore itself to the new Horde. From their threatened fishing village of Sen'jin on the Durotar coast, the Echo Isles lost to the traitor Zalazane, they fight to reclaim their first home on Kalimdor."
+    f.overview = "Trollkind is one of Azeroth's oldest native races, divided into many tribes adapted to every land: jungle, forest, ice and sand. Most tribes adhere to the ancient Zandalari tribe yet hold no loyalty beyond their own, but the Darkspear tribe, driven from Stranglethorn and rescued by Thrall, swore itself to the new Horde. From their threatened fishing village of Sen'jin on the Durotar coast, the Echo Isles lost to the traitor Zalazane, they fight to reclaim their first home on Kalimdor."
     f.facts = {
         faction = "Horde (Darkspear tribe; other tribes independent or hostile)",
         capital = "Sen'jin Village, Durotar (the Echo Isles held by Zalazane)",
@@ -367,7 +367,7 @@ if f then
         mount = "Raptor",
         language = "Zandali, Orcish",
     }
-    f.classes = { { classFile = "WARRIOR" }, { classFile = "HUNTER" }, { classFile = "MAGE" }, { classFile = "PRIEST" }, { classFile = "ROGUE" }, { classFile = "SHAMAN" }, { classFile = "WARLOCK", isNew = true } }
+    f.classes = { { classFile = "WARRIOR" }, { classFile = "HUNTER" }, { classFile = "MAGE" }, { classFile = "PRIEST" }, { classFile = "ROGUE" }, { classFile = "SHAMAN" }, { classFile = "WARLOCK" } }
     f.history = [[The trolls were among the first races to arise around the Well of Eternity, savage hunter-gatherers who worshipped the Wild Gods as "loa" and raised their shrines on the holy peaks of Zandalar, crowned by the temple city Zuldazar. When the C'Thrax Kith'ix rallied the aqiri swarms, the Zandalari united all tribes into the Empire of Zul and broke the insectoid legions; the far-flung strongholds that guarded the victory grew into the empires of the Amani, Gurubashi and Drakkari. Dark trolls settling by the Well became the first night elves, whose queen Azshara later humbled the troll nations and fostered a hatred that has never cooled.
 
 Centuries of ruin followed the Sundering. In the north, Zandalari-guided Amani under Jintha nearly destroyed Quel'Thalas until Arathor's hundred magi burned their warbands from the field. In the south, the starving Gurubashi gave themselves to Hakkar the Soulflayer; the Zandalari stormed Zul'Gurub to end his reign, and when the surviving Atal'ai raised a new temple in the Swamp of Sorrows, Ysera sank it beneath the mire and set her green dragons to guard it. And on Stormwind's border, the Gurubashi warlord Zan'non's siege broke only when the Guardian Medivh rained fire from the walls.
@@ -393,7 +393,7 @@ Their magic is their own: voodoo, the ancient power of the trolls, and hoodoo be
     f.groups["drakkari_tribes"] = { name = "Drakkari tribes", lore = "The ice trolls: the Drakkari of Zul'Drak, the Frostmane raiding Dun Morogh, the Winterax and Winterfang of the north." }
     f.groups["farraki_tribe"] = { name = "Farraki tribe", lore = "The sand trolls of Zul'Farrak in Tanaris." }
     f.groups["shadowtooth_clan"] = { name = "Shadowtooth clan", lore = "Dark trolls lingering in the caverns beneath Mount Hyjal." }
-    f.figureText["voljin"] = { name = "Vol'jin", role = "Chieftain of the Darkspear, son of Sen'jin.", aff = "Darkspear tribe, Horde", title = "Chieftain of the Darkspear, son of Sen'jin. — Darkspear tribe, Horde" }
+    f.figureText["vol_jin_forever"] = { name = "Vol'jin", role = "Chieftain of the Darkspear, son of Sen'jin.", aff = "Darkspear tribe, Horde", title = "Chieftain of the Darkspear, son of Sen'jin. — Darkspear tribe, Horde" }
     f.figureText["senjin"] = { name = "Sen'jin", role = "Former chieftain of the Darkspear, Vol'jin's father.", aff = "Darkspear tribe", title = "Former chieftain of the Darkspear, Vol'jin's father. — Darkspear tribe" }
     f.figureText["rokhan"] = { name = "Rokhan", role = "Lead scout of the Darkspear.", aff = "Darkspear tribe, Horde", title = "Lead scout of the Darkspear. — Darkspear tribe, Horde" }
     f.figureText["master_gadrin"] = { name = "Master Gadrin", role = "Advisor and mentor to Vol'jin, leader of Sen'jin Village.", aff = "Darkspear tribe", title = "Advisor and mentor to Vol'jin, leader of Sen'jin Village. — Darkspear tribe" }
@@ -421,7 +421,7 @@ if f then
     f.name = "The Forsaken"
     f.groupTabLabel = "Orders"
     f.quote = { text = "Do not shy from dark paths, if those paths lead to victory.", author = "Forsaken proverb" }
-    f.overview = "Death offered no escape for the scores of humans slain in the Lich King's purge of Lordaeron. They rose as Scourge minions, enslaved to war on all they once held dear. When the Lich King's grip faltered after the Third War, a contingent of the undead broke free, tormented by memories of their atrocities and hunted by a world that saw only monsters. The former ranger-general Sylvanas Windrunner rallied these Forsaken, made the Undercity beneath Lordaeron's ruins their refuge, and bound them to her burning purpose: the destruction of Arthas."
+    f.overview = "Death offered no escape for the scores of humans and high elves slain by the Lich King's forces during the Third War. They rose as Scourge minions, enslaved to war on all they once held dear. When the Lich King's grip faltered, a contingent of the undead broke free, tormented by memories of their atrocities and hunted by a world that saw only monsters. The former Ranger-General of Silvermoon, Sylvanas Windrunner, rallied these Forsaken, made the Undercity beneath Lordaeron's ruins their refuge, and bound them to her burning purpose: the destruction of Arthas – once the Lich King's champion and the despoiler of their homelands, now himself a being risen beyond death."
     f.facts = {
         faction = "Horde",
         capital = "The Undercity, beneath the Ruins of Lordaeron",
@@ -429,7 +429,7 @@ if f then
         mount = "Skeletal horse",
         language = "Gutterspeak, Orcish",
     }
-    f.classes = { { classFile = "WARRIOR" }, { classFile = "ROGUE" }, { classFile = "MAGE" }, { classFile = "PRIEST" }, { classFile = "WARLOCK" }, { classFile = "PALADIN", isNew = true } }
+    f.classes = { { classFile = "WARRIOR" }, { classFile = "ROGUE" }, { classFile = "MAGE" }, { classFile = "PRIEST" }, { classFile = "WARLOCK" }, { classFile = "PALADIN" } }
     f.history = [[Lordaeron fell in the Third War to Arthas Menethil's Scourge, its dead raised to serve. But when Illidan's attack on the Frozen Throne weakened the Lich King's power, many undead across the Plaguelands woke to free will and to horror at their own deeds. As Arthas departed for Northrend, Sylvanas Windrunner, herself a banshee torn from the Scourge, rallied the free-willed and seized the undead empire. With banshees controlling gnolls, bandits and ogres, the dreadlord Varimathras's coerced oath, and Grand Marshal Garithos's Alliance resistance enthralled to her will, she reclaimed Lordaeron. Then she executed her living allies rather than honor her promise to leave them the city. From the ruins of Capital City she proclaimed her faction the "Forsaken" and swore to slaughter any who stood in their way. The catacombs the Scourge had begun beneath the city became their refuge: the Undercity.
 
 To shield her budding nation, Sylvanas sent emissaries seeking allies. None returned from the Alliance. It was the kind-hearted tauren of Thunder Bluff who answered: Archdruid Hamuul Runetotem saw hope of redemption in them, and the elder crone Magatha Grimtotem argued that tauren ways might restore their humanity. Thrall and Cairne doubted, but the Earthen Ring held it the Horde's duty to aid a people wrestling inner demons as the orcs once had. The alliance was forged: the Forsaken gained their chance at vengeance, the Horde an invaluable foothold in the Eastern Kingdoms.
@@ -452,8 +452,8 @@ They mark their rebirth with new names, Nathanos Marris became Blightcaller, and
     f.groups["dark_rangers"] = { name = "The dark rangers", lore = "Undead elven rangers under the Banshee Queen, heirs of Quel'Thalas's own." }
     f.groups["cult_of_forgotten_shadow"] = { name = "The Cult of Forgotten Shadow", lore = "The shadow priests' order, born of Natalie Seline's recovered teachings." }
     f.groups["scourge_and_the_scarlet_crusade"] = { name = "The Scourge and the Scarlet Crusade", lore = "The two besetting foes: the masters they escaped, and the zealots who would unmake them." }
-    f.figureText["sylvanas_windrunner"] = { name = "Sylvanas Windrunner", role = "The Dark Lady, Banshee Queen of the Forsaken.", aff = "Forsaken, Horde", title = "The Dark Lady, Banshee Queen of the Forsaken. — Forsaken, Horde" }
-    f.figureText["varimathras"] = { name = "Varimathras", role = "Arch Lord of the Undercity, Sylvanas's majordomo.", aff = "Forsaken", title = "Arch Lord of the Undercity, Sylvanas's majordomo. — Forsaken" }
+    f.figureText["sylvanas_windrunner_forever"] = { name = "Sylvanas Windrunner", role = "The Dark Lady, Banshee Queen of the Forsaken.", aff = "Forsaken, Horde", title = "The Dark Lady, Banshee Queen of the Forsaken. — Forsaken, Horde" }
+    f.figureText["varimathras_forever"] = { name = "Varimathras", role = "Arch Lord of the Undercity, Sylvanas's majordomo.", aff = "Forsaken", title = "Arch Lord of the Undercity, Sylvanas's majordomo. — Forsaken" }
     f.figureText["nathanos_blightcaller"] = { name = "Nathanos Blightcaller", role = "Champion of the Banshee Queen, Ranger Lord.", aff = "Forsaken", title = "Champion of the Banshee Queen, Ranger Lord. — Forsaken" }
     f.figureText["master_apothecary_faranell"] = { name = "Master Apothecary Faranell", role = "Leader of the Royal Apothecary Society.", aff = "Royal Apothecary Society", title = "Leader of the Royal Apothecary Society. — Royal Apothecary Society" }
     f.figureText["belmont"] = { name = "Belmont", role = "Leader of the Deathstalkers.", aff = "Deathstalkers", title = "Leader of the Deathstalkers. — Deathstalkers" }
@@ -470,7 +470,7 @@ if f then
     f.name = "Tauren"
     f.groupTabLabel = "Tribes"
     f.quote = { text = "Into the brave hearts of her pure children, the Earthmother placed the love of the hunt. For the creatures of the first dawn were savage and fierce. They hid from the Earthmother, finding solace in the shadows and the wild places of the land. The Shu'halo hunted these beasts wherever they could be found and tamed them with the Earthmother's blessing.", author = "The White Stag and the Moon" }
-    f.overview = "The tauren, shu'halo in their own tongue, are a noble race of enormous bovine humanoids who wandered Kalimdor's plains for countless generations, always harried by the brutal centaur. When Thrall's Horde helped drive the centaur from sacred Mulgore, High Chieftain Cairne Bloodhoof built the refuge of Thunder Bluff on its mesas, and the grateful tauren became the Horde's most steadfast allies."
+    f.overview = "The tauren, shu'halo in their own tongue, are a noble race of enormous bovine humanoids who wandered Kalimdor's plains for countless generations, always harried by the brutal centaur. When Thrall's Horde helped Cairne Bloodhoof fend off the centaur and reach the lush valley of Mulgore, High Chieftain Cairne Bloodhoof built the first tauren city of Thunder Bluff on its mesas. Recognizing the honor and ferocity of their new friends, the tauren gladly joined the new Horde as steadfast allies."
     f.facts = {
         faction = "Horde",
         capital = "Thunder Bluff, Mulgore",
@@ -505,7 +505,7 @@ Their faith is the Earth Mother, their creator: when her children fell to the co
     f.groups["earthen_ring"] = { name = "Earthen Ring", lore = "The worldwide circle of shamans, originally founded by tauren; its Elder Council governs Thunder Bluff beside the High Chieftain." }
     f.groups["longwalkers"] = { name = "Longwalkers", lore = "Scouts and messengers sworn only to the High Chieftain." }
     f.groups["outrunners"] = { name = "Outrunners", lore = "Guardians of every traveler crossing Mulgore's plains." }
-    f.figureText["cairne_bloodhoof"] = { name = "Cairne Bloodhoof", role = "High Chieftain of the united tauren tribes.", aff = "Horde, Thunder Bluff", title = "High Chieftain of the united tauren tribes. — Horde, Thunder Bluff" }
+    f.figureText["cairne_bloodhoof_forever"] = { name = "Cairne Bloodhoof", role = "High Chieftain of the united tauren tribes.", aff = "Horde, Thunder Bluff", title = "High Chieftain of the united tauren tribes. — Horde, Thunder Bluff" }
     f.figureText["baine_bloodhoof"] = { name = "Baine Bloodhoof", role = "Cairne's son, heir of the Bloodhoof tribe.", aff = "Horde, Thunder Bluff", title = "Cairne's son, heir of the Bloodhoof tribe. — Horde, Thunder Bluff" }
     f.figureText["magatha_grimtotem"] = { name = "Magatha Grimtotem", role = "Elder Crone of the Grimtotem tribe.", aff = "Grimtotem tribe", title = "Elder Crone of the Grimtotem tribe. — Grimtotem tribe" }
     f.figureText["hamuul_runetotem"] = { name = "Hamuul Runetotem", role = "Archdruid of the tauren, student of Malfurion.", aff = "Thunder Bluff, Cenarion Circle", title = "Archdruid of the tauren, student of Malfurion. — Thunder Bluff, Cenarion Circle" }
@@ -530,7 +530,7 @@ if f then
     f.name = "Skyborne"
     f.groupTabLabel = "Orders"
     f.quote = { text = "So now you see? There is a world of knowledge and untapped potential outside of Skywall. This will never stop being our home, but I've come to believe that the path to our salvation lies below. We must travel to Azeroth and gain the power and means to save Zephras Isle. This is the way. Will you have the courage to join us when the time comes?", author = "Ayessa Dawnsinger" }
-    f.overview = "The Skyborne, the shen'dorei or \"hidden people\", are an elven race descended from the citizens of Eldre'Thalas, Highborne magisters and kaldorei alike, who fled Prince Tortheldrin's persecution nearly ten thousand years ago. They struck a pact with the wind spirits of Skywall, who raised Zephras Isle into the Elemental Plane of Air, and there they built a hidden civilization for millennia. Now the wind spirits are gone, the pylons that hold their islands aloft are failing, and the Skyborne descend upon Azeroth to save their home: the High Order seeking the Alliance's arcane wisdom, the Windshapers seeking the Horde's shamans."
+    f.overview = "The Skyborne, the shen'dorei or \"hidden people\", are an elven race descended from the citizens of Eldre'Thalas, Highborne magisters and kaldorei alike, who fled Prince Tortheldrin's persecution nearly ten thousand years ago. They struck a pact with the wind spirits of Skywall, who raised Zephras Isle into the Elemental Plane of Air, and there they built a civilization hidden for millennia. Now the wind spirits are gone, the pylons that hold their islands aloft are failing, and the Skyborne descend upon Azeroth to save their home: the High Order seeking the Alliance's arcane wisdom, the Windshapers seeking the Horde's shamans."
     f.facts = {
         faction = "Alliance (High Order) and Horde (Windshapers); the Al'Aketh cult answers to Al'Akir",
         capital = "Valanaar, Zephras Isle (Elemental Plane of Air)",

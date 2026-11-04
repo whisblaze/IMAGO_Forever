@@ -1198,18 +1198,52 @@ function IMAGO.Chronicle.CreateFrame()
     f.classEmblemBox:SetPoint("TOPLEFT", f.detailFrame, "TOPLEFT", 35, -110)
     f.classEmblemBox:Hide()
 
-    f.classIcon = f.classEmblemBox:CreateTexture(nil, "ARTWORK")
-    f.classIcon:SetSize(96, 96)
-    f.classIcon:SetPoint("CENTER", f.classEmblemBox, "CENTER", 0, -10)
-    f.classIcon:SetAlpha(0.95)
-    local classIconRing = CreateFrame("Frame", nil, f.classEmblemBox, "BackdropTemplate")
-    classIconRing:SetPoint("TOPLEFT", f.classIcon, "TOPLEFT", -3, 3)
-    classIconRing:SetPoint("BOTTOMRIGHT", f.classIcon, "BOTTOMRIGHT", 3, -3)
-    classIconRing:SetBackdrop({
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        edgeSize = 12,
-    })
-    classIconRing:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.9)
+    local function MakeClassEmblem(parent, size, yOffset)
+        local t = parent:CreateTexture(nil, "ARTWORK")
+        t:SetSize(size, size)
+        t:SetPoint("TOP", parent, "TOP", 0, yOffset)
+        t:SetAlpha(0.95)
+        local ring = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+        ring:SetPoint("TOPLEFT", t, "TOPLEFT", -2, 2)
+        ring:SetPoint("BOTTOMRIGHT", t, "BOTTOMRIGHT", 2, -2)
+        ring:SetBackdrop({
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            edgeSize = 10,
+        })
+        ring:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.9)
+        return t
+    end
+
+    f.classIcon  = MakeClassEmblem(f.classEmblemBox, 88, -14)
+
+    -- Class crest: large artwork under the icon; a Button wrapper so the
+    -- hover state can grow it softly around its center (196 -> 232)
+    local crestBtn = CreateFrame("Button", nil, f.classEmblemBox)
+    crestBtn:SetSize(150, 150)
+    crestBtn:SetPoint("CENTER", f.classEmblemBox, "TOP", 0, -200)
+    f.classCrest = crestBtn:CreateTexture(nil, "ARTWORK")
+    f.classCrest:SetAllPoints()
+    f.classCrest:SetAlpha(0.95)
+    crestBtn._size, crestBtn._target = 150, 150
+    crestBtn:SetScript("OnEnter", function(self) self._target = 180 end)
+    crestBtn:SetScript("OnLeave", function(self) self._target = 150 end)
+    crestBtn:SetScript("OnUpdate", function(self)
+        local diff = self._target - self._size
+        if diff ~= 0 and math.abs(diff) > 0.5 then
+            self._size = self._size + diff * 0.25
+            self:SetSize(self._size, self._size)
+        end
+    end)
+
+    f.classIconCap = f.classEmblemBox:CreateFontString(nil, "OVERLAY")
+    f.classIconCap:SetFont(IMAGO.FONT_BODY, 11)
+    f.classIconCap:SetPoint("TOP", f.classIcon, "BOTTOM", 0, -5)
+    f.classIconCap:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
+
+    f.classCrestCap = f.classEmblemBox:CreateFontString(nil, "OVERLAY")
+    f.classCrestCap:SetFont(IMAGO.FONT_BODY, 11)
+    f.classCrestCap:SetPoint("TOP", f.classCrest, "BOTTOM", 0, -5)
+    f.classCrestCap:SetTextColor(IMAGO_COLORS.GOLD_MUTED[1], IMAGO_COLORS.GOLD_MUTED[2], IMAGO_COLORS.GOLD_MUTED[3])
 
     -- Shared bottom-fade widget for scrolling text columns: a 24px
     -- gradient pinned to the scroll frame's bottom edge. Visibility is
@@ -2075,13 +2109,12 @@ function IMAGO.Chronicle.CreateFrame()
     side.empty:SetJustifyH("LEFT")
     side.empty:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
     side.acts = MakeActRow(side, {
+        { key = "share", label = "FACT_SHARE",
+          onClick = function(slug)
+              if IMAGO.Social and IMAGO.Social.ShareZone then IMAGO.Social.ShareZone(slug) end
+          end },
         { key = "notes", label = "FACT_NOTES",
           onClick = function(slug) IMAGO.Chronicle.OpenNotePopup(slug) end },
-        { key = "map", label = "FACT_MAP", tip = "ACTION_OPEN_MAP_TIP",
-          onClick = function(slug)
-              local id = tonumber(tostring(slug):match("^zone:(%d+)$"))
-              if id then OpenZoneOnMap(id) end
-          end },
     })
     f.zoneSide = side
 
@@ -2393,10 +2426,13 @@ function IMAGO.Chronicle.CreateFrame()
             btn.icon:SetTexCoord(0, 1, 0, 1)
         end
         btn:SetSize(22, 22)
-        btn.border = btn:CreateTexture(nil, "OVERLAY")
-        btn.border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-        btn.border:SetSize(58, 58)
-        btn.border:SetPoint("TOPLEFT", -7, 7)
+        if not btn.border then
+            btn.border = btn:CreateTexture(nil, "OVERLAY")
+            btn.border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+            btn.border:SetSize(58, 58)
+            btn.border:SetPoint("TOPLEFT", -7, 7)
+        end
+        btn.border:Show()
         btn:SetScript("OnClick", config.onClick)
         btn:Show()
     end
@@ -2695,10 +2731,12 @@ function IMAGO.Chronicle.CreateFrame()
         if f.achievementsPage then f.achievementsPage:Hide() end
         if f.homePage then f.homePage:Hide() end
         if f.detailImage then f.detailImage:Hide() end
+
         if f.detailImageBorder then f.detailImageBorder:Hide() end -- NEW: hide the border
         if f.detailSeparator then f.detailSeparator:Hide() end
 
         if f.detailImage then f.detailImage:Hide() end
+
         if f.detailImageBorder then f.detailImageBorder:Hide() end
         if f.detailSeparator then f.detailSeparator:Hide() end
         if f.creditsPage then f.creditsPage:Hide() end
@@ -2860,44 +2898,9 @@ function IMAGO.Chronicle.CreateFrame()
                 end
 
                 local contributors = {
-                    {name = "Cadash", roles = "Lore Scribe, Translator", top = true},
-                    {name = "austin", roles = "Archivist, Lore Scribe", top = true},
-                    {name = "Elanor", roles = "Data Miner, Translator, Moderator", top = true},
-                    {name = "DeMaa", roles = "Lua Developer, Moderator", top = true},
-                    {name = "druidian", roles = "Archivist, Lore Scribe", top = true},
-                    {name = "Minorou", roles = "Lore Scribe", top = true},
-                    {name = "MayaWoW", roles = "Data Miner, Translator", top = true},
-                    {name = "Lewi", roles = "Archivist, Lore Scribe, Translator", top = true},
-                    {name = "Nebb", roles = "Lore Scribe", top = true},
-                    {name = "Metrus", roles = "Lore Scribe, Translator", top = true},
-                    {name = "Karstan", roles = "Lore Scribe, Translator"},
-                    {name = "Elsafan (Crazycat).", roles = "Archivist, Data Miner"},
-                    {name = "Travanoid", roles = "Lore Scribe"},
-                    {name = "Lemurensohn", roles = "Archivist, Translator"},
-                    {name = "zeerocool11", roles = "Archivist, Lore Scribe, Data Miner, Lua Developer"},
-                    {name = "ALI4S", roles = "Lua Developer"},
-                    {name = "Remu", roles = "Data Miner, Translator"},
-                    {name = "zelkaris", roles = "Lore Scribe, Data Miner, Lua Developer"},
-                    {name = "Duschgell", roles = "Archivist"},
-                    {name = "Nihilea", roles = "Data Miner, Translator"},
-                    {name = "Saljourn", roles = "Lore Scribe, Data Miner"},
-                    {name = "Riknar", roles = "Lore Scribe"},
-                    {name = "MortiousPrime", roles = "Archivist, Lore Scribe, Data Miner"},
-                    {name = "LeoColpas", roles = "Translator"},
-                    {name = "Chadson Chappo", roles = "Archivist"},
-                    {name = "ruffboi", roles = "Lore Scribe"},
-                    {name = "Echo_Delta_Golf", roles = "Lore Scribe"},
-                    {name = "Lilith", roles = "Translator"},
-                    {name = "LowRoars", roles = "Archivist, Lore Scribe, Data Miner, Lua Developer"},
-                    {name = "咪嚕", roles = "Archivist, Translator"},
-                    {name = "Silver_Wind809", roles = "Data Miner, Lua Developer"},
-                    {name = "William Orr", roles = "Data Miner"},
-                    {name = "Nuise_16094", roles = "Translator"},
-                    {name = "Nuise", roles = "Translator"},
-                    {name = "Jay! :P", roles = "Lore Scribe, Data Miner"},
-                    {name = "!pxrty193", roles = "Lua Developer"},
-                    {name = "johnnyd2", roles = "Tester"},
-                    {name = "Kittywulfe", roles = "Tester"},
+                    {name = "Whisblaze", roles = "Creator, Lua Developer, Lore Scribe, Data Miner", top = true},
+                    {name = "SilverWind_809", roles = "Co-Creator, Lua Developer, Lore Scribe, Data Miner", top = true},
+                    {name = "Cadash", roles = "Lore Scribe, Archivist, Data Miner, Translator", top = true},
                 }
 
                 local yOffset = -40 -- More space after the divider
@@ -2990,6 +2993,7 @@ function IMAGO.Chronicle.CreateFrame()
         if f.timelineContent then f.timelineContent:Hide() end
         if f.timelineChronoHeading then f.timelineChronoHeading:Hide() end
         if f.detailImage then f.detailImage:Hide() end
+
         if f.detailImageBorder then f.detailImageBorder:Hide() end
         if f.detailSeparator then f.detailSeparator:Hide() end
         IMAGO.Chronicle.HideZoneDetail()
@@ -3002,6 +3006,7 @@ function IMAGO.Chronicle.CreateFrame()
         if f.loreSource then f.loreSource:Hide() end
         if f.timelineContainer then f.timelineContainer:Hide() end
         if f.detailImage then f.detailImage:Hide() end
+
         if f.detailImageBorder then f.detailImageBorder:Hide() end
         if f.detailSeparator then f.detailSeparator:Hide() end
 
@@ -4357,7 +4362,7 @@ function IMAGO.Chronicle.SetZoneSide(facts, refs, rec)
         Head(3, L["FACT_RECORD"] or "RECORD")
         KVRow(side.rk, 1, L["FACT_DISCOVERED"] or "DISCOVERED", rec.date or "—")
         y = y + ROW + 8
-        local bw = (inner - 6) / 2
+        local bw = (inner - (#side.acts - 1) * 6) / #side.acts
         for i, b in ipairs(side.acts) do
             b:SetWidth(bw)
             b:ClearAllPoints()
@@ -4534,7 +4539,13 @@ function IMAGO.Chronicle.ShowZoneDetail(mapID, zoneData)
 
     FillZoneFacts(mapID, zoneData)
     IMAGO.Chronicle.ShowZonePage("lore")
-    IMAGO.Chronicle.SetDetailAction(nil)
+    -- Map shortcut: circular action button top-right, like Retail
+    IMAGO.Chronicle.SetDetailAction({
+        label   = IMAGO.L["ACTION_OPEN_MAP"] or "World Map",
+        tooltip = IMAGO.L["ACTION_OPEN_MAP_TIP"] or "Open this zone on the world map",
+        texture = "Interface\\Icons\\icon_treasuremap",
+        onClick = function() OpenZoneOnMap(mapID) end,
+    })
 end
 
 --- Jumps to the Fates sidebar and opens the faction/category group the
@@ -5375,6 +5386,7 @@ function IMAGO.Chronicle.UpdateList()
                 IMAGO.Chronicle.SetDetailAction(nil)
                 f.detailTitle:SetText(IMAGO.L["ZONE_UNDISCOVERED"] or "Unentdeckt")
                 f.detailTitle:SetTextColor(IMAGO_COLORS.TEXT_MUTED[1], IMAGO_COLORS.TEXT_MUTED[2], IMAGO_COLORS.TEXT_MUTED[3])
+        
 
                 if f.detailImage then
                     f.detailImage:SetTexture("Interface\\AddOns\\IMAGO_forever\\media\\worldmap.tga")
@@ -5573,8 +5585,7 @@ function IMAGO.Chronicle.UpdateList()
             end
 
             if race.isVisible then
-                                local newMark = raceData.isNew and (" |TInterface\\TARGETINGFRAME\\UI-RaidTargetingIcon_1:14:14|t") or ""
-                btn.t:SetText(displayName .. newMark)
+                btn.t:SetText(displayName)
                 btn.t:SetTextColor(IMAGO_COLORS.TEXT_PRIMARY[1], IMAGO_COLORS.TEXT_PRIMARY[2], IMAGO_COLORS.TEXT_PRIMARY[3])
             else
                 btn.t:SetText(displayName)
@@ -6791,9 +6802,6 @@ function IMAGO.Chronicle.RenderRaceTab(tabKey)
             if discovered and cl.note then
                 name = name .. " (" .. cl.note .. ")"
             end
-            if cl.isNew then
-                name = name .. " |TInterface\\TARGETINGFRAME\\UI-RaidTargetingIcon_1:13:13|t"
-            end
             parts[#parts + 1] = icon .. name
         end
         return table.concat(parts, "   ")
@@ -6807,6 +6815,17 @@ function IMAGO.Chronicle.RenderRaceTab(tabKey)
     -- Left column rule: crests + tabard on Overview; homeland artwork
     -- wherever a zone record exists (crests as fallback) on the other
     -- text tabs; models only on Culture (mounts) and Figures (leader).
+    -- Only the Overview text is final — the other sub-tabs are still
+    -- being written/reviewed, so they show a work-in-progress note
+    -- instead of their draft content.
+    if tabKey ~= "overview" then
+        SetDetailModels(nil)
+        AddText(IMAGO.L["RACE_WIP_NOTE"] or "This entry is still being written.", IMAGO_COLORS.TEXT_MUTED, 14)
+        c:SetHeight(math.max(1, y))
+        f.infoContent:SetHeight(math.max(1, y + 20))
+        IMAGO.UpdateScrollBarVisibility(f.infoScroll)
+        return
+    end
     if tabKey == "overview" then
         -- the identity tab always shows race icons + tabard
         SetDetailModels(nil)
@@ -7009,8 +7028,8 @@ function IMAGO.Chronicle.RenderClass(slug, data, isVisible)
         f.detailTitle:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
     end
 
-    -- left column: class icon in the gold ring, identical on every tab
-    -- (no faction caption — in Forever every class exists on both sides)
+    -- left column: class icon + class crest side by side, identical on
+    -- every tab (captions like the race emblem box)
     local coords = CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[data.classFile]
     if coords then
         f.classIcon:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES")
@@ -7019,6 +7038,13 @@ function IMAGO.Chronicle.RenderClass(slug, data, isVisible)
     else
         f.classIcon:Hide()
     end
+    f.classIconCap:SetText(IMAGO.L["CLASS_CAP_ICON"] or "Class Icon")
+
+    local crestPath = "Interface\\AddOns\\IMAGO_forever\\media\\classes\\" .. slug .. "_crest.tga"
+    f.classCrest:SetTexture(crestPath)
+    f.classCrest:SetTexCoord(0, 1, 0, 1)
+    f.classCrest:Show()
+    f.classCrestCap:SetText(IMAGO.L["CLASS_CAP_CREST"] or "Class Crest")
     f.classEmblemBox:Show()
 
     for _, t in ipairs(f.classTabs or {}) do t:Show() end
@@ -9140,9 +9166,11 @@ function IMAGO.Chronicle.ShowHome()
         p.welcomeLabel:SetText(IMAGO.L["HOME_WELCOME_LABEL"] or "WELCOME BACK")
 
         p.welcome = p:CreateFontString(nil, "OVERLAY")
-        p.welcome:SetFont(IMAGO.FONT_TITLE, 28, "OUTLINE")
+        p.welcome:SetFont(IMAGO.FONT_TITLE, 22, "OUTLINE")
         p.welcome:SetPoint("TOPLEFT", p.welcomeLabel, "BOTTOMLEFT", 0, -6)
         p.welcome:SetTextColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3])
+        p.welcome:SetMaxLines(1)
+        p.welcome:SetJustifyH("LEFT")
 
         -- Centered subtitle on the page's middle axis, styled to match the
         -- I M A G O window title: same font family, outline, drop shadow and
@@ -9163,8 +9191,11 @@ function IMAGO.Chronicle.ShowHome()
         p.scoreLabel:SetText(IMAGO.L["ACH_SCORE"] and string.upper(IMAGO.L["ACH_SCORE"]) or "CHRONICLE SCORE")
 
         p.scoreBox = CreateFrame("Frame", nil, p, "BackdropTemplate")
-        p.scoreBox:SetSize(64, 36)
+        p.scoreBox:SetSize(58, 32)
         p.scoreBox:SetPoint("TOPRIGHT", p.scoreLabel, "BOTTOMRIGHT", 0, -6)
+        -- cap the welcome line at the score label so double names
+        -- truncate with ellipsis instead of overlapping it
+        p.welcome:SetPoint("RIGHT", p.scoreLabel, "LEFT", -12, 0)
         p.scoreBox:SetBackdrop({
             bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -9174,7 +9205,7 @@ function IMAGO.Chronicle.ShowHome()
         p.scoreBox:SetBackdropColor(IMAGO_COLORS.BG_PANEL[1], IMAGO_COLORS.BG_PANEL[2], IMAGO_COLORS.BG_PANEL[3], 0.85)
         p.scoreBox:SetBackdropBorderColor(IMAGO_COLORS.GOLD[1], IMAGO_COLORS.GOLD[2], IMAGO_COLORS.GOLD[3], 0.5)
         p.scoreBox.t = p.scoreBox:CreateFontString(nil, "OVERLAY")
-        p.scoreBox.t:SetFont(IMAGO.FONT_TITLE, 24)
+        p.scoreBox.t:SetFont(IMAGO.FONT_TITLE, 20)
         p.scoreBox.t:SetAllPoints()
         p.scoreBox.t:SetTextColor(IMAGO_COLORS.GOLD_BRIGHT[1], IMAGO_COLORS.GOLD_BRIGHT[2], IMAGO_COLORS.GOLD_BRIGHT[3])
 
@@ -9496,6 +9527,16 @@ function IMAGO.Chronicle.ShowHome()
         end
         lastKind = IMAGO.L["TAB_ZONES"] or "Zones"
         lastTab = 3
+    elseif type(last) == "table" and last.type == "race" then
+        local rd = IMAGOdb.races and IMAGOdb.races[last.id]
+        lastName = (rd and rd.name) or last.id
+        lastKind = IMAGO.L["TAB_RACES"] or "Races"
+        lastTab = 4
+    elseif type(last) == "table" and last.type == "class" then
+        local cd = IMAGOdb.classes and IMAGOdb.classes[last.id]
+        lastName = (cd and cd.name) or last.id
+        lastKind = IMAGO.L["TAB_CLASSES"] or "Classes"
+        lastTab = 5
     end
     if lastName then
         l.name:SetText(lastName)

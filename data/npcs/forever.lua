@@ -98,21 +98,6 @@ IMAGOdb.npcs.CAT_NIGHT_ELVES_DARNASSUS["tyrande_whisperwind_forever"] = {
     category = "CAT_NIGHT_ELVES_DARNASSUS",
 }
 
-IMAGOdb.npcs.CAT_NIGHT_ELVES_DARNASSUS["shandris_feathermoon"] = {
-    ids = {3936},
-    zones = {},
-    category = "CAT_NIGHT_ELVES_DARNASSUS",
-    raceKey = "night_elf",
-}
-
--- CAT_THERAMORE — Theramore
-IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"] = {
-    ids = {4968},
-    zones = {},
-    category = "CAT_THERAMORE",
-    raceKey = "human",
-}
-
 -- CAT_WILDHAMMER_CLAN — Wildhammer Clan
 IMAGOdb.npcs.CAT_WILDHAMMER_CLAN["falstad_wildhammer_forever"] = {
     displayID = 5635,

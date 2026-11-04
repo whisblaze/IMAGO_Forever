@@ -106,20 +106,6 @@ IMAGOdb.npcs.CAT_NIGHT_ELVES_DARNASSUS["tyrande_whisperwind_forever"].source = "
 IMAGOdb.npcs.CAT_NIGHT_ELVES_DARNASSUS["tyrande_whisperwind_forever"].timeline = IMAGOdb.timelines.TYRANDE_WHISPERWIND
 
 
-IMAGOdb.npcs.CAT_NIGHT_ELVES_DARNASSUS["shandris_feathermoon"].name = "Shandris Feathermoon"
-IMAGOdb.npcs.CAT_NIGHT_ELVES_DARNASSUS["shandris_feathermoon"].race = "Night Elf"
-IMAGOdb.npcs.CAT_NIGHT_ELVES_DARNASSUS["shandris_feathermoon"].lore =
-[[
-Orphaned by the Burning Legion's first invasion, Shandris was raised in the Sisterhood of Elune and became Tyrande's adopted daughter in all but name. Now she commands the Sentinel Army as its general.
-She rules the stronghold that bears her name in Feralas, watching over ruins older than memory and enemies older still — the naga rising from the sea, and whispers of the Emerald Nightmare stirring beneath the earth.]]
-IMAGOdb.npcs.CAT_NIGHT_ELVES_DARNASSUS["shandris_feathermoon"].zones = {"Feralas"}
-IMAGOdb.npcs.CAT_NIGHT_ELVES_DARNASSUS["shandris_feathermoon"].source = "warcraft.wiki.gg/wiki/Shandris_Feathermoon"
-IMAGOdb.npcs.CAT_NIGHT_ELVES_DARNASSUS["shandris_feathermoon"].timeline = {
-    {era = "Ancient", text = "Survived the War of the Ancients as a child and was taken under Tyrande's wing."},
-    {era = "WC3", text = "Commanded the Sentinels in Kalimdor's defense during the Legion's second invasion."},
-    {era = "Forever", text = "Governs Feathermoon Stronghold in Feralas as general of the Sentinel Army."},
-}
-
 -- =================================== --
 -- CAT_WILDHAMMER_CLAN — Wildhammer Clan
 -- =================================== --
@@ -134,23 +120,6 @@ IMAGOdb.npcs.CAT_WILDHAMMER_CLAN["falstad_wildhammer_forever"].zones = {"The Hin
 IMAGOdb.npcs.CAT_WILDHAMMER_CLAN["falstad_wildhammer_forever"].source = "Cadash"
 IMAGOdb.npcs.CAT_WILDHAMMER_CLAN["falstad_wildhammer_forever"].timeline = IMAGOdb.timelines.FALSTAD_WILDHAMMER
 
-
--- =================================== --
--- CAT_THERAMORE — Theramore
--- =================================== --
-IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].name = "Lady Jaina Proudmoore"
-IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].race = "Human"
-IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].lore =
-[[
-Daughter of Admiral Daelin Proudmoore and once the apprentice of Antonidas, Jaina is perhaps the most powerful sorceress alive. She led the survivors of Lordaeron across the sea and founded Theramore on Kalimdor's dusty coast.
-Jaina has paid for peace in blood: she stood aside while Thrall's Horde slew her own father rather than let war consume both peoples. She still believes humans and orcs can coexist — a conviction that grows lonelier with each passing year.]]
-IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].zones = {"Dustwallow Marsh"}
-IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].source = "warcraft.wiki.gg/wiki/Jaina_Proudmoore"
-IMAGOdb.npcs.CAT_THERAMORE["jaina_proudmoore"].timeline = {
-    {era = "WC3", text = "Heeded Medivh's warning, led Lordaeron's survivors to Kalimdor, and fought at Hyjal. Later chose peace over her own father, allowing the Horde to kill Daelin Proudmoore."},
-    {era = "Pre-Forever", text = "Founded the island-city of Theramore as a beacon of cooperation between the Alliance and the Horde."},
-    {era = "Forever", text = "Rules Theramore and brokers fragile peace between the factions, including the summit where Varian Wrynn vanished."},
-}
 
 -- =================================== --
 -- CAT_ORCS_HORDE — Orcs of the Horde

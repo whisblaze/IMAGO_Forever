@@ -241,6 +241,7 @@ function IMAGO.Scanner.DiscoverRace(raceSlug)
 
     IMAGOSaved.seenRaces[raceSlug] = true
     IMAGO.StampDiscovery(raceSlug)
+    IMAGO.AddToHistory({ type = "race", id = raceSlug })
 
     local name = data.name or raceSlug
     local msg = IMAGO.L["CHAT_RACE_DISCOVERY"] and string.format(IMAGO.L["CHAT_RACE_DISCOVERY"], name)
@@ -249,7 +250,7 @@ function IMAGO.Scanner.DiscoverRace(raceSlug)
     PlaySound(3175, "Master")
 
     if IMAGO.Display and IMAGO.Display.Show then
-        IMAGO.Display.Show(name, data.history, "race", true, raceSlug)
+        IMAGO.Display.Show(name, data.overview, "race", true, raceSlug)
     end
 
     if IMAGO.Chronicle and IMAGO.Chronicle.frame and IMAGO.Chronicle.frame:IsShown() then
@@ -274,6 +275,7 @@ function IMAGO.Scanner.DiscoverClass(classFile)
 
     IMAGOSaved.seenClasses[slug] = true
     IMAGO.StampDiscovery(slug)
+    IMAGO.AddToHistory({ type = "class", id = slug })
 
     local name = data.name or slug
     local msg = IMAGO.L["CHAT_CLASS_DISCOVERY"] and string.format(IMAGO.L["CHAT_CLASS_DISCOVERY"], name)
@@ -282,7 +284,7 @@ function IMAGO.Scanner.DiscoverClass(classFile)
     PlaySound(3175, "Master")
 
     if IMAGO.Display and IMAGO.Display.Show then
-        IMAGO.Display.Show(name, data.history, "class", true, slug)
+        IMAGO.Display.Show(name, data.overview, "class", true, slug)
     end
 
     if IMAGO.Chronicle and IMAGO.Chronicle.frame and IMAGO.Chronicle.frame:IsShown() then
@@ -316,11 +318,26 @@ local CLASS_TRAINER_HINTS = {
 --- Class discovery by contact: targeting a player of that class, or an NPC
 --- class trainer (their tooltip's title line reads "<Class> Trainer").
 --- Ordinary NPCs — guards, vendors — no longer count.
+--- UnitRace's English race file -> our race slug. Scourge is the file
+--- Blizzard uses for playable undead; anything unknown falls through to
+--- lowercase and is validated by DiscoverRace against IMAGOdb.races.
+local RACE_FILE_TO_SLUG = {
+    Human = "human", Dwarf = "dwarf", NightElf = "night_elf", Gnome = "gnome",
+    Orc = "orc", Scourge = "undead", Undead = "undead", Tauren = "tauren",
+    Troll = "troll", Skyborne = "skyborne",
+}
+
 function IMAGO.Scanner.CheckTargetClass(unit)
     if UnitIsPlayer(unit) then
         local ok, _, classFile = pcall(UnitClass, unit)
         if ok and classFile then
             IMAGO.Scanner.DiscoverClass(classFile)
+        end
+        -- meeting a player also documents their race — same "met them in
+        -- the world" rule as NPC records
+        local okRace, _, raceFile = pcall(UnitRace, unit)
+        if okRace and raceFile then
+            IMAGO.Scanner.DiscoverRace(RACE_FILE_TO_SLUG[raceFile] or raceFile:lower())
         end
         return
     end
@@ -1076,11 +1093,11 @@ function IMAGO.Init()
                 if npcID and IMAGOdb and IMAGOdb.idToSlug then
                     local slug = IMAGOdb.idToSlug[npcID]
                     if slug then
-                        local _ = tooltip:AddLine(" ")
+                        tooltip:AddLine(" ")
                         if IMAGOSaved.seenNPCs[slug] then
-                            _ = tooltip:AddLine(IMAGO.L["TOOLTIP_KNOWN"] or "IMAGO: In Chronik verzeichnet")
+                            tooltip:AddLine(IMAGO.L["TOOLTIP_KNOWN"] or "IMAGO: In Chronik verzeichnet")
                         else
-                            _ = tooltip:AddLine(IMAGO.L["TOOLTIP_UNKNOWN"] or "IMAGO: Schicksal verborgen")
+                            tooltip:AddLine(IMAGO.L["TOOLTIP_UNKNOWN"] or "IMAGO: Schicksal verborgen")
                         end
                     end
                 end

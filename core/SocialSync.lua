@@ -30,6 +30,39 @@ local function Send(msg, channel, target)
     end
 end
 
+-- Addon broadcasts go to guild + whichever group channel applies
+-- (raids hear nothing on PARTY).
+local function Broadcast(msg)
+    if IsInGuild and IsInGuild() then Send(msg, "GUILD") end
+    if IsInRaid and IsInRaid() then
+        Send(msg, "RAID")
+    elseif IsInGroup and IsInGroup() then
+        Send(msg, "PARTY")
+    end
+end
+
+-- What kind of chronicle entry a slug points at, and its record.
+local function EntryKindAndData(slug)
+    local npc = IMAGO.GetNPCData and IMAGO.GetNPCData(slug)
+    if npc then return "npc", npc end
+    if IMAGOdb and IMAGOdb.races and IMAGOdb.races[slug] then
+        return "race", IMAGOdb.races[slug]
+    end
+    if IMAGOdb and IMAGOdb.classes and IMAGOdb.classes[slug] then
+        return "class", IMAGOdb.classes[slug]
+    end
+    return nil, nil
+end
+
+local KIND_LABEL_KEY = {
+    npc = "TAB_FATES", race = "TAB_RACES",
+    class = "TAB_CLASSES", zone = "TAB_ZONES",
+}
+
+local function KindLabel(kind)
+    return IMAGO.L[KIND_LABEL_KEY[kind] or "TAB_FATES"] or "Entry"
+end
+
 -- Sorted board for the leaderboard UI (includes self)
 function IMAGO.Social.GetBoard()
     local list = { { name = MyName(), score = MyScore(), isSelf = true } }
@@ -42,36 +75,62 @@ end
 
 -- Ask group + guild for their scores
 function IMAGO.Social.QueryScores()
-    if IsInGroup and IsInGroup() then Send("Q", "PARTY") end
-    if IsInGuild and IsInGuild() then Send("Q", "GUILD") end
+    Broadcast("Q")
     -- own entry is always present; re-announce so others see us too
     if IsInGuild and IsInGuild() then Send("S:" .. MyScore(), "GUILD") end
 end
 
 -- Post own score into guild/party chat (falls back to local print)
+local function Say(msg, channel)
+    if C_ChatInfo and C_ChatInfo.SendChatMessage then
+        C_ChatInfo.SendChatMessage(msg, channel)
+    else
+        SendChatMessage(msg, channel)
+    end
+end
+
 function IMAGO.Social.PostScore()
     local msg = string.format("[IMAGO] %s: %d",
         IMAGO.L["ACH_SCORE"] or "Chronicle Score", MyScore())
     if IsInGuild and IsInGuild() then
-        SendChatMessage(msg, "GUILD")
+        Say(msg, "GUILD")
+    end
+    if IsInRaid and IsInRaid() then
+        Say(msg, "RAID")
     elseif IsInGroup and IsInGroup() then
-        SendChatMessage(msg, "PARTY")
-    else
+        Say(msg, "PARTY")
+    end
+    if not IsInGuild() and not IsInGroup() then
         print(msg)
     end
 end
 
--- Share a fate: invisible addon broadcast to guild/party peers plus a
--- ready-made chat line in the player's own chat box (they pick the channel).
+-- Share an entry (fate/race/class): invisible addon broadcast to guild +
+-- group peers plus a ready-made chat line (the player picks the channel).
 function IMAGO.Social.ShareNPC(slug)
-    local data = (IMAGO.GetNPCData and IMAGO.GetNPCData(slug))
-        or (IMAGOdb and IMAGOdb.races and IMAGOdb.races[slug])
-        or (IMAGOdb and IMAGOdb.classes and IMAGOdb.classes[slug])
+    local kind, data = EntryKindAndData(slug)
+    if not kind then return end
     local name = (data and data.name) or slug
     local cat = data and data.category and (IMAGO.L[data.category] or data.category) or ""
-    if IsInGuild and IsInGuild() then Send("N:" .. slug, "GUILD") end
-    if IsInGroup and IsInGroup() then Send("N:" .. slug, "PARTY") end
-    local line = string.format(IMAGO.L["FACT_SHARE_LINE"] or "[IMAGO] Fate: %s — %s", name, cat)
+    Broadcast("N:" .. kind .. ":" .. slug)
+    local line = string.format(IMAGO.L["FACT_SHARE_LINE"] or "[IMAGO] %s: %s", KindLabel(kind), name)
+    if cat ~= "" then line = line .. " — " .. cat end
+    if ChatFrame_OpenChat then
+        ChatFrame_OpenChat(line)
+    else
+        print(line)
+    end
+end
+
+-- Share a zone dossier: same broadcast, labeled "Zone".
+function IMAGO.Social.ShareZone(slug)
+    local mapID = tonumber(tostring(slug):match("^zone:(%d+)$") or slug)
+    local zd = mapID and IMAGOdb and IMAGOdb.zones and IMAGOdb.zones[mapID]
+    local name = (zd and zd.name)
+        or (C_Map and C_Map.GetMapInfo and (C_Map.GetMapInfo(mapID) or {}).name)
+        or tostring(slug)
+    Broadcast("N:zone:" .. tostring(mapID or slug))
+    local line = string.format(IMAGO.L["FACT_SHARE_LINE"] or "[IMAGO] %s: %s", KindLabel("zone"), name)
     if ChatFrame_OpenChat then
         ChatFrame_OpenChat(line)
     else
@@ -83,11 +142,16 @@ end
 -- as text on the receiver's side only — no pins, no UI intrusion) plus a
 -- ready-made chat line. Falls back to name/zone when no coords are stored.
 function IMAGO.Social.ShareLocation(slug)
-    local data = (IMAGO.GetNPCData and IMAGO.GetNPCData(slug))
-        or (IMAGOdb and IMAGOdb.races and IMAGOdb.races[slug])
-        or (IMAGOdb and IMAGOdb.classes and IMAGOdb.classes[slug])
+    local _, data = EntryKindAndData(slug)
     local name = (data and data.name) or slug
     local d = IMAGOSaved.discoveredAt and IMAGOSaved.discoveredAt[slug]
+    -- no discovery stamp -> there is no location to share; hint instead
+    if not d then
+        print(string.format("|c%s[IMAGO]|r %s",
+            IMAGO_HEX and IMAGO_HEX.GOLD or "FFD0AD4D",
+            IMAGO.L["SHARE_LOC_UNKNOWN"] or "Location unknown — the entry hasn't been discovered yet."))
+        return
+    end
     local mapID = d and d.mapID or nil
     local x, y = d and d.x, d and d.y
     local zone = d and d.zone
@@ -99,8 +163,7 @@ function IMAGO.Social.ShareLocation(slug)
     if mapID and x and y then
         payload = payload .. ":" .. mapID .. ":" .. x .. ":" .. y
     end
-    if IsInGuild and IsInGuild() then Send(payload, "GUILD") end
-    if IsInGroup and IsInGroup() then Send(payload, "PARTY") end
+    Broadcast(payload)
     local info = name
     if zone and zone ~= "" then info = info .. " — " .. zone end
     if x and y then info = info .. string.format(" (%.1f, %.1f)", x * 100, y * 100) end
@@ -114,10 +177,7 @@ end
 
 -- Called by GetChronicleScore when an achievement completes for the first time
 function IMAGO.Social.OnEarned(def)
-    local score = MyScore()
-    local payload = "A:" .. def.id .. ":" .. score
-    if IsInGuild and IsInGuild() then Send(payload, "GUILD") end
-    if IsInGroup and IsInGroup() then Send(payload, "PARTY") end
+    Broadcast("A:" .. def.id .. ":" .. MyScore())
 end
 
 -- ------------------------------------------------------------
@@ -171,21 +231,40 @@ syncFrame:SetScript("OnEvent", function(_, event, ...)
         end
 
     elseif op == "N" then
-        -- A peer shared a fate. Name only if we already found it — no spoilers.
-        local slug = payload
+        -- A peer shared an entry (npc/race/class/zone). Name only if we
+        -- already found it — no spoilers.
+        local kind, slug = payload:match("^(%a+):(.+)$")
+        if not kind then kind, slug = "npc", payload end -- legacy "N:<slug>"
         if slug and slug ~= "" then
-            local disc = (IMAGOSaved.seenNPCs and IMAGOSaved.seenNPCs[slug])
-                or (IMAGOSaved.manualUnlocks and IMAGOSaved.manualUnlocks[slug])
-                or IMAGOSaved.encyclopediaMode
+            local disc = IMAGOSaved.encyclopediaMode
+            if not disc then
+                if kind == "npc" then
+                    disc = (IMAGOSaved.seenNPCs and IMAGOSaved.seenNPCs[slug])
+                        or (IMAGOSaved.manualUnlocks and IMAGOSaved.manualUnlocks[slug])
+                elseif kind == "race" then
+                    disc = (IMAGOSaved.seenRaces and IMAGOSaved.seenRaces[slug])
+                        or (IMAGOSaved.manualRaceUnlocks and IMAGOSaved.manualRaceUnlocks[slug])
+                elseif kind == "class" then
+                    disc = (IMAGOSaved.seenClasses and IMAGOSaved.seenClasses[slug])
+                        or (IMAGOSaved.manualClassUnlocks and IMAGOSaved.manualClassUnlocks[slug])
+                elseif kind == "zone" then
+                    local n = tonumber(slug)
+                    disc = (IMAGOSaved.seenZones and (IMAGOSaved.seenZones[n] or IMAGOSaved.seenZones[slug]))
+                        or (IMAGOSaved.manualZoneUnlocks and (IMAGOSaved.manualZoneUnlocks[n] or IMAGOSaved.manualZoneUnlocks[slug]))
+                end
+            end
             local line
             if disc then
-                local data = IMAGO.GetNPCData and IMAGO.GetNPCData(slug)
-                line = string.format("%s — %s %s",
+                local _, data = EntryKindAndData(slug)
+                if not data and kind == "zone" then
+                    data = IMAGOdb and IMAGOdb.zones and IMAGOdb.zones[tonumber(slug)]
+                end
+                line = string.format("%s — %s %s %s",
                     sender, IMAGO.L["FACT_SHARED"] or "shared a fate:",
-                    (data and data.name) or slug)
+                    KindLabel(kind), (data and data.name) or slug)
             else
                 line = string.format("%s %s",
-                    sender, IMAGO.L["FACT_SHARED_UNKNOWN"] or "shared a fate you haven't found yet")
+                    sender, IMAGO.L["FACT_SHARED_UNKNOWN"] or "shared an entry you haven't found yet")
             end
             print(string.format("|c%s[IMAGO]|r %s", IMAGO_HEX and IMAGO_HEX.GOLD or "FFD0AD4D", line))
         end
@@ -196,7 +275,7 @@ syncFrame:SetScript("OnEvent", function(_, event, ...)
         local slug, mapID, xs, ys = payload:match("^(.-):(%d+):([%d%.]+):([%d%.]+)$")
         slug = slug or payload
         if slug and slug ~= "" then
-            local data = IMAGO.GetNPCData and IMAGO.GetNPCData(slug)
+            local _, data = EntryKindAndData(slug)
             local info = (data and data.name) or slug
             if mapID and C_Map and C_Map.GetMapInfo then
                 local ok, mi = pcall(C_Map.GetMapInfo, tonumber(mapID))
