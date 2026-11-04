@@ -293,7 +293,7 @@ if e["guardians_tirisfal"] then
     e["guardians_tirisfal"].body = [[
 Um die grausamsten Dämonen zu bekämpfen, wählte der Rat von Tirisfal einen Champion und erfüllte ihn mit ihrer vereinten Macht. Der Wächter wurde so ein außergewöhnlich mächtiger Magier.
 
-Der dunkle Titan Sargeras besaß den letzten Wächter Medivh, damit er das Dunkle Portal errichtete und der orcischen Horde den Einzug nach Azeroth ermöglichte. Es wurde beschlossen, dass nie wieder ein einzelner Sterblicher solche Macht führen sollte.
+Noch vor seiner Geburt ging der Geist des dunklen Titanen Sargeras von seiner Mutter Aegwynn auf den ungeborenen Medivh über. Von Geburt an besessen, errichtete der letzte Wächter später das Dunkle Portal und ermöglichte der orcischen Horde den Einzug nach Azeroth. Es wurde beschlossen, dass nie wieder ein einzelner Sterblicher solche Macht führen sollte.
 ]]
 end
 

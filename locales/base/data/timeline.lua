@@ -113,6 +113,22 @@ At Nihilam the Pantheon stood against Sargeras, but it fell: Aggramar died benea
 ]]
 end
 
+if ev["doom_karesh"] then
+    ev["doom_karesh"].title = "The Doom of K'aresh"
+    ev["doom_karesh"].yearLabel = "c. -100,000 DP"
+    ev["doom_karesh"].body = [[
+Once a thriving world of golden deserts and bustling city-states, K'aresh was home to a flourishing civilization. Under the guidance of High Priest Salhadaar and the Council of Oracles, the K'areshi prospered. Yet even as their civilization flourished, a terrible fate was drawing near.
+
+As both suns were extinguished in an instant, Dimensius the All-Devouring descended upon K'aresh, unleashing the Void upon its unsuspecting inhabitants and started the Devouring War. Countless gateways tore open across the planet, flooding its skies and sands with dark energies. The K'areshi had received warnings of the impending catastrophe, but by the time they understood their world's desperate plea, the enemy was already upon them.
+
+Desperate to survive, the K'areshi raised magical shields around their cities, which transformed the Void's corrupting energies into arcane power. The barriers held, but their protection came at a terrible cost. Prolonged exposure to the shields' magic stripped the K'areshi of their physical forms, leaving their souls transformed into beings of pure energy. What should have been the end of their civilization became their only chance at survival. They held Dimensius at bay - until the All-Devouring summoned armies beyond their ability to withstand.
+
+In a final, desperate gambit, a handful of its defenders made an impossible choice to stop Dimensius once and for all. The plan succeeded, scattering fragments of the void lord across the Great Dark Beyond - but at the terrible cost of their home. K'aresh was obliterated, its once-great cities reduced to ruins. In the aftermath, the truth of the planet's downfall faded into legend, leaving its survivors to mourn a world they believed had been lost entirely to the All-Devouring.
+
+As K'aresh crumbled, its people fled into distant realms, eventually becoming the ethereals and brokers. Yet a few refused to abandon their shattered home, becoming the wastelanders who still wandered its desolate remains.
+]]
+end
+
 if ev["charge_dragonflights"] then
     ev["charge_dragonflights"].title = "The Dragon Aspects"
     ev["charge_dragonflights"].yearLabel = "c. -20,285 DP"

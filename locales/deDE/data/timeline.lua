@@ -115,6 +115,22 @@ Bei Nihilam stellte sich das Pantheon Sargeras entgegen, doch es fiel: Aggramar 
 ]]
 end
 
+if ev["doom_karesh"] then
+    ev["doom_karesh"].title = "Das Unheil von K'aresh"
+    ev["doom_karesh"].yearLabel = "ca. -100.000 DP"
+    ev["doom_karesh"].body = [[
+Einst war K'aresh eine blühende Welt mit goldenen Wüsten und geschäftigen Stadtstaaten. Unter der Führung von Hohepriester Salhadaar und dem Orakelrat gedieh die Zivilisation der K'areshi. Doch während ihre Welt florierte, rückte bereits ein schreckliches Schicksal näher.
+
+In nur wenigen Sekunden verdunkelte sich der Himmel als beide Sonnen erloschen. Dimensius der alles Verschlingende fiel über K'aresh her und entfesselte die Leere über dessen ahnungslose Bewohner. Überall auf dem Planeten rissen Portale auf, die Himmel und Wüsten mit dunkler Energie überfluteten. Warnungen vor der drohenden Katastrophe hatte es gegeben, doch als die K'areshi die Gefahr endlich begriffen, stand der Feind bereits vor ihrer Tür.
+
+In ihrer Verzweiflung errichteten sie magische Schutzschilde um ihre Städte, die die verderblichen Energien der Leere in arkane Macht umwandelten. Die Barrieren hielten stand, doch ihr Schutz forderte einen schrecklichen Preis: Die Magie entzog den K'areshi nach und nach ihre körperliche Gestalt, bis von ihnen nur noch Seelen aus reiner Energie übrig blieben. Was das Ende ihrer Zivilisation hätte sein sollen, wurde zu ihrer einzigen Überlebenschance. Sie hielten Dimensius zurück – bis der alles Verschlingende Armeen herbeirief, denen sie nicht mehr gewachsen waren.
+
+In einem letzten verzweifelten Versuch trafen einige Verteidiger eine unmögliche Entscheidung, um Dimensius aufzuhalten. Ihr Plan gelang: Fragmente des Leerenfürsten wurden in die Weiten des Großen Dunklen Jenseits verstreut. Doch K'aresh selbst wurde vernichtet, seine einst prachtvollen Städte zu Ruinen zerschmettert. Mit der Zeit verblasste die Wahrheit über den Untergang und wurde zur Legende. Die Überlebenden trauerten um eine Heimat, die sie für immer an die Leere verloren glaubten.
+
+Während K'aresh in Stücke barst, flohen seine Bewohner in ferne Gefilde. Im Laufe der Zeit wurden sie zu den Astralen und Mittlern. Doch nicht alle kehrten ihrer zerstörten Heimat den Rücken: Einige blieben zurück und wurden zu den Ödnisbewohnern, die noch immer durch die trostlosen Überreste ihrer Welt ziehen.
+]]
+end
+
 if ev["charge_dragonflights"] then
     ev["charge_dragonflights"].title = "Die Drachenaspekte"
     ev["charge_dragonflights"].yearLabel = "c. -20,285 DP"

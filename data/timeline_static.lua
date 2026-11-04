@@ -74,6 +74,10 @@ IMAGOdb.timeline.events = {
         era = "cosmos", year = -999996, order = 40, linkable = true,
     },
 
+    ["doom_karesh"] = {
+        era = "cosmos", year = -100000, order = 45, linkable = true,
+    },
+
     ["charge_dragonflights"] = {
         era = "cosmos", year = -20285, order = 50,
     },

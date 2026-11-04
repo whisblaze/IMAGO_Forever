@@ -279,7 +279,7 @@ if e["guardians_tirisfal"] then
     e["guardians_tirisfal"].body = [[
 To combat the most ferocious demons, the Council of Tirisfal chose a champion and imbued them with their combined power. The Guardian thus became an extraordinarily powerful mage.
 
-The Dark Titan Sargeras possessed the Last Guardian Medivh to construct the Dark Portal and to allow the orcish Horde to enter Azeroth. It was decided that no single mortal should ever wield such power again.
+Before he was even born, the spirit of the Dark Titan Sargeras passed from his mother Aegwynn into the unborn Medivh. Possessed from birth, the Last Guardian later constructed the Dark Portal and allowed the orcish Horde to enter Azeroth. It was decided that no single mortal should ever wield such power again.
 ]]
 end
 
