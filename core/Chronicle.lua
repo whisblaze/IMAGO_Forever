@@ -159,13 +159,16 @@ local function GetCrypticName(name)
 end
 
 local function GetValidModelID(npcData)
-    if npcData.displayID then return tonumber(npcData.displayID), true end
+    -- SetCreature with the creature ID resolves the correct model itself;
+    -- displayID holds creature IDs here, so SetDisplayInfo would render
+    -- whatever model that number happens to map to — a different NPC.
     if npcData.ids and type(npcData.ids) == "table" then
-        local entry = npcData.ids[2] or npcData.ids[1]
+        local entry = npcData.ids[1]
         if entry then
             return type(entry) == "table" and tonumber(entry[1]) or tonumber(entry), false
         end
     end
+    if npcData.displayID then return tonumber(npcData.displayID), true end
     return nil
 end
 
